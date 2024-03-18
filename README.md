@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<h1 align="center">
+    <img src="https://www.autoscout24.nl/cms-content-assets/1tkbXrmTEPPaTFel6UxtLr-c0eb4849caa00accfa44b32e8da0a2ff-AutoScout24_primary_solid.png"
+    width="200px"
+    alt="Logo" />
+</h1>
 
-## Getting Started
 
-First, run the development server:
+<h3 align="center">
+  Next.js - Autoscout24 
+</h3>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+<p align="center">
+  :pushpin: Autoscout24 clone website created using Next.js &amp; Typescript
+</p>
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+<p align="center">
+  <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/vujic02/react-native-uber.svg?color=yellow">
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+  <img alt="GitHub language top" src="https://img.shields.io/github/languages/top/vujic02/react-native-uber.svg?color=yellow">
 
-## Learn More
+  <a href="https://www.nikolavujic.com/">
+    <img alt="Made by vujic02" src="https://img.shields.io/badge/made%20by-vujic02-yellow">
+  </a>
 
-To learn more about Next.js, take a look at the following resources:
+  <img alt="License" src="https://img.shields.io/badge/license-MIT-yellow">
+</p>
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+<p align="center">
+  <a href="#setup">Install and run</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a href="#demo">Demo</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a href="#features">Features</a>
+</p>
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+<h1 align="center" id="demo">💻 Demo</h1>
 
-## Deploy on Vercel
+<div width="100%" align="center">
+<img src="DEMO IMAGE LINK GOES HERE / GIF" height="400px" align="center" />
+</div>
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+<h1 align="center" id="setup"> ⚙️ Setup (Local)</h1>
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+1. Run in console: npm install
+
+2. Run in console: run npm run dev
+
+3. Open https://localhost:3000
+
+✨You're all set!✨
+
+<h1 align="center" id="features"> 📋 Features and solutions</h1>
+
+- Filter vehicles by Make, Price, Model, Country
+- 
+- 
+- 
+- 
