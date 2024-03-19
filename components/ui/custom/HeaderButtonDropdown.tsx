@@ -15,24 +15,20 @@ import Image from "next/image";
 
 import { ChevronDown } from "lucide-react";
 
-type Props = {};
-
-const HeaderButtonDropdown = (props: Props) => {
-  const [position, setPosition] = useState("English");
-
-  console.log(position);
+const HeaderButtonDropdown = () => {
+  const [language, setLanguage] = useState("English");
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost">
-          Open <ChevronDown className="ml-2 h-4 w-4" />
+        <Button variant="ghost" className="text-base">
+          {language} <ChevronDown className="ml-2 h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>Language</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuRadioGroup value={position} onValueChange={(value) => setPosition(value)}>
+        <DropdownMenuRadioGroup value={language} onValueChange={(value) => setLanguage(value)}>
           <DropdownMenuRadioItem
             className="data-[state=checked]:bg-gray-400 flex justify-between cursor-pointer data-[state=checked]:cursor-default"
             value="English"

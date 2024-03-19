@@ -2,10 +2,10 @@
 import React from "react";
 import { HeaderButton, HeaderButtonDropdown } from "@/components/ui/custom";
 import Image from "next/image";
+import { Star } from "lucide-react";
+import Link from "next/link";
 
-type Props = {};
-
-const Header = (props: Props) => {
+const Header = () => {
   return (
     <div className="bg-accent h-[72px] flex justify-center">
       <div className="max-w-[1100px] w-full flex items-center justify-between">
@@ -15,8 +15,10 @@ const Header = (props: Props) => {
           <HeaderButton text="Motorbikes" />
         </div>
 
-        <div>
-          <HeaderButton text="Star" />
+        <div className="flex gap-3">
+          <Link href="/favorites">
+            <HeaderButton icon={<Star className="fill-accent-foreground group-hover:fill-accent" />} />
+          </Link>
           <HeaderButtonDropdown />
         </div>
       </div>

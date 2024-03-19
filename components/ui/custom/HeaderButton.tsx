@@ -1,13 +1,19 @@
 "use client";
-import React from "react";
+import React, { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 
 type Props = {
-  text: String;
+  text?: String;
+  icon?: ReactNode;
 };
 
-const HeaderButton = ({ text }: Props) => {
-  return <Button variant="ghost">{text}</Button>;
+const HeaderButton = ({ text, icon }: Props) => {
+  return (
+    <Button variant="ghost" className="group text-base">
+      {text && text}
+      {icon && icon}
+    </Button>
+  );
 };
 
 export default HeaderButton;
