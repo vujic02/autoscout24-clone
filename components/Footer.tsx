@@ -8,7 +8,7 @@ const Footer = () => {
   return (
     <div className="flex justify-center">
       <div className="max-w-[1100px] w-full">
-        <div id="top-footer">
+        <div id="top-footer" className="px-4">
           <div className="text-sm text-gray-500 font-light">
             <sup className="text-xs top-auto -bottom-0.5 mr-1.5">1</sup>VAT deductible
           </div>
@@ -27,14 +27,14 @@ const Footer = () => {
             The values may represent experiences with this model or originate from other sources.
           </div>
         </div>
-        <div id="mid-footer" className="mt-8 border-t border-b border-gray-300 py-4 w-full flex justify-end">
+        <div id="mid-footer" className="mt-8 border-t border-b border-gray-300 py-4 w-full flex justify-end px-4">
           <a onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="text-blue-600 flex items-center font-light" href="">
             To the top
             <ArrowUpToLine className="ml-1" />
           </a>
         </div>
-        <div id="bottom-footer" className="mt-10 py-4 w-full">
-          <div className="flex justify-between w-full">
+        <div id="bottom-footer" className="mt-4 py-4 w-full">
+          <div className="flex flex-col md:flex-row justify-between w-full px-4">
             <div className="flex flex-col">
               <p className="text-black font-medium">AutoScout24: the largest pan-European online car market.</p>
               <div className="flex flex-col gap-3 mt-8">
@@ -76,6 +76,9 @@ const Footer = () => {
               <HeaderButtonDropdown variant="outline" />
             </div>
           </div>
+        </div>
+        <div id="copyright" className="flex flex-col items-center md:items-start mt-4 py-4 border-t border-gray-300 px-4">
+          <p className="text-gray-500 text-xs font-light">© Copyright {new Date().getFullYear()} by AutoScout24 GmbH. All Rights reserved.</p>
         </div>
       </div>
     </div>
