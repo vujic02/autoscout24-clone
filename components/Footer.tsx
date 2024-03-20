@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
 import { ArrowUpToLine } from "lucide-react";
-
-type Props = {};
+import Image from "next/image";
+import { HeaderButtonDropdown } from "./ui/custom";
 
 const Footer = () => {
   return (
@@ -32,6 +32,50 @@ const Footer = () => {
             To the top
             <ArrowUpToLine className="ml-1" />
           </a>
+        </div>
+        <div id="bottom-footer" className="mt-10 py-4 w-full">
+          <div className="flex justify-between w-full">
+            <div className="flex flex-col">
+              <p className="text-black font-medium">AutoScout24: the largest pan-European online car market.</p>
+              <div className="flex flex-col gap-3 mt-8">
+                <p className="text-black font-medium">Company</p>
+                <a href="https://www.autoscout24.com/company/" target="_blank" className="text-black hover:text-blue-950 font-light">
+                  About Autoscout24
+                </a>
+                <a href="https://www.autoscout24.com/company/career/" target="_blank" className="text-black hover:text-blue-950 font-light">
+                  Career
+                </a>
+                <a href="https://www.autoscout24.com/company/contact/" target="_blank" className="text-black hover:text-blue-950 font-light">
+                  Contact
+                </a>
+                <a href="https://www.autoscout24.com/company/imprint/" target="_blank" className="text-black hover:text-blue-950 font-light">
+                  Imprint
+                </a>
+                <a href="https://www.autoscout24.com/company/privacy/" target="_blank" className="text-black hover:text-blue-950 font-light">
+                  Data Protection Information
+                </a>
+              </div>
+            </div>
+            <div className="flex flex-col gap-4 mt-10">
+              <a
+                href="https://apps.apple.com/us/app/autoscout24-buy-sell-cars/id311785642?mt=8&pt=229724&ct=web2app"
+                target="_blank"
+                className="text-black hover:text-blue-950 font-light flex items-center"
+              >
+                <Image className="mr-2" width={18} height={22} src="./icons/ios-icon.svg" alt="" />
+                Autoscout24 for iOS
+              </a>
+              <a
+                href="https://apps.apple.com/us/app/autoscout24-buy-sell-cars/id311785642?mt=8&pt=229724&ct=web2app"
+                target="_blank"
+                className="text-black hover:text-blue-950 font-light flex items-center"
+              >
+                <Image className="mr-2" width={18} height={22} src="./icons/android-icon.svg" alt="" />
+                Autoscout24 for Android
+              </a>
+              <HeaderButtonDropdown variant="outline" />
+            </div>
+          </div>
         </div>
       </div>
     </div>
