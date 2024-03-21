@@ -10,7 +10,7 @@ const Header = () => {
     <div className="bg-accent h-[72px] flex justify-center">
       <div className="max-w-[1100px] w-full flex items-center justify-between">
         <div className="flex gap-5">
-          <Image className="ml-4" alt="" width={126} height={30} src="./as24.svg" />
+          <Image className="ml-4" alt="" width={126} height={30} src="./icons/as24.svg" />
           <HeaderButton text="Used and New Cars" />
           <HeaderButton text="Motorbikes" />
         </div>
@@ -19,7 +19,7 @@ const Header = () => {
           <Link href="/favorites">
             <HeaderButton icon={<Star className="fill-accent-foreground group-hover:fill-accent" />} />
           </Link>
-          <HeaderButtonDropdown />
+          <HeaderButtonDropdown variant="ghost" />
         </div>
       </div>
     </div>

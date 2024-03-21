@@ -15,13 +15,17 @@ import Image from "next/image";
 
 import { ChevronDown } from "lucide-react";
 
-const HeaderButtonDropdown = () => {
+type Props = {
+  variant: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost";
+};
+
+const HeaderButtonDropdown = ({ variant }: Props) => {
   const [language, setLanguage] = useState("English");
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="text-base">
+        <Button variant={variant} className="text-base">
           {language} <ChevronDown className="ml-2 h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
