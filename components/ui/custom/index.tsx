@@ -1,5 +1,5 @@
-import HeaderButton from "./HeaderButton";
-import HeaderButtonDropdown from "./HeaderButtonDropdown";
-import MenuIcon from "./MenuIcon";
+import HeaderDesktop from "./Header/HeaderDesktop";
+import HeaderMobile from "./Header/HeaderMobile";
+import HeaderMobileOverlay from "./Header/HeaderMobileOverlay";
 
-export { HeaderButton, HeaderButtonDropdown, MenuIcon };
+export { HeaderDesktop, HeaderMobile, HeaderMobileOverlay };
