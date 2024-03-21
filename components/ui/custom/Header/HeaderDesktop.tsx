@@ -11,7 +11,7 @@ type Props = {
 
 const HeaderDesktop = ({ language, setLanguage }: Props) => {
   return (
-    <div id="desktop-header" className="max-w-[1100px] w-full hidden md:flex  md:items-center md:justify-between">
+    <div id="desktop-header" className="max-w-[1100px] w-full hidden md:flex md:items-center md:justify-between">
       <div className="flex gap-5">
         <Image className="ml-4" alt="" width={126} height={30} src="./icons/as24.svg" />
         <HeaderButton text="Used and New Cars" />

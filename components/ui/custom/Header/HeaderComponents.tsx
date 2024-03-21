@@ -83,8 +83,6 @@ const HeaderButton = ({ text, icon, customCSS }: PropsHeaderButton) => {
   );
 };
 
-export default HeaderButton;
-
 type PropsMenuIcon = {
   isMobileOpen: boolean;
   setIsMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
