@@ -2,7 +2,6 @@
 import React from "react";
 import { ArrowUpToLine } from "lucide-react";
 import Image from "next/image";
-import { HeaderButtonDropdown } from "./ui/custom";
 
 const Footer = () => {
   return (
@@ -73,7 +72,6 @@ const Footer = () => {
                 <Image className="mr-2" width={18} height={22} src="./icons/android-icon.svg" alt="" />
                 Autoscout24 for Android
               </a>
-              <HeaderButtonDropdown variant="outline" />
             </div>
           </div>
         </div>
