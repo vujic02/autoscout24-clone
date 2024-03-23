@@ -1,10 +1,16 @@
 import React from "react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+type Props = {
+  triggerStyle?: string;
+  disabled?: boolean;
+  data: object[]; // ovde dodati object strukturu npr: {[label: Make, [Audi, Mercedes, BMW, Opel]]...}
+};
+
 const CustomSelect = () => {
   return (
     <Select>
-      <SelectTrigger className="w-[280px]">
+      <SelectTrigger className="w-full border-[#949494]">
         <SelectValue placeholder="Select a timezone" />
       </SelectTrigger>
       <SelectContent>

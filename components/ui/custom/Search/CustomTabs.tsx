@@ -12,7 +12,7 @@ const CustomTabs = (props: Props) => {
 
   return (
     <Tabs defaultValue="cars">
-      <TabsList id="tab-list" className="grid w-[calc(2*90px)] grid-cols-2 !h-[46px] !p-0">
+      <TabsList id="tab-list" className="grid w-[calc(2*90px)] grid-cols-2 gap-x-[1px] !h-[46px] !p-0">
         <TabsTrigger className="w-full max-w-[90px] h-full relative bg-[#dcdcdc] rounded-none" value="cars">
           <Image alt="" src="./icons/cars.svg" width={30} height={22} />
         </TabsTrigger>
@@ -20,10 +20,14 @@ const CustomTabs = (props: Props) => {
           <Image alt="" src="./icons/motorcycles.svg" width={30} height={22} />
         </TabsTrigger>
       </TabsList>
-      <TabsContent className="bg-white m-0 p-16" value="cars">
-        <CustomSelect />
+      <TabsContent className="bg-white m-0 p-4" value="cars">
+        <div className="grid grid-cols-3 gap-x-4">
+          <CustomSelect />
+          <CustomSelect />
+          <CustomSelect />
+        </div>
       </TabsContent>
-      <TabsContent value="motorcycles">
+      <TabsContent className="bg-white m-0 p-4" value="motorcycles">
         <CustomSelect />
       </TabsContent>
     </Tabs>
