@@ -3,9 +3,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 import CustomSelect from "./CustomSelect";
 
-type Props = {};
+type Props = {
+  tabsList: { value: string; image: string }[];
+};
 
-const CustomTabs = (props: Props) => {
+const CustomTabs = ({ tabsList }: Props) => {
   // todo
   // tabs trigger napisati u mapu, u propsu pass down: [{value, image}, {value, image}...].
   // tabs content napisati u mapu, u propsu pass down: [{value, JSXComponent}, {value, JSXComponent}...],
@@ -13,12 +15,11 @@ const CustomTabs = (props: Props) => {
   return (
     <Tabs defaultValue="cars">
       <TabsList id="tab-list" className="grid w-[calc(2*90px)] grid-cols-2 gap-x-[1px] !h-[46px] !p-0">
-        <TabsTrigger className="w-full max-w-[90px] h-full relative bg-[#dcdcdc] rounded-none" value="cars">
-          <Image alt="" src="./icons/cars.svg" width={30} height={22} />
-        </TabsTrigger>
-        <TabsTrigger className="w-full max-w-[90px] h-full relative bg-[#dcdcdc] rounded-none" value="motorcycles">
-          <Image alt="" src="./icons/motorcycles.svg" width={30} height={22} />
-        </TabsTrigger>
+        {tabsList.map((list, id) => (
+          <TabsTrigger key={id} className="w-full max-w-[90px] h-full relative bg-[#dcdcdc] rounded-none" value={list.value}>
+            <Image alt="" src={list.image} width={30} height={22} />
+          </TabsTrigger>
+        ))}
       </TabsList>
       <TabsContent className="bg-white m-0 p-4" value="cars">
         <div className="grid grid-cols-3 gap-x-4">
