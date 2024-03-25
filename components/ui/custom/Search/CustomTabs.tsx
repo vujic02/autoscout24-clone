@@ -5,9 +5,10 @@ import CustomSelect from "./CustomSelect";
 
 type Props = {
   tabsList: { value: string; image: string }[];
+  tabsContent: { value: string; component: JSX.Element }[];
 };
 
-const CustomTabs = ({ tabsList }: Props) => {
+const CustomTabs = ({ tabsList, tabsContent }: Props) => {
   // todo
   // tabs trigger napisati u mapu, u propsu pass down: [{value, image}, {value, image}...].
   // tabs content napisati u mapu, u propsu pass down: [{value, JSXComponent}, {value, JSXComponent}...],
@@ -21,16 +22,11 @@ const CustomTabs = ({ tabsList }: Props) => {
           </TabsTrigger>
         ))}
       </TabsList>
-      <TabsContent className="bg-white m-0 p-4" value="cars">
-        <div className="grid grid-cols-3 gap-x-4">
-          <CustomSelect />
-          <CustomSelect />
-          <CustomSelect />
-        </div>
-      </TabsContent>
-      <TabsContent className="bg-white m-0 p-4" value="motorcycles">
-        <CustomSelect />
-      </TabsContent>
+      {tabsContent.map((content, id) => (
+        <TabsContent className="bg-white m-0 p-4" value={content.value} key={id}>
+          {content.component}
+        </TabsContent>
+      ))}
     </Tabs>
   );
 };
