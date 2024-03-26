@@ -1,7 +1,6 @@
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
-import CustomSelect from "./CustomSelect";
 
 type Props = {
   tabsList: { value: string; image: string }[];
@@ -9,10 +8,6 @@ type Props = {
 };
 
 const CustomTabs = ({ tabsList, tabsContent }: Props) => {
-  // todo
-  // tabs trigger napisati u mapu, u propsu pass down: [{value, image}, {value, image}...].
-  // tabs content napisati u mapu, u propsu pass down: [{value, JSXComponent}, {value, JSXComponent}...],
-
   return (
     <Tabs defaultValue="cars">
       <TabsList id="tab-list" className="grid w-[calc(2*90px)] grid-cols-2 gap-x-[1px] !h-[46px] !p-0">
