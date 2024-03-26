@@ -1,10 +1,11 @@
 import React from "react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { customSelectData } from "@/types/Home";
 
 type Props = {
   triggerStyle?: string;
   disabled?: boolean;
-  data: { label: string; options: string[] }[]; // ovde dodati object strukturu npr: {[label: Make, options: [Audi, Mercedes, BMW, Opel]]...}
+  data: customSelectData;
 };
 
 const CustomSelect = ({ data, disabled, triggerStyle }: Props) => {

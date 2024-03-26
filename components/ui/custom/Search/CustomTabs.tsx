@@ -1,10 +1,11 @@
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { customTabsContent, customTabsList } from "@/types/Home";
 import Image from "next/image";
 
 type Props = {
-  tabsList: { value: string; image: string }[];
-  tabsContent: { value: string; component: JSX.Element }[];
+  tabsList: customTabsList;
+  tabsContent: customTabsContent;
 };
 
 const CustomTabs = ({ tabsList, tabsContent }: Props) => {

@@ -1,30 +1,14 @@
-import CustomSelect from "@/components/ui/custom/Search/CustomSelect";
+import { CarsComponent, MotorcyclesComponent } from "@/components/ui/custom/Search/SearchComponents";
 
-const CarsComponent = () => {
-  let data = [
-    { label: "Make", options: ["Audi", "Mercedes", "BMW"] },
-    { label: "Other", options: ["Opel", "Volkswagen", "SEAT"] },
-  ];
+let carsSelectData = [
+  { label: "Make", options: ["Audi", "Mercedes", "BMW"] },
+  { label: "Other", options: ["Opel", "Volkswagen", "SEAT"] },
+];
 
-  return (
-    <div className="">
-      <CustomSelect data={data} />
-    </div>
-  );
-};
-
-const MotorcyclesComponent = () => {
-  let data = [
-    { label: "Make", options: ["Yamaha", "Suzuki", "Honda"] },
-    { label: "Other", options: ["BMW", "KTM", "CFMoto"] },
-  ];
-
-  return (
-    <div className="">
-      <CustomSelect data={data} />
-    </div>
-  );
-};
+let motorcycleSelectData = [
+  { label: "Make", options: ["Yamaha", "Suzuki", "Honda"] },
+  { label: "Other", options: ["BMW", "KTM", "CFMoto"] },
+];
 
 const tabsListData = [
   { value: "cars", image: "./icons/cars.svg" },
@@ -32,8 +16,8 @@ const tabsListData = [
 ];
 
 const tabsContentData = [
-  { value: "cars", component: <CarsComponent /> },
-  { value: "motorcycles", component: <MotorcyclesComponent /> },
+  { value: "cars", component: <CarsComponent data={carsSelectData} /> },
+  { value: "motorcycles", component: <MotorcyclesComponent data={motorcycleSelectData} /> },
 ];
 
-export { tabsListData, tabsContentData };
+export { tabsListData, tabsContentData, carsSelectData, motorcycleSelectData };
