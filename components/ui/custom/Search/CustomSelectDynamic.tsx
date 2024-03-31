@@ -5,7 +5,7 @@ import { customSelectData } from "@/types/Home";
 type Props = {
   triggerStyle?: string;
   disabled?: boolean;
-  data: customSelectData;
+  data: any;
   setSelectedOption: React.Dispatch<React.SetStateAction<string>>;
 };
 
@@ -18,17 +18,14 @@ const CustomSelect = ({ data, disabled, triggerStyle, setSelectedOption }: Props
         <SelectValue placeholder="Select a timezone" />
       </SelectTrigger>
       <SelectContent>
-        {data &&
-          data.map((select, idx) => (
-            <SelectGroup key={idx}>
-              <SelectLabel>{select.label}</SelectLabel>
-              {select.options.map((option, idx) => (
-                <SelectItem key={idx + 100} value={option}>
-                  {option}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          ))}
+          <SelectGroup>
+            {data.options.map((option) => (
+                <SelectLabel>{select.label}</SelectLabel>
+              <SelectItem key={idx + 100} value={option}>
+                {option}
+              </SelectItem>
+            ))}
+          </SelectGroup>
       </SelectContent>
     </Select>
   );
