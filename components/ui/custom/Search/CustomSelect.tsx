@@ -7,15 +7,16 @@ type Props = {
   disabled?: boolean;
   data: customSelectData;
   setSelectedOption: React.Dispatch<React.SetStateAction<string>>;
+  placeholder: string;
 };
 
-const CustomSelect = ({ data, disabled, triggerStyle, setSelectedOption }: Props) => {
+const CustomSelect = ({ data, disabled, triggerStyle, setSelectedOption, placeholder }: Props) => {
   console.log(data);
 
   return (
     <Select onValueChange={(value) => setSelectedOption(value)}>
       <SelectTrigger disabled={disabled && disabled} className={`w-full border-[#949494] ${triggerStyle}`}>
-        <SelectValue placeholder="Select a timezone" />
+        <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
         {data &&
