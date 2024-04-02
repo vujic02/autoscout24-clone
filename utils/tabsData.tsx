@@ -16,10 +16,11 @@ let carsModelData = {
   BMW: { label: "Model", options: ["320i", "325i", "320d", "520d", "520i"] },
 };
 
-let motorcycleModelData = [
-  { label: "Make", options: ["Yamaha", "Suzuki", "Honda"] },
-  { label: "Other", options: ["BMW", "KTM", "CFMoto"] },
-];
+let motorcycleModelData = {
+  Yamaha: { label: "Model", options: ["YZF-R125", "YZF-R6", "YZF-R7", "YZF-R1", "YZF-R1M", "MT-07", "MT-09"] },
+  Suzuki: { label: "Model", options: ["GSX-250R", "GSX-R600", "GSX-R750", "GSX-R1000", "GSX-R1000R", "Hayabusa"] },
+  Honda: { label: "Model", options: ["CBR-125R", "CBR-300R", "CBR-500R", "CBR-650R", "CBR-600RR", "CBR-1000RR"] },
+};
 
 const tabsListData = [
   { value: "cars", image: "./icons/cars.svg" },
