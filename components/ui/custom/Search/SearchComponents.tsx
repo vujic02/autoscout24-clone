@@ -6,11 +6,17 @@ import { customSelectData } from "@/types/Home";
 type VehicleSelectProps = {
   make: customSelectData;
   model: any;
+  prices: customSelectData;
+  countries: customSelectData;
+  firstRegistration: customSelectData;
 };
 
-const CarsComponent = ({ make, model }: VehicleSelectProps) => {
+const CarsComponent = ({ make, model, prices, countries, firstRegistration }: VehicleSelectProps) => {
   const [selectedMake, setSelectedMake] = useState("");
   const [selectedModel, setSelectedModel] = useState("");
+  const [selectedPrice, setSelectedPrice] = useState("");
+  const [selectedRegistration, setSelectedRegistration] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("");
   const modelData = model[selectedMake];
 
   return (
@@ -23,11 +29,11 @@ const CarsComponent = ({ make, model }: VehicleSelectProps) => {
           data={modelData && [modelData]}
           setSelectedOption={setSelectedModel}
         />
-        <CustomSelect placeholder="Price up to (€)" data={make} setSelectedOption={setSelectedMake} />
+        <CustomSelect placeholder="Price up to (€)" data={prices} setSelectedOption={setSelectedPrice} />
       </div>
       <div className="grid grid-cols-3 gap-3">
-        <CustomSelect placeholder="First registration from" data={make} setSelectedOption={setSelectedMake} />
-        <CustomSelect placeholder="Europe" data={make} setSelectedOption={setSelectedMake} />
+        <CustomSelect placeholder="First registration from" data={firstRegistration} setSelectedOption={setSelectedRegistration} />
+        <CustomSelect placeholder="Europe" data={countries} setSelectedOption={setSelectedCountry} />
         <button
           style={{
             boxShadow: "0 1px 3px 0 rgba(0,0,0,.5)",
@@ -41,10 +47,14 @@ const CarsComponent = ({ make, model }: VehicleSelectProps) => {
   );
 };
 
-const MotorcyclesComponent = ({ make, model }: VehicleSelectProps) => {
+const MotorcyclesComponent = ({ make, model, prices, countries, firstRegistration }: VehicleSelectProps) => {
   const [selectedMake, setSelectedMake] = useState("");
   const [selectedModel, setSelectedModel] = useState("");
+  const [selectedPrice, setSelectedPrice] = useState("");
+  const [selectedRegistration, setSelectedRegistration] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("");
   const modelData = model[selectedMake];
+
   return (
     <div className="flex flex-col gap-3">
       <div className="grid grid-cols-3 gap-3">
@@ -55,11 +65,11 @@ const MotorcyclesComponent = ({ make, model }: VehicleSelectProps) => {
           data={modelData && [modelData]}
           setSelectedOption={setSelectedModel}
         />
-        <CustomSelect placeholder="Price up to (€)" data={make} setSelectedOption={setSelectedMake} />
+        <CustomSelect placeholder="Price up to (€)" data={prices} setSelectedOption={setSelectedPrice} />
       </div>
       <div className="grid grid-cols-3 gap-3">
-        <CustomSelect placeholder="First registration from" data={make} setSelectedOption={setSelectedMake} />
-        <CustomSelect placeholder="Europe" data={make} setSelectedOption={setSelectedMake} />
+        <CustomSelect placeholder="First registration from" data={firstRegistration} setSelectedOption={setSelectedRegistration} />
+        <CustomSelect placeholder="Europe" data={countries} setSelectedOption={setSelectedCountry} />
         <button
           style={{
             boxShadow: "0 1px 3px 0 rgba(0,0,0,.5)",
