@@ -3,17 +3,16 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { customSelectData } from "@/types/Home";
 
 type Props = {
-  triggerStyle?: string;
   disabled?: boolean;
   data: customSelectData;
   setSelectedOption: React.Dispatch<React.SetStateAction<string>>;
   placeholder: string;
 };
 
-const CustomSelect = ({ data, disabled, triggerStyle, setSelectedOption, placeholder }: Props) => {
+const CustomSelect = ({ data, disabled, setSelectedOption, placeholder }: Props) => {
   return (
     <Select onValueChange={(value) => setSelectedOption(value)}>
-      <SelectTrigger disabled={disabled && disabled} className={`w-full border-[#949494] ${triggerStyle}`}>
+      <SelectTrigger disabled={disabled && disabled} className="w-full border-[#949494]">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>

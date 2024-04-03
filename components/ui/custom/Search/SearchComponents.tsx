@@ -1,15 +1,15 @@
 "use client";
 import React, { useState } from "react";
 import CustomSelect from "@/components/ui/custom/Search/CustomSelect";
-import { customSelectData } from "@/types/Home";
+import { customSelectData, customSelectDataDynamic } from "@/types/Home";
 
-type VehicleSelectProps = {
+interface VehicleSelectProps {
   make: customSelectData;
-  model: any;
+  model: customSelectDataDynamic;
   prices: customSelectData;
   countries: customSelectData;
   firstRegistration: customSelectData;
-};
+}
 
 const CarsComponent = ({ make, model, prices, countries, firstRegistration }: VehicleSelectProps) => {
   const [selectedMake, setSelectedMake] = useState("");
