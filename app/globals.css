@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+#tab-list button[data-state="active"]::after {
+  border-top: 3px solid #333;
+  bottom: 0;
+  content: " ";
+  display: block;
+  position: absolute;
+  width: 75%;
+}
+
+body {
+  background-color: #f4f4f4;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
