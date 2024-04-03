@@ -15,9 +15,9 @@
 </p>
 
 <p align="center">
-  <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/vujic02/react-native-uber.svg?color=yellow">
+  <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/vujic02/autoscout24-clone.svg?color=yellow">
 
-  <img alt="GitHub language top" src="https://img.shields.io/github/languages/top/vujic02/react-native-uber.svg?color=yellow">
+  <img alt="GitHub language top" src="https://img.shields.io/github/languages/top/vujic02/autoscout24-clone?color=yellow">
 
   <a href="https://www.nikolavujic.com/">
     <img alt="Made by vujic02" src="https://img.shields.io/badge/made%20by-vujic02-yellow">
