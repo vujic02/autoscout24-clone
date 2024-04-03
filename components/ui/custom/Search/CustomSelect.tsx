@@ -11,8 +11,6 @@ type Props = {
 };
 
 const CustomSelect = ({ data, disabled, triggerStyle, setSelectedOption, placeholder }: Props) => {
-  console.log(data);
-
   return (
     <Select onValueChange={(value) => setSelectedOption(value)}>
       <SelectTrigger disabled={disabled && disabled} className={`w-full border-[#949494] ${triggerStyle}`}>

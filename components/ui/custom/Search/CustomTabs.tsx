@@ -13,7 +13,11 @@ const CustomTabs = ({ tabsList, tabsContent }: Props) => {
     <Tabs defaultValue="cars">
       <TabsList id="tab-list" className="grid w-[calc(2*90px)] grid-cols-2 gap-x-[1px] !h-[46px] !p-0">
         {tabsList.map((list, id) => (
-          <TabsTrigger key={id} className="w-full max-w-[90px] h-full relative bg-[#dcdcdc] rounded-none" value={list.value}>
+          <TabsTrigger
+            key={id}
+            className={`w-full max-w-[90px] h-full relative bg-[#dcdcdc] !rounded-none ${id === 0 ? "!rounded-tl-md" : "!rounded-tr-md"}`}
+            value={list.value}
+          >
             <Image alt="" src={list.image} width={30} height={22} />
           </TabsTrigger>
         ))}
