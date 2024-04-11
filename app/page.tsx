@@ -8,7 +8,15 @@ export default function Home() {
       <div className="max-w-[1100px] w-full">
         <CustomTabs tabsContent={tabsContentData} tabsList={tabsListData} />
         <div className="grid grid-cols-4">
-          <VehicleCard />
+          <VehicleCard
+            name="Yamaha YZF-R6"
+            price={9000}
+            fuelType="Gasoline"
+            kilometerage={34525}
+            location="IT 2462"
+            registration={new Date("6/22/2022")}
+            image="https://www.mitchellsmc.co.uk/wp-content/uploads/2023/05/DSC05578-scaled.jpg"
+          />
         </div>
       </div>
     </main>
