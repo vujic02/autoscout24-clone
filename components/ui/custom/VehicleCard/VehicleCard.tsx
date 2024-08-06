@@ -1,5 +1,5 @@
 import React from "react";
-import { MapPin } from "lucide-react";
+import { MapPin, Star } from "lucide-react";
 import Image from "next/image";
 
 type Props = {
@@ -10,12 +10,20 @@ type Props = {
   name: String;
   location: String;
   image?: string;
+  favorite: boolean;
+  setFavorite: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const VehicleCard = ({ registration, fuelType, kilometerage, location, name, price, image }: Props) => {
+const VehicleCard = ({ registration, fuelType, kilometerage, location, name, price, image, favorite, setFavorite }: Props) => {
   return (
     <div className="relative flex flex-col hover:shadow-md transition-all cursor-pointer border border-transparent active:border-black rounded-md">
-      <div className="bg-[#eaeaea] flex justify-center items-center w-full h-48 rounded-t-sm">
+      <div className="relative bg-[#eaeaea] flex justify-center items-center w-full h-48 rounded-t-sm">
+        <div
+          onClick={() => setFavorite((prev) => !prev)}
+          className="absolute top-2 right-2 flex justify-center items-center p-2 rounded-full bg-white"
+        >
+          <Star className={`${favorite ? "fill-black" : "fill-white"}`} />
+        </div>
         {image ? (
           <img className="object-cover w-full h-full rounded-t-sm" src={image} alt="#" />
         ) : (
