@@ -8,12 +8,13 @@ import Image from "next/image";
 type Props = {
   favorite: boolean;
   setFavorite: React.Dispatch<React.SetStateAction<boolean>>;
+  image: boolean;
 };
 
-const VehicleSearchedResult = ({ favorite, setFavorite }: Props) => {
+const VehicleSearchedResult = ({ favorite, setFavorite, image }: Props) => {
   return (
     <div className="bg-white p-4">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center px-4">
         <div className="flex items-center gap-2">
           <Link className="text-[#333] font-semibold text-xl" href="#">
             BMW 318d
@@ -71,16 +72,30 @@ const VehicleSearchedResult = ({ favorite, setFavorite }: Props) => {
           </div>
         </div>
       </div>
-      <div className="flex justify-between items-center mt-4">
+      <div className="flex justify-start gap-x-3 mt-4 px-4">
         <div className="max-w-[266px] max-h-[199px] relative">
           <Image width={266} height={199} alt="#" src="/testimage.webp" />
           <div className="absolute bottom-2 left-2 h-9 w-[50px] flex justify-center items-center bg-[#00000080] text-white border border-white rounded-sm font-light text-xs">
             1 / 10
           </div>
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col mt-4">
           <h2 className="text-xl font-semibold">€ 7,200.-</h2>
           <div className="flex items-center"></div>
+        </div>
+      </div>
+      <div className="flex justify-between items-center mt-6 border-t border-t-[#eaeaea]">
+        <div className="mt-4 px-4">
+          {image ? <img src="#" alt="#"></img> : null}
+          <div className="flex flex-col">
+            <p className="text-[#333] text-sm font-normal">PG Cars</p>
+            <p className="text-[#333] text-sm font-normal">Lukas Sternberger • AT-7423 Pinkafeld</p>
+          </div>
+        </div>
+        <div className="mt-4 px-4">
+          <a className="text-[#1166a8] text-base font-normal hover:text-[#1167a8cc] transition-colors duration-300" href="#">
+            + Show more vehicles
+          </a>
         </div>
       </div>
     </div>
