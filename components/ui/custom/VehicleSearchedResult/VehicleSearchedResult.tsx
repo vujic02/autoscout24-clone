@@ -3,6 +3,7 @@ import Link from "next/link";
 import React from "react";
 import { Star, Mail, Facebook, Link as LinkIcon, Share2 } from "lucide-react";
 import * as DropdownMenu from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 
 type Props = {
   favorite: boolean;
@@ -28,7 +29,10 @@ const VehicleSearchedResult = ({ favorite, setFavorite }: Props) => {
               <DropdownMenu.DropdownMenuTrigger asChild>
                 <Share2 width={20} height={20} className="fill-transparent" />
               </DropdownMenu.DropdownMenuTrigger>
-              <DropdownMenu.DropdownMenuContent className="w-56">
+              <DropdownMenu.DropdownMenuContent
+                style={{ boxShadow: "0 12px 24px 0 #0000000d, 0 8px 16px 0 #0000000d, 0 4px 8px 0 #0000000d, 0 0 2px 0 #0000001f" }}
+                className="w-56 mt-3 relative overflow-visible !border-0"
+              >
                 <DropdownMenu.DropdownMenuLabel>Share offer</DropdownMenu.DropdownMenuLabel>
                 <DropdownMenu.DropdownMenuSeparator />
                 <DropdownMenu.DropdownMenuGroup>
@@ -57,9 +61,26 @@ const VehicleSearchedResult = ({ favorite, setFavorite }: Props) => {
                     </a>
                   </DropdownMenu.DropdownMenuItem>
                 </DropdownMenu.DropdownMenuGroup>
+                <div className="absolute -top-[5px] left-1/2 -translate-x-1/2 rotate-180 z-50">
+                  <svg fill="white" width="10" height="5" viewBox="0 0 30 10" preserveAspectRatio="none">
+                    <polygon points="0,0 30,0 15,10"></polygon>
+                  </svg>
+                </div>
               </DropdownMenu.DropdownMenuContent>
             </DropdownMenu.DropdownMenu>
           </div>
+        </div>
+      </div>
+      <div className="flex justify-between items-center mt-4">
+        <div className="max-w-[266px] max-h-[199px] relative">
+          <Image width={266} height={199} alt="#" src="/testimage.webp" />
+          <div className="absolute bottom-2 left-2 h-9 w-[50px] flex justify-center items-center bg-[#00000080] text-white border border-white rounded-sm font-light text-xs">
+            1 / 10
+          </div>
+        </div>
+        <div className="flex flex-col">
+          <h2 className="text-xl font-semibold">€ 7,200.-</h2>
+          <div className="flex items-center"></div>
         </div>
       </div>
     </div>
