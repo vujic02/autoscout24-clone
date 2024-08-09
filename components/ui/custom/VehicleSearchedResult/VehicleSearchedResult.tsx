@@ -72,7 +72,7 @@ const VehicleSearchedResult = ({ favorite, setFavorite, image }: Props) => {
           </div>
         </div>
       </div>
-      <div className="flex justify-start gap-x-3 mt-4 px-4">
+      <div className="flex justify-start gap-x-3 mt-6 px-4">
         <div className="max-w-[266px] max-h-[199px] relative">
           <Image width={266} height={199} alt="#" src="/testimage.webp" />
           <div className="absolute bottom-2 left-2 h-9 w-[50px] flex justify-center items-center bg-[#00000080] text-white border border-white rounded-sm font-light text-xs">
@@ -80,8 +80,29 @@ const VehicleSearchedResult = ({ favorite, setFavorite, image }: Props) => {
           </div>
         </div>
         <div className="flex flex-col mt-4">
-          <h2 className="text-xl font-semibold">€ 7,200.-</h2>
-          <div className="flex items-center"></div>
+          <h2 className="text-[28px] font-semibold">€ 7,200.-</h2>
+          <div className="flex items-center flex-wrap gap-x-8 gap-y-2 mt-4">
+            <div className="flex gap-x-2">
+              <Image className="object-contain" width={24} height={24} alt="#" src="/icons/road.png"></Image>
+              <p className="text-[#333] font-normal text-base">244,400 km</p>
+            </div>
+            <div className="flex gap-2">
+              <Image className="object-contain" width={24} height={24} alt="#" src="/icons/gearbox.png"></Image>
+              <p className="text-[#333] font-normal text-base">Automatic</p>
+            </div>
+            <div className="flex gap-x-2">
+              <Image className="object-contain" width={24} height={24} alt="#" src="/icons/calendar.png"></Image>
+              <p className="text-[#333] font-normal text-base">06/2011</p>
+            </div>
+            <div className="flex gap-x-2">
+              <Image className="object-contain" width={24} height={24} alt="#" src="/icons/gas.png"></Image>
+              <p className="text-[#333] font-normal text-base">Diesel</p>
+            </div>
+            <div className="flex gap-x-2">
+              <Image className="object-contain" width={24} height={24} alt="#" src="/icons/speedometer.png"></Image>
+              <p className="text-[#333] font-normal text-base">220 kW (299 hp)</p>
+            </div>
+          </div>
         </div>
       </div>
       <div className="flex justify-between items-center mt-6 border-t border-t-[#eaeaea]">
