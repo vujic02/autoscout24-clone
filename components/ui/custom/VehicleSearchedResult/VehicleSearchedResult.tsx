@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { VehicleSearchedResultDesktop } from "./VehicleSearchedResultComponents";
+import { VehicleSearchedResultDesktop, VehicleSearchedResultMobile } from "./VehicleSearchedResultComponents";
 
 type Props = {
   favorite: boolean;
@@ -9,7 +9,16 @@ type Props = {
 };
 
 const VehicleSearchedResult = ({ favorite, setFavorite, image }: Props) => {
-  return <VehicleSearchedResultDesktop favorite={favorite} image={image} setFavorite={setFavorite} />;
+  return (
+    <>
+      <div className="hidden md:block">
+        <VehicleSearchedResultDesktop favorite={favorite} setFavorite={setFavorite} image={image} />
+      </div>
+      <div className="block md:hidden">
+        <VehicleSearchedResultMobile favorite={favorite} setFavorite={setFavorite} image={image} />
+      </div>
+    </>
+  );
 };
 
 export default VehicleSearchedResult;
