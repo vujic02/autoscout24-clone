@@ -16,7 +16,8 @@ const FilterSidebar = ({}: Props) => {
   const modelData = model[selectedMake];
 
   return (
-    <div>
+    <div className="bg-white px-4 py-6">
+      <label>Make</label>
       <CustomSelect placeholder="Make" data={carsMakeData} setSelectedOption={setSelectedMake} />
       <CustomSelect
         placeholder="Model"
@@ -25,6 +26,8 @@ const FilterSidebar = ({}: Props) => {
         setSelectedOption={setSelectedModel}
       />
       <CustomSelect placeholder="Price up to (€)" data={prices} setSelectedOption={setSelectedPrice} />
+      <CustomSelect placeholder="First registration from" data={firstRegistration} setSelectedOption={setSelectedRegistration} />
+      <CustomSelect placeholder="Europe" data={countries} setSelectedOption={setSelectedCountry} />
     </div>
   );
 };
