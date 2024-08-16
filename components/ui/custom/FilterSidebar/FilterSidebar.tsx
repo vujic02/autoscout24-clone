@@ -17,21 +17,23 @@ const FilterSidebar = ({}: Props) => {
 
   return (
     <div className="bg-white px-4 py-6">
-      <label className="text-sm">Make</label>
-      <CustomSelect placeholder="Make" data={carsMakeData} setSelectedOption={setSelectedMake} />
-      <label className="text-sm">Model</label>
-      <CustomSelect
-        placeholder="Model"
-        disabled={selectedMake === "" ? true : false}
-        data={modelData && [modelData]}
-        setSelectedOption={setSelectedModel}
-      />
-      <label className="text-sm">Price</label>
-      <CustomSelect placeholder="Price up to (€)" data={prices} setSelectedOption={setSelectedPrice} />
-      <label className="text-sm">First registration</label>
-      <CustomSelect placeholder="First registration from" data={firstRegistration} setSelectedOption={setSelectedRegistration} />
-      <label className="text-sm">Countries</label>
-      <CustomSelect placeholder="Europe" data={countries} setSelectedOption={setSelectedCountry} />
+      <div className="border-t border-t-[#dcdcdc] py-2">
+        <label className="text-sm">Make</label>
+        <CustomSelect placeholder="Make" data={carsMakeData} setSelectedOption={setSelectedMake} />
+        <label className="text-sm">Model</label>
+        <CustomSelect
+          placeholder="Model"
+          disabled={selectedMake === "" ? true : false}
+          data={modelData && [modelData]}
+          setSelectedOption={setSelectedModel}
+        />
+        <label className="text-sm">Price</label>
+        <CustomSelect placeholder="Price up to (€)" data={prices} setSelectedOption={setSelectedPrice} />
+        <label className="text-sm">First registration</label>
+        <CustomSelect placeholder="First registration from" data={firstRegistration} setSelectedOption={setSelectedRegistration} />
+        <label className="text-sm">Countries</label>
+        <CustomSelect placeholder="Europe" data={countries} setSelectedOption={setSelectedCountry} />
+      </div>
     </div>
   );
 };
