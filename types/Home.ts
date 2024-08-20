@@ -1,11 +1,13 @@
-type customSelectData = { label: string; options: string[] }[];
+type vehicleData = { label: string; options: string[] };
+
+type customSelectData = vehicleData[];
 
 type customSelectDataDynamic = {
-  [key: string]: { label: string; options: string[] };
+  [key: string]: vehicleData;
 };
 
 type customTabsContent = { value: string; component: JSX.Element }[];
 
 type customTabsList = { value: string; image: string }[];
 
-export type { customSelectData, customSelectDataDynamic, customTabsContent, customTabsList };
+export type { vehicleData, customSelectData, customSelectDataDynamic, customTabsContent, customTabsList };

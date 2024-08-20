@@ -1,13 +1,12 @@
 "use client";
 import React, { useState } from "react";
-import CustomSelect from "../Search/CustomSelect";
-import { customSelectData, customSelectDataDynamic } from "@/types/Home";
-import { carsMakeData, carsModelData, countries, firstRegistration, motorcycleMakeData, motorcycleModelData, prices } from "@/utils/tabsStatic";
-import { Badge } from "@/components/ui/badge";
+import { customSelectDataDynamic } from "@/types/Home";
+import { carsModelData } from "@/utils/tabsStatic";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { SlidersHorizontal } from "lucide-react";
+import { Sidebar } from "./FilterSidebarComponents";
 
-interface Props {}
-
-const FilterSidebar = ({}: Props) => {
+const FilterSidebar = () => {
   const model: customSelectDataDynamic = carsModelData;
   const [selectedMake, setSelectedMake] = useState("");
   const [selectedModel, setSelectedModel] = useState("");
@@ -17,45 +16,38 @@ const FilterSidebar = ({}: Props) => {
   const modelData = model[selectedMake];
 
   return (
-    <div className="bg-white px-4 py-6">
-      <div className="py-4 px-2 min-h-36">
-        <p className="text-base text-[#333] font-semibold mt-2">My search (2)</p>
-        <div className="flex flex-wrap gap-1 mt-2">
-          <Badge variant="secondary">Europe</Badge>
-          <Badge variant="secondary">BMW</Badge>
-        </div>
-      </div>
-      <div className="border-t border-t-[#dcdcdc] py-2">
-        <div className="flex flex-col gap-y-3 px-2 mt-2">
-          <p className="text-[#333] text-base font-semibold">Basic specifications & Location</p>
-          <div>
-            <label className="inline-block text-base mb-0.5 mt-6">Make</label>
-            <CustomSelect placeholder="Make" data={carsMakeData} setSelectedOption={setSelectedMake} />
-          </div>
-          <div>
-            <label className="inline-block text-base mb-0.5">Model</label>
-            <CustomSelect
-              placeholder="Model"
-              disabled={selectedMake === "" ? true : false}
-              data={modelData && [modelData]}
-              setSelectedOption={setSelectedModel}
+    <>
+      <div className="md:hidden flex">
+        <Sheet>
+          <SheetTrigger className="flex items-center gap-2 bg-[#333] text-white px-2 py-1 rounded-sm">
+            <SlidersHorizontal width={16} height={16} /> Filters{" "}
+            <div className="text-xs bg-white text-[#333] rounded-full w-5 h-5 flex justify-center items-center ml-1">3</div>
+          </SheetTrigger>
+          <SheetContent side="left">
+            <Sidebar
+              modelData={modelData}
+              selectedMake={selectedMake}
+              setSelectedCountry={setSelectedCountry}
+              setSelectedMake={setSelectedMake}
+              setSelectedModel={setSelectedModel}
+              setSelectedPrice={setSelectedPrice}
+              setSelectedRegistration={setSelectedRegistration}
             />
-          </div>
-          <div>
-            <label className="inline-block text-base mb-0.5">Price</label>
-            <CustomSelect placeholder="Price up to (€)" data={prices} setSelectedOption={setSelectedPrice} />
-          </div>
-          <div>
-            <label className="inline-block text-base mb-0.5">First registration</label>
-            <CustomSelect placeholder="First registration from" data={firstRegistration} setSelectedOption={setSelectedRegistration} />
-          </div>
-          <div>
-            <label className="inline-block text-base mb-0.5">Countries</label>
-            <CustomSelect placeholder="Europe" data={countries} setSelectedOption={setSelectedCountry} />
-          </div>
-        </div>
+          </SheetContent>
+        </Sheet>
       </div>
-    </div>
+      <div className="md:flex hidden">
+        <Sidebar
+          modelData={modelData}
+          selectedMake={selectedMake}
+          setSelectedCountry={setSelectedCountry}
+          setSelectedMake={setSelectedMake}
+          setSelectedModel={setSelectedModel}
+          setSelectedPrice={setSelectedPrice}
+          setSelectedRegistration={setSelectedRegistration}
+        />
+      </div>
+    </>
   );
 };
 
