@@ -16,7 +16,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
+
+from listings.views import ListingListCreateView, ListingDetailView, RegisterView, LoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/listings/', ListingListCreateView.as_view(), name='listings'),
+    path('api/listings/<int:pk>/', ListingDetailView.as_view(), name='listing-detail'),
+
+    path('api/auth/register/', RegisterView.as_view(), name='auth-register'),
+    path('api/auth/login/', LoginView.as_view(), name='auth-login'),
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
