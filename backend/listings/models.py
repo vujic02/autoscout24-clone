@@ -30,7 +30,20 @@ class Listing(models.Model):
     main_image = models.ImageField(upload_to='listings/', null=True, blank=True)
 
     status = models.CharField(max_length=20, default='ACTIVE')
+    featured = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.title} - {self.price}€'
+
+
+class ListingImage(models.Model):
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='listings/')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f'Image for {self.listing.title}'

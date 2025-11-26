@@ -1,21 +1,20 @@
 "use client";
 import React from "react";
 import { VehicleSearchedResultDesktop, VehicleSearchedResultMobile } from "./VehicleSearchedResultComponents";
+import { Listing } from "@/lib/api";
 
 type Props = {
-  favorite: boolean;
-  setFavorite: React.Dispatch<React.SetStateAction<boolean>>;
-  image: boolean;
+  listing: Listing;
 };
 
-const VehicleSearchedResult = ({ favorite, setFavorite, image }: Props) => {
+const VehicleSearchedResult = ({ listing }: Props) => {
   return (
     <>
       <div className="hidden md:block">
-        <VehicleSearchedResultDesktop favorite={favorite} setFavorite={setFavorite} image={image} />
+        <VehicleSearchedResultDesktop listing={listing} />
       </div>
       <div className="block md:hidden">
-        <VehicleSearchedResultMobile favorite={favorite} setFavorite={setFavorite} image={image} />
+        <VehicleSearchedResultMobile listing={listing} />
       </div>
     </>
   );

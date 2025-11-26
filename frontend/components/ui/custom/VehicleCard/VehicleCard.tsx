@@ -12,11 +12,15 @@ type Props = {
   image?: string;
   favorite: boolean;
   setFavorite: React.Dispatch<React.SetStateAction<boolean>>;
+  onClick?: () => void;
 };
 
-const VehicleCard = ({ registration, fuelType, kilometerage, location, name, price, image, favorite, setFavorite }: Props) => {
+const VehicleCard = ({ registration, fuelType, kilometerage, location, name, price, image, favorite, setFavorite, onClick }: Props) => {
   return (
-    <div className="relative flex flex-col hover:shadow-md transition-all cursor-pointer border border-transparent active:border-black rounded-md">
+    <div
+      className="relative flex flex-col hover:shadow-md transition-all cursor-pointer border border-transparent active:border-black rounded-md"
+      onClick={onClick}
+    >
       <div className="relative bg-[#eaeaea] flex justify-center items-center w-full h-48 rounded-t-sm">
         <div
           onClick={() => setFavorite((prev) => !prev)}

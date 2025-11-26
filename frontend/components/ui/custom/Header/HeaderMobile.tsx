@@ -13,7 +13,9 @@ const HeaderMobile = ({ isMobileOpen, setIsMobileOpen }: Props) => {
   return (
     <div id="mobile-header" className="flex md:hidden w-full justify-between items-center px-4">
       <MenuIcon isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
-      <Image className="ml-4" alt="" width={126} height={30} src="./icons/as24.svg" />
+      <Link href="/" className="hover:opacity-80 transition-opacity ml-4">
+        <Image alt="AutoScout24" width={126} height={30} src="./icons/as24.svg" />
+      </Link>
       <Link href="/favorites">
         <Star className="fill-accent-foreground text-accent-foreground" />
       </Link>

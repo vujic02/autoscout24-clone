@@ -19,7 +19,7 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from listings.views import ListingListCreateView, ListingDetailView, RegisterView, LoginView
+from listings.views import ListingListCreateView, ListingDetailView, RegisterView, LoginView, AdminListingsView, ToggleFeaturedView, CurrentUserView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,6 +28,11 @@ urlpatterns = [
 
     path('api/auth/register/', RegisterView.as_view(), name='auth-register'),
     path('api/auth/login/', LoginView.as_view(), name='auth-login'),
+    path('api/auth/current-user/', CurrentUserView.as_view(), name='current-user'),
+    
+    # Admin endpoints
+    path('api/admin/listings/', AdminListingsView.as_view(), name='admin-listings'),
+    path('api/admin/listings/<int:listing_id>/toggle-featured/', ToggleFeaturedView.as_view(), name='toggle-featured'),
 ]
 
 

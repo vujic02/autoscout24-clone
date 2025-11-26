@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode } from "react";
+import React, { ReactNode, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,8 +10,10 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
+import Link from "next/link";
 
 import { ChevronDown } from "lucide-react";
 
@@ -114,4 +116,72 @@ const MenuIcon = ({ isMobileOpen, setIsMobileOpen }: PropsMenuIcon) => {
   );
 };
 
-export { HeaderButtonDropdown, HeaderButton, MenuIcon };
+type PropsUserAuthDropdown = {
+  isLoggedIn?: boolean;
+  userEmail?: string;
+  isAdmin?: boolean;
+};
+
+const UserAuthDropdown = ({ isLoggedIn = false, userEmail, isAdmin = false }: PropsUserAuthDropdown) => {
+  const [open, setOpen] = useState(false);
+
+  const handleLogout = () => {
+    // Clear authentication data from localStorage
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("authUser");
+    localStorage.removeItem("isAdmin");
+
+    // Reload the page to update the header and redirect to home
+    window.location.href = "/";
+  };
+
+  if (!isLoggedIn) {
+    return (
+      <Link href="/login">
+        <Button variant="ghost" className="text-base">
+          Log In
+        </Button>
+      </Link>
+    );
+  }
+
+  return (
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="text-base max-w-[200px] truncate">
+          {userEmail} <ChevronDown className="ml-2 h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>{userEmail}</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {isAdmin && (
+          <>
+            <DropdownMenuItem asChild>
+              <Link href="/admin" className="cursor-pointer">
+                Admin Dashboard
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
+        <DropdownMenuItem asChild>
+          <Link href="/my-listings" className="cursor-pointer">
+            My Listings
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/add-listing" className="cursor-pointer">
+            Add Listing
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600">
+          Log Out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
+export { HeaderButtonDropdown, HeaderButton, MenuIcon, UserAuthDropdown };

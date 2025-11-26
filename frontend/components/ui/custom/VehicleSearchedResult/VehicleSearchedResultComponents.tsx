@@ -4,23 +4,25 @@ import { Star, Mail, Facebook, Link as LinkIcon, Share2 } from "lucide-react";
 import * as DropdownMenu from "@/components/ui/dropdown-menu";
 import Image from "next/image";
 import Link from "next/link";
+import type { Listing } from "@/lib/api";
 
 type Props = {
-  favorite: boolean;
-  setFavorite: React.Dispatch<React.SetStateAction<boolean>>;
-  image: boolean;
+  listing: Listing;
 };
 
-const VehicleSearchedResultDesktop = ({ favorite, setFavorite, image }: Props) => {
+const VehicleSearchedResultDesktop = ({ listing }: Props) => {
+  const favorite = true;
+
   return (
-    <div className="bg-white p-4">
-      <div className="flex justify-between items-center px-4">
-        <div className="flex items-center gap-2">
-          <Link className="text-[#333] font-semibold text-xl" href="#">
-            BMW 318d
-          </Link>
-          <p className="text-[#333] font-normal text-base">318d Touring 2.0 143cv</p>
-        </div>
+    <Link href={`/vehicle/${listing.id}`} className="block">
+      <div className="bg-white p-4 hover:shadow-lg transition-shadow cursor-pointer">
+        <div className="flex justify-between items-center px-4">
+          <div className="flex items-center gap-2">
+            <span className="text-[#333] font-semibold text-xl hover:text-blue-600">
+              {listing.make} {listing.model}
+            </span>
+            <p className="text-[#333] font-normal text-base">{listing.title}</p>
+          </div>
         <div className="flex items-center gap-2 pr-2">
           <div className="rounded-full bg-[#f3f4f5] hover:bg-[#e8eaec] transition-all p-2 cursor-pointer">
             <Star width={20} height={20} className={`${favorite ? "fill-black" : "fill-trasparent"}`} />
@@ -73,18 +75,26 @@ const VehicleSearchedResultDesktop = ({ favorite, setFavorite, image }: Props) =
         </div>
       </div>
       <div className="flex justify-start gap-x-3 mt-6 px-4">
-        <div className="max-w-[266px] max-h-[199px] relative">
-          <Image width={266} height={199} alt="#" src="/testimage.webp" />
+        <div
+          className={`relative max-w-[266px] max-h-[199px] ${
+            listing.main_image ? "w-full h-full" : "flex justify-center items-center w-full h-[199px] bg-slate-50"
+          }`}
+        >
+          <img
+            className={`${listing.main_image ? "w-full h-full" : "w-36 h-36"}`}
+            alt="#"
+            src={listing.main_image ? listing.main_image : "/bg404.png"}
+          />
           <div className="absolute bottom-2 left-2 h-9 w-[50px] flex justify-center items-center bg-[#00000080] text-white border border-white rounded-sm font-light text-xs">
             1 / 10
           </div>
         </div>
         <div className="flex flex-col mt-4">
-          <h2 className="text-[28px] font-semibold">€ 7,200.-</h2>
+          <h2 className="text-[28px] font-semibold">€ {listing.price}.-</h2>
           <div className="flex items-center flex-wrap gap-x-8 gap-y-2 mt-4">
             <div className="flex gap-x-2">
               <Image className="object-contain" width={24} height={24} alt="#" src="/icons/road.png"></Image>
-              <p className="text-[#333] font-normal text-base">244,400 km</p>
+              <p className="text-[#333] font-normal text-base">{listing.mileage} km</p>
             </div>
             <div className="flex gap-2">
               <Image className="object-contain" width={24} height={24} alt="#" src="/icons/gearbox.png"></Image>
@@ -92,11 +102,11 @@ const VehicleSearchedResultDesktop = ({ favorite, setFavorite, image }: Props) =
             </div>
             <div className="flex gap-x-2">
               <Image className="object-contain" width={24} height={24} alt="#" src="/icons/calendar.png"></Image>
-              <p className="text-[#333] font-normal text-base">06/2011</p>
+              <p className="text-[#333] font-normal text-base">{listing.registration_year}</p>
             </div>
             <div className="flex gap-x-2">
               <Image className="object-contain" width={24} height={24} alt="#" src="/icons/gas.png"></Image>
-              <p className="text-[#333] font-normal text-base">Diesel</p>
+              <p className="text-[#333] font-normal text-base">{listing.fuel_type}</p>
             </div>
             <div className="flex gap-x-2">
               <Image className="object-contain" width={24} height={24} alt="#" src="/icons/speedometer.png"></Image>
@@ -107,7 +117,6 @@ const VehicleSearchedResultDesktop = ({ favorite, setFavorite, image }: Props) =
       </div>
       <div className="flex justify-between items-center mt-6 border-t border-t-[#eaeaea]">
         <div className="mt-4 px-4">
-          {image ? <img src="#" alt="#"></img> : null}
           <div className="flex flex-col">
             <p className="text-[#333] text-sm font-normal">PG Cars</p>
             <p className="text-[#333] text-sm font-normal">Lukas Sternberger • AT-7423 Pinkafeld</p>
@@ -119,16 +128,24 @@ const VehicleSearchedResultDesktop = ({ favorite, setFavorite, image }: Props) =
           </a>
         </div>
       </div>
-    </div>
+      </div>
+    </Link>
   );
 };
 
-const VehicleSearchedResultMobile = ({ favorite, setFavorite, image }: Props) => {
+const VehicleSearchedResultMobile = ({ listing }: Props) => {
+  const favorite = true;
+
   return (
-    <div style={{ boxShadow: "0 2px 6px #dcdcdc" }} className="bg-white pb-4">
+    <Link href={`/vehicle/${listing.id}`} className="block">
+      <div style={{ boxShadow: "0 2px 6px #dcdcdc" }} className="bg-white pb-4 hover:shadow-lg transition-shadow cursor-pointer">
       <div className="flex justify-between items-center">
-        <div className="relative w-full">
-          <img className="w-full h-full" alt="#" src="/testimage.webp" />
+        <div className={`relative ${listing.main_image ? "w-full h-full" : "flex justify-center items-center w-full min-h-72 h-full bg-slate-50"}`}>
+          <img
+            className={`${listing.main_image ? "w-full h-full" : "w-16 h-16"}`}
+            alt="#"
+            src={listing.main_image ? listing.main_image : "/bg404.png"}
+          />
           <div className="absolute bottom-2 left-2 h-9 w-[50px] flex justify-center items-center bg-[#00000080] text-white border border-white rounded-sm font-light text-xs">
             1 / 10
           </div>
@@ -186,17 +203,17 @@ const VehicleSearchedResultMobile = ({ favorite, setFavorite, image }: Props) =>
       </div>
       <div className="flex flex-col justify-start gap-x-3 mt-6 px-4">
         <div className="flex items-center gap-2">
-          <Link className="text-[#333] font-semibold text-xl" href="#">
-            BMW 318d
+          <Link className="text-[#333] font-semibold text-xl hover:text-blue-600" href={`/vehicle/${listing.id}`}>
+            {listing.make} {listing.model}
           </Link>
-          <p className="text-[#333] font-normal text-base">318d Touring 2.0 143cv</p>
+          <p className="text-[#333] font-normal text-base">{listing.title}</p>
         </div>
         <div className="flex flex-col mt-4">
-          <h2 className="text-2xl font-semibold">€ 7,200.-</h2>
+          <h2 className="text-2xl font-semibold">€ {listing.price}.-</h2>
           <div className="flex items-center flex-wrap gap-x-8 gap-y-2 mt-4">
             <div className="flex gap-x-2">
               <Image className="object-contain" width={20} height={20} alt="#" src="/icons/road.png"></Image>
-              <p className="text-[#333] font-normal text-sm">244,400 km</p>
+              <p className="text-[#333] font-normal text-sm">{listing.mileage} km</p>
             </div>
             <div className="flex gap-2">
               <Image className="object-contain" width={20} height={20} alt="#" src="/icons/gearbox.png"></Image>
@@ -204,11 +221,11 @@ const VehicleSearchedResultMobile = ({ favorite, setFavorite, image }: Props) =>
             </div>
             <div className="flex gap-x-2">
               <Image className="object-contain" width={20} height={20} alt="#" src="/icons/calendar.png"></Image>
-              <p className="text-[#333] font-normal text-sm">06/2011</p>
+              <p className="text-[#333] font-normal text-sm">{listing.registration_year}</p>
             </div>
             <div className="flex gap-x-2">
               <Image className="object-contain" width={20} height={20} alt="#" src="/icons/gas.png"></Image>
-              <p className="text-[#333] font-normal text-sm">Diesel</p>
+              <p className="text-[#333] font-normal text-sm">{listing.fuel_type}</p>
             </div>
             <div className="flex gap-x-2">
               <Image className="object-contain" width={20} height={20} alt="#" src="/icons/speedometer.png"></Image>
@@ -219,7 +236,6 @@ const VehicleSearchedResultMobile = ({ favorite, setFavorite, image }: Props) =>
       </div>
       <div className="flex justify-between items-center mt-6 border-t border-t-[#eaeaea]">
         <div className="mt-4 px-4">
-          {image ? <img src="#" alt="#"></img> : null}
           <div className="flex flex-col">
             <p className="text-[#333] text-sm font-normal">PG Cars</p>
             <p className="text-[#333] text-sm font-normal">Lukas Sternberger • AT-7423 Pinkafeld</p>
@@ -231,7 +247,8 @@ const VehicleSearchedResultMobile = ({ favorite, setFavorite, image }: Props) =>
           </a>
         </div>
       </div>
-    </div>
+      </div>
+    </Link>
   );
 };
 
