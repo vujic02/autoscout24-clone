@@ -4,9 +4,11 @@
     alt="Logo" />
 </h1>
 
+
 <h3 align="center">
   Next.js - Autoscout24 
 </h3>
+
 
 <p align="center">
   :pushpin: Autoscout24 clone website created using Next.js, Typescript &amp; Django REST Framework
@@ -85,7 +87,7 @@ The app will be available at `http://localhost:3000`.
 <h1 align="center" id="features"> 📋 Features and solutions</h1>
 
 - Filter vehicles by Make, Price, Model, Country
--
--
--
--
+- 
+- 
+- 
+- 

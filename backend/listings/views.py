@@ -207,3 +207,29 @@ class ToggleFeaturedView(APIView):
                 {'detail': 'Listing not found.'},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+
+class BrandAveragePriceView(APIView):
+    """Get average price for each brand across all listings"""
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        from django.db.models import Avg, Count
+        
+        # Get all brands with their average price and count
+        brand_stats = Listing.objects.values('make').annotate(
+            average_price=Avg('price'),
+            count=Count('id')
+        ).order_by('-count')
+        
+        # Format the response
+        data = [
+            {
+                'make': item['make'],
+                'average_price': int(item['average_price']) if item['average_price'] else 0,
+                'count': item['count']
+            }
+            for item in brand_stats
+        ]
+        
+        return Response(data)

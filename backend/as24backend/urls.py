@@ -19,7 +19,7 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from listings.views import ListingListCreateView, ListingDetailView, RegisterView, LoginView, AdminListingsView, ToggleFeaturedView, CurrentUserView
+from listings.views import ListingListCreateView, ListingDetailView, RegisterView, LoginView, AdminListingsView, ToggleFeaturedView, CurrentUserView, BrandAveragePriceView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,6 +33,7 @@ urlpatterns = [
     # Admin endpoints
     path('api/admin/listings/', AdminListingsView.as_view(), name='admin-listings'),
     path('api/admin/listings/<int:listing_id>/toggle-featured/', ToggleFeaturedView.as_view(), name='toggle-featured'),
+    path('api/admin/brand-average-prices/', BrandAveragePriceView.as_view(), name='brand-average-prices'),
 ]
 
 

@@ -1,8 +1,8 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Edit, Trash2, ArrowLeft } from "lucide-react";
+import { Edit, Trash2, ArrowLeft, TrendingUp, Package, DollarSign, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
@@ -113,6 +113,55 @@ const MyListingsPage = () => {
     }
   };
 
+  // Calculate statistics
+  const statistics = useMemo(() => {
+    if (listings.length === 0) {
+      return {
+        totalListings: 0,
+        averagePrice: 0,
+        totalValue: 0,
+        mostListedBrand: "N/A",
+        brandBreakdown: [],
+        fuelTypeBreakdown: [],
+      };
+    }
+
+    const totalListings = listings.length;
+    const totalValue = listings.reduce((sum, listing) => sum + listing.price, 0);
+    const averagePrice = Math.round(totalValue / totalListings);
+
+    // Count brands
+    const brandCounts: Record<string, number> = {};
+    listings.forEach((listing) => {
+      brandCounts[listing.make] = (brandCounts[listing.make] || 0) + 1;
+    });
+
+    const brandBreakdown = Object.entries(brandCounts)
+      .map(([make, count]) => ({ make, count }))
+      .sort((a, b) => b.count - a.count);
+
+    const mostListedBrand = brandBreakdown.length > 0 ? brandBreakdown[0].make : "N/A";
+
+    // Count fuel types
+    const fuelTypeCounts: Record<string, number> = {};
+    listings.forEach((listing) => {
+      fuelTypeCounts[listing.fuel_type] = (fuelTypeCounts[listing.fuel_type] || 0) + 1;
+    });
+
+    const fuelTypeBreakdown = Object.entries(fuelTypeCounts)
+      .map(([type, count]) => ({ type: type.charAt(0).toUpperCase() + type.slice(1), count }))
+      .sort((a, b) => b.count - a.count);
+
+    return {
+      totalListings,
+      averagePrice,
+      totalValue,
+      mostListedBrand,
+      brandBreakdown,
+      fuelTypeBreakdown,
+    };
+  }, [listings]);
+
   if (loading) {
     return (
       <main className="max-w-6xl mx-auto p-4 md:p-8">
@@ -134,6 +183,108 @@ const MyListingsPage = () => {
         <h1 className="text-3xl font-bold text-gray-900">My Listings</h1>
         <p className="text-gray-600 mt-2">Manage your vehicle listings</p>
       </div>
+
+      {error && <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded mb-6">{error}</div>}
+
+      {listings.length > 0 && (
+        <div className="mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+          {/* Total Listings */}
+          <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-6 shadow-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-blue-100 text-sm font-medium">Total Listings</p>
+                <p className="text-3xl font-bold mt-2">{statistics.totalListings}</p>
+              </div>
+              <Package size={40} className="opacity-20" />
+            </div>
+          </div>
+
+          {/* Average Price */}
+          <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg p-6 shadow-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-green-100 text-sm font-medium">Average Price</p>
+                <p className="text-3xl font-bold mt-2">€{statistics.averagePrice.toLocaleString()}</p>
+              </div>
+              <DollarSign size={40} className="opacity-20" />
+            </div>
+          </div>
+
+          {/* Most Listed Brand */}
+          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg p-6 shadow-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-purple-100 text-sm font-medium">Most Listed Brand</p>
+                <p className="text-3xl font-bold mt-2">{statistics.mostListedBrand}</p>
+              </div>
+              <TrendingUp size={40} className="opacity-20" />
+            </div>
+          </div>
+
+          {/* Total Value */}
+          <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-lg p-6 shadow-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-orange-100 text-sm font-medium">Total Value</p>
+                <p className="text-3xl font-bold mt-2">€{statistics.totalValue.toLocaleString()}</p>
+              </div>
+              <Zap size={40} className="opacity-20" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {listings.length > 0 && (
+        <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Brand Breakdown */}
+          <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Brand Breakdown</h3>
+            <div className="space-y-3">
+              {statistics.brandBreakdown.slice(0, 5).map((item, idx) => (
+                <div key={idx}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-medium text-gray-700">{item.make}</span>
+                    <span className="text-sm text-gray-600">{item.count}</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-blue-600 h-2 rounded-full"
+                      style={{
+                        width: `${(item.count / statistics.totalListings) * 100}%`,
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Fuel Type Breakdown */}
+          <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Fuel Type Distribution</h3>
+            <div className="space-y-3">
+              {statistics.fuelTypeBreakdown.map((item, idx) => (
+                <div key={idx}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-medium text-gray-700">{item.type}</span>
+                    <span className="text-sm text-gray-600">{item.count}</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className={`h-2 rounded-full ${
+                        idx === 0 ? "bg-green-600" : idx === 1 ? "bg-orange-600" : idx === 2 ? "bg-purple-600" : "bg-gray-600"
+                      }`}
+                      style={{
+                        width: `${(item.count / statistics.totalListings) * 100}%`,
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {error && <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded mb-6">{error}</div>}
 
