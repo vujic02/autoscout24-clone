@@ -33,6 +33,14 @@ export type ListingFilters = {
   country?: string;
   fuel_type?: string;
   featured?: string;
+  page?: string;
+};
+
+export type PaginatedResponse = {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Listing[];
 };
 
 function buildQuery(params: ListingFilters): string {
@@ -45,12 +53,13 @@ function buildQuery(params: ListingFilters): string {
   if (params.country) searchParams.set("country", params.country);
   if (params.fuel_type) searchParams.set("fuel_type", params.fuel_type);
   if (params.featured) searchParams.set("featured", params.featured);
+  if (params.page) searchParams.set("page", params.page);
 
   const query = searchParams.toString();
   return query ? `?${query}` : "";
 }
 
-export async function fetchListings(filters: ListingFilters = {}): Promise<Listing[]> {
+export async function fetchListings(filters: ListingFilters = {}): Promise<PaginatedResponse> {
   const query = buildQuery(filters);
 
   const res = await fetch(`${API_BASE}/api/listings/${query}`, {

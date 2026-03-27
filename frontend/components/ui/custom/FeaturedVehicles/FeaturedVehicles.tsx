@@ -16,7 +16,7 @@ const FeaturedVehicles = () => {
       try {
         setLoading(true);
         const data = await fetchListings({ featured: "true" });
-        setListings(data.slice(0, 4)); // Get first 4
+        setListings(data.results.slice(0, 4)); // Get first 4
         setError("");
       } catch (err) {
         console.error("Failed to fetch featured listings:", err);

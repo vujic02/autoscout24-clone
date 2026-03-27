@@ -72,7 +72,8 @@ const MyListingsPage = () => {
 
         const data = await res.json();
         // Filter listings to only show user's own listings
-        const myListings = data.filter((listing: Listing) => listing.user === userId);
+        const allListings = data.results ?? data;
+        const myListings = allListings.filter((listing: Listing) => listing.user === userId);
         setListings(myListings);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
@@ -271,9 +272,7 @@ const MyListingsPage = () => {
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
-                      className={`h-2 rounded-full ${
-                        idx === 0 ? "bg-green-600" : idx === 1 ? "bg-orange-600" : idx === 2 ? "bg-purple-600" : "bg-gray-600"
-                      }`}
+                      className={`h-2 rounded-full ${idx === 0 ? "bg-green-600" : idx === 1 ? "bg-orange-600" : idx === 2 ? "bg-purple-600" : "bg-gray-600"}`}
                       style={{
                         width: `${(item.count / statistics.totalListings) * 100}%`,
                       }}
