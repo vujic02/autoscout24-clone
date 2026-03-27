@@ -1,36 +1,35 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
-.yarn/install-state.gz
+# Virtual environment
+backend/venv/
 
-# testing
-/coverage
+# Database
+backend/db.sqlite3
 
-# next.js
-/.next/
-/out/
+# Uploaded media
+backend/media/
 
-# production
-/build
+# Environment variables
+.env
+.env.*
 
-# misc
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
 .DS_Store
-*.pem
+Thumbs.db
 
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# local env files
-.env*.local
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# Node (also in frontend/.gitignore)
+node_modules/
+.next/
