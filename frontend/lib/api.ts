@@ -16,6 +16,17 @@ export type Listing = {
   mileage: number;
   price: number;
   fuel_type: string;
+  body_type: string | null;
+  transmission: string | null;
+  drive_type: string | null;
+  horsepower: number | null;
+  engine_displacement: number | null;
+  exterior_color: string | null;
+  interior_color: string | null;
+  number_of_doors: number | null;
+  number_of_seats: number | null;
+  previous_owners: number | null;
+  seller_type: string | null;
   country: string;
   city: string;
   description: string | null;

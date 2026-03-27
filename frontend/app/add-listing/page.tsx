@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { carsMakeData, carsModelData, countries, fuelTypes } from "@/utils/tabsStatic";
+import { carsMakeData, carsModelData, countries, fuelTypes, bodyTypes, transmissions, driveTypes, colors, sellerTypes } from "@/utils/tabsStatic";
 import CustomSelect from "@/components/ui/custom/Search/CustomSelect";
 
 const AddListingPage = () => {
@@ -21,6 +21,12 @@ const AddListingPage = () => {
   const [selectedModel, setSelectedModel] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedFuel, setSelectedFuel] = useState("petrol");
+  const [selectedBodyType, setSelectedBodyType] = useState("");
+  const [selectedTransmission, setSelectedTransmission] = useState("");
+  const [selectedDriveType, setSelectedDriveType] = useState("");
+  const [selectedExteriorColor, setSelectedExteriorColor] = useState("");
+  const [selectedInteriorColor, setSelectedInteriorColor] = useState("");
+  const [selectedSellerType, setSelectedSellerType] = useState("");
 
   const [formData, setFormData] = useState({
     title: "",
@@ -31,6 +37,17 @@ const AddListingPage = () => {
     mileage: "",
     price: "",
     fuel_type: "petrol",
+    body_type: "",
+    transmission: "",
+    drive_type: "",
+    horsepower: "",
+    engine_displacement: "",
+    exterior_color: "",
+    interior_color: "",
+    number_of_doors: "",
+    number_of_seats: "",
+    previous_owners: "",
+    seller_type: "",
     country: "",
     city: "",
     description: "",
@@ -52,8 +69,25 @@ const AddListingPage = () => {
       model: selectedModel,
       country: selectedCountry,
       fuel_type: selectedFuel,
+      body_type: selectedBodyType,
+      transmission: selectedTransmission,
+      drive_type: selectedDriveType,
+      exterior_color: selectedExteriorColor,
+      interior_color: selectedInteriorColor,
+      seller_type: selectedSellerType,
     }));
-  }, [selectedMake, selectedModel, selectedCountry, selectedFuel]);
+  }, [
+    selectedMake,
+    selectedModel,
+    selectedCountry,
+    selectedFuel,
+    selectedBodyType,
+    selectedTransmission,
+    selectedDriveType,
+    selectedExteriorColor,
+    selectedInteriorColor,
+    selectedSellerType,
+  ]);
 
   // Fetch listing data for edit mode
   useEffect(() => {
@@ -92,6 +126,17 @@ const AddListingPage = () => {
           mileage: data.mileage || "",
           price: data.price || "",
           fuel_type: data.fuel_type || "petrol",
+          body_type: data.body_type || "",
+          transmission: data.transmission || "",
+          drive_type: data.drive_type || "",
+          horsepower: data.horsepower || "",
+          engine_displacement: data.engine_displacement || "",
+          exterior_color: data.exterior_color || "",
+          interior_color: data.interior_color || "",
+          number_of_doors: data.number_of_doors || "",
+          number_of_seats: data.number_of_seats || "",
+          previous_owners: data.previous_owners ?? "",
+          seller_type: data.seller_type || "",
           country: data.country || "",
           city: data.city || "",
           description: data.description || "",
@@ -104,6 +149,12 @@ const AddListingPage = () => {
         setSelectedModel(data.model || "");
         setSelectedCountry(data.country || "");
         setSelectedFuel(data.fuel_type || "petrol");
+        setSelectedBodyType(data.body_type || "");
+        setSelectedTransmission(data.transmission || "");
+        setSelectedDriveType(data.drive_type || "");
+        setSelectedExteriorColor(data.exterior_color || "");
+        setSelectedInteriorColor(data.interior_color || "");
+        setSelectedSellerType(data.seller_type || "");
 
         // Set existing images
         if (data.images && data.images.length > 0) {
@@ -123,9 +174,10 @@ const AddListingPage = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    const numericFields = ["mileage", "price", "year", "registration_year", "horsepower", "engine_displacement", "number_of_doors", "number_of_seats", "previous_owners"];
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "mileage" || name === "price" || name === "year" || name === "registration_year" ? (value ? Number(value) : "") : value,
+      [name]: numericFields.includes(name) ? (value ? Number(value) : "") : value,
     }));
   };
 
@@ -183,6 +235,17 @@ const AddListingPage = () => {
       formDataToSend.append("mileage", String(formData.mileage));
       formDataToSend.append("price", String(formData.price));
       formDataToSend.append("fuel_type", formData.fuel_type.toLowerCase());
+      if (formData.body_type) formDataToSend.append("body_type", formData.body_type.toLowerCase());
+      if (formData.transmission) formDataToSend.append("transmission", formData.transmission.toLowerCase());
+      if (formData.drive_type) formDataToSend.append("drive_type", formData.drive_type.toLowerCase());
+      if (formData.horsepower) formDataToSend.append("horsepower", String(formData.horsepower));
+      if (formData.engine_displacement) formDataToSend.append("engine_displacement", String(formData.engine_displacement));
+      if (formData.exterior_color) formDataToSend.append("exterior_color", formData.exterior_color.toLowerCase());
+      if (formData.interior_color) formDataToSend.append("interior_color", formData.interior_color.toLowerCase());
+      if (formData.number_of_doors) formDataToSend.append("number_of_doors", String(formData.number_of_doors));
+      if (formData.number_of_seats) formDataToSend.append("number_of_seats", String(formData.number_of_seats));
+      if (formData.previous_owners !== "") formDataToSend.append("previous_owners", String(formData.previous_owners));
+      if (formData.seller_type) formDataToSend.append("seller_type", formData.seller_type.toLowerCase());
       formDataToSend.append("country", formData.country);
       formDataToSend.append("city", formData.city);
       formDataToSend.append("description", formData.description);
@@ -424,6 +487,127 @@ const AddListingPage = () => {
             <CustomSelect data={fuelTypes} placeholder="Select fuel type" setSelectedOption={setSelectedFuel} />
           </div>
 
+          {/* Body Type and Transmission */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className={labelClasses}>Body Type</label>
+              <CustomSelect data={bodyTypes} placeholder="Select body type" setSelectedOption={setSelectedBodyType} />
+            </div>
+            <div>
+              <label className={labelClasses}>Transmission</label>
+              <CustomSelect data={transmissions} placeholder="Select transmission" setSelectedOption={setSelectedTransmission} />
+            </div>
+          </div>
+
+          {/* Drive Type and Seller Type */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className={labelClasses}>Drive Type</label>
+              <CustomSelect data={driveTypes} placeholder="Select drive type" setSelectedOption={setSelectedDriveType} />
+            </div>
+            <div>
+              <label className={labelClasses}>Seller Type</label>
+              <CustomSelect data={sellerTypes} placeholder="Select seller type" setSelectedOption={setSelectedSellerType} />
+            </div>
+          </div>
+
+          {/* Horsepower and Engine Displacement */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="horsepower" className={labelClasses}>
+                Horsepower (hp)
+              </label>
+              <input
+                type="number"
+                id="horsepower"
+                name="horsepower"
+                value={formData.horsepower}
+                onChange={handleInputChange}
+                placeholder="e.g., 150"
+                min="0"
+                className={inputClasses}
+              />
+            </div>
+            <div>
+              <label htmlFor="engine_displacement" className={labelClasses}>
+                Engine Displacement (cc)
+              </label>
+              <input
+                type="number"
+                id="engine_displacement"
+                name="engine_displacement"
+                value={formData.engine_displacement}
+                onChange={handleInputChange}
+                placeholder="e.g., 1998"
+                min="0"
+                className={inputClasses}
+              />
+            </div>
+          </div>
+
+          {/* Exterior and Interior Color */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className={labelClasses}>Exterior Color</label>
+              <CustomSelect data={colors} placeholder="Select exterior color" setSelectedOption={setSelectedExteriorColor} />
+            </div>
+            <div>
+              <label className={labelClasses}>Interior Color</label>
+              <CustomSelect data={colors} placeholder="Select interior color" setSelectedOption={setSelectedInteriorColor} />
+            </div>
+          </div>
+
+          {/* Doors, Seats, Previous Owners */}
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label htmlFor="number_of_doors" className={labelClasses}>
+                Doors
+              </label>
+              <input
+                type="number"
+                id="number_of_doors"
+                name="number_of_doors"
+                value={formData.number_of_doors}
+                onChange={handleInputChange}
+                placeholder="e.g., 4"
+                min="2"
+                max="5"
+                className={inputClasses}
+              />
+            </div>
+            <div>
+              <label htmlFor="number_of_seats" className={labelClasses}>
+                Seats
+              </label>
+              <input
+                type="number"
+                id="number_of_seats"
+                name="number_of_seats"
+                value={formData.number_of_seats}
+                onChange={handleInputChange}
+                placeholder="e.g., 5"
+                min="1"
+                max="9"
+                className={inputClasses}
+              />
+            </div>
+            <div>
+              <label htmlFor="previous_owners" className={labelClasses}>
+                Previous Owners
+              </label>
+              <input
+                type="number"
+                id="previous_owners"
+                name="previous_owners"
+                value={formData.previous_owners}
+                onChange={handleInputChange}
+                placeholder="e.g., 1"
+                min="0"
+                className={inputClasses}
+              />
+            </div>
+          </div>
+
           {/* Country and City */}
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -434,16 +618,7 @@ const AddListingPage = () => {
               <label htmlFor="city" className={labelClasses}>
                 City
               </label>
-              <input
-                type="text"
-                id="city"
-                name="city"
-                value={formData.city}
-                onChange={handleInputChange}
-                placeholder="e.g., Munich"
-                className={inputClasses}
-                required
-              />
+              <input type="text" id="city" name="city" value={formData.city} onChange={handleInputChange} placeholder="e.g., Munich" className={inputClasses} required />
             </div>
           </div>
 
@@ -472,11 +647,7 @@ const AddListingPage = () => {
             >
               {loading ? (isEditMode ? "Updating..." : "Creating...") : isEditMode ? "Update Listing" : "Create Listing"}
             </Button>
-            <Button
-              type="button"
-              onClick={() => router.back()}
-              className="flex-1 bg-gray-200 text-black py-3 rounded-md font-medium hover:bg-gray-300 transition-colors"
-            >
+            <Button type="button" onClick={() => router.back()} className="flex-1 bg-gray-200 text-black py-3 rounded-md font-medium hover:bg-gray-300 transition-colors">
               Cancel
             </Button>
           </div>

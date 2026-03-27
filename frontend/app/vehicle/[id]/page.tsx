@@ -136,7 +136,7 @@ const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
               </div>
               <div className="border-r border-gray-200 pr-6">
                 <p className="text-gray-600 text-sm mb-2">Gearbox</p>
-                <p className="text-xl font-semibold">-</p>
+                <p className="text-xl font-semibold capitalize">{listing.transmission || "-"}</p>
               </div>
               <div>
                 <p className="text-gray-600 text-sm mb-2">First registration</p>
@@ -148,14 +148,78 @@ const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
               </div>
               <div className="border-r border-gray-200 pr-6 pt-4">
                 <p className="text-gray-600 text-sm mb-2">Power</p>
-                <p className="text-xl font-semibold">9 kW (12 hp)</p>
+                <p className="text-xl font-semibold">{listing.horsepower ? `${listing.horsepower} hp` : "-"}</p>
               </div>
               <div className="pt-4">
                 <p className="text-gray-600 text-sm mb-2">Seller</p>
-                <p className="text-xl font-semibold">Private seller</p>
+                <p className="text-xl font-semibold capitalize">{listing.seller_type ? `${listing.seller_type} seller` : "-"}</p>
               </div>
             </div>
           </div>
+
+          {/* Vehicle Details */}
+          {(listing.body_type ||
+            listing.drive_type ||
+            listing.exterior_color ||
+            listing.interior_color ||
+            listing.engine_displacement ||
+            listing.number_of_doors ||
+            listing.number_of_seats ||
+            listing.previous_owners) && (
+            <div className="bg-white rounded-lg p-6 mb-6">
+              <h3 className="text-lg font-semibold mb-4">Vehicle Details</h3>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                {listing.body_type && (
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-600">Body type</span>
+                    <span className="font-medium capitalize">{listing.body_type}</span>
+                  </div>
+                )}
+                {listing.drive_type && (
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-600">Drive type</span>
+                    <span className="font-medium uppercase">{listing.drive_type}</span>
+                  </div>
+                )}
+                {listing.engine_displacement && (
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-600">Engine</span>
+                    <span className="font-medium">{listing.engine_displacement.toLocaleString()} cc</span>
+                  </div>
+                )}
+                {listing.exterior_color && (
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-600">Exterior color</span>
+                    <span className="font-medium capitalize">{listing.exterior_color}</span>
+                  </div>
+                )}
+                {listing.interior_color && (
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-600">Interior color</span>
+                    <span className="font-medium capitalize">{listing.interior_color}</span>
+                  </div>
+                )}
+                {listing.number_of_doors && (
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-600">Doors</span>
+                    <span className="font-medium">{listing.number_of_doors}</span>
+                  </div>
+                )}
+                {listing.number_of_seats && (
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-600">Seats</span>
+                    <span className="font-medium">{listing.number_of_seats}</span>
+                  </div>
+                )}
+                {listing.previous_owners !== null && listing.previous_owners !== undefined && (
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-600">Previous owners</span>
+                    <span className="font-medium">{listing.previous_owners}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Description */}
           {listing.description && (
@@ -179,9 +243,7 @@ const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
             <p className="text-4xl font-bold text-gray-900 mb-6">€ {listing.price.toLocaleString()}</p>
 
             {/* Primary CTA */}
-            <button className="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors mb-4">
-              Send Email
-            </button>
+            <button className="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors mb-4">Send Email</button>
 
             {/* Action Buttons */}
             <div className="grid grid-cols-3 gap-2">

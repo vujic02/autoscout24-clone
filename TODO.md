@@ -1,16 +1,16 @@
 # TODO — Missing & Incomplete Features
 
-## Database / Model Gaps
+## Database / Model Gaps -- DONE
 
-- Add `body_type` field (Sedan, SUV, Coupe, Hatchback, Wagon, Convertible, Van)
-- Add `transmission` field (Manual, Automatic, CVT, Semi-automatic)
-- Add `horsepower` / `engine_power` field (currently hardcoded "9 kW (12 hp)" in vehicle detail)
-- Add `engine_displacement` (cc)
-- Add `exterior_color`, `interior_color`
-- Add `number_of_doors`, `number_of_seats`
-- Add `drive_type` (FWD, RWD, AWD)
-- Add `previous_owners` count
-- Add `seller_type` (Private / Dealer)
+- ~~Add `body_type` field (Sedan, SUV, Coupe, Hatchback, Wagon, Convertible, Van)~~
+- ~~Add `transmission` field (Manual, Automatic, CVT, Semi-automatic)~~
+- ~~Add `horsepower` / `engine_power` field (currently hardcoded "9 kW (12 hp)" in vehicle detail)~~
+- ~~Add `engine_displacement` (cc)~~
+- ~~Add `exterior_color`, `interior_color`~~
+- ~~Add `number_of_doors`, `number_of_seats`~~
+- ~~Add `drive_type` (FWD, RWD, AWD)~~
+- ~~Add `previous_owners` count~~
+- ~~Add `seller_type` (Private / Dealer)~~
 - Add `views_count` for popularity tracking
 - `status` field exists but is never used — always 'ACTIVE'
 
@@ -19,7 +19,7 @@
 - Add contact fields to User profile (phone, display name, location)
 - Show seller contact info on vehicle detail page (name, phone, email)
 - "Send Email" button on vehicle detail is non-functional — needs backend endpoint or mailto
-- Replace hardcoded "Private seller" on detail page with actual data
+- ~~Replace hardcoded "Private seller" on detail page with actual data~~
 
 ## Listing Limits
 
@@ -30,9 +30,9 @@
 
 ## Vehicle Detail Page
 
-- Gearbox shows "-" — wire to actual `transmission` field
-- Power shows hardcoded value — wire to `horsepower` field
-- Add body type, color, drivetrain, doors, seats, previous owners
+- ~~Gearbox shows "-" — wire to actual `transmission` field~~
+- ~~Power shows hardcoded value — wire to `horsepower` field~~
+- ~~Add body type, color, drivetrain, doors, seats, previous owners~~
 - Share buttons (Facebook, Email, Copy Link) are non-functional
 - Print button is non-functional
 - Favorites heart is local state only — lost on refresh

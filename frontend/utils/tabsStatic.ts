@@ -361,21 +361,7 @@ let carsModelData = {
   },
   Honda: {
     label: "Model",
-    options: [
-      "Civic",
-      "Civic Si",
-      "Civic Type R",
-      "Accord",
-      "CR-V",
-      "Pilot",
-      "Odyssey",
-      "Fit",
-      "Ridgeline",
-      "HR-V",
-      "Insight",
-      "Clarity",
-      "Passport",
-    ],
+    options: ["Civic", "Civic Si", "Civic Type R", "Accord", "CR-V", "Pilot", "Odyssey", "Fit", "Ridgeline", "HR-V", "Insight", "Clarity", "Passport"],
   },
   Ford: {
     label: "Model",
@@ -428,56 +414,15 @@ let carsModelData = {
   },
   Kia: {
     label: "Model",
-    options: [
-      "Picanto",
-      "Rio",
-      "Cerato",
-      "Cerato GT",
-      "Stinger",
-      "Sportage",
-      "Sorento",
-      "Telluride",
-      "Niro",
-      "Niro EV",
-      "Niro Hybrid",
-      "EV6",
-      "Seltos",
-    ],
+    options: ["Picanto", "Rio", "Cerato", "Cerato GT", "Stinger", "Sportage", "Sorento", "Telluride", "Niro", "Niro EV", "Niro Hybrid", "EV6", "Seltos"],
   },
   Mazda: {
     label: "Model",
-    options: [
-      "Mazda 2",
-      "Mazda 2 Sport",
-      "Mazda 3",
-      "Mazda 3 Turbo",
-      "Mazda 6",
-      "Mazda 6 Turbo",
-      "CX-3",
-      "CX-5",
-      "CX-9",
-      "MX-5",
-      "MX-5 Miata",
-      "MX-30",
-    ],
+    options: ["Mazda 2", "Mazda 2 Sport", "Mazda 3", "Mazda 3 Turbo", "Mazda 6", "Mazda 6 Turbo", "CX-3", "CX-5", "CX-9", "MX-5", "MX-5 Miata", "MX-30"],
   },
   Nissan: {
     label: "Model",
-    options: [
-      "Micra",
-      "Altima",
-      "Maxima",
-      "Qashqai",
-      "Qashqai e-Power",
-      "Rogue",
-      "Rogue Sport",
-      "Murano",
-      "Pathfinder",
-      "GT-R",
-      "Leaf",
-      "Leaf Plus",
-      "Ariya",
-    ],
+    options: ["Micra", "Altima", "Maxima", "Qashqai", "Qashqai e-Power", "Rogue", "Rogue Sport", "Murano", "Pathfinder", "GT-R", "Leaf", "Leaf Plus", "Ariya"],
   },
   Subaru: {
     label: "Model",
@@ -541,16 +486,7 @@ let carsModelData = {
   },
   "Range Rover": {
     label: "Model",
-    options: [
-      "Range Rover",
-      "Range Rover Sport",
-      "Range Rover Sport SVR",
-      "Range Rover Velar",
-      "Range Rover Evoque",
-      "Discovery",
-      "Discovery Sport",
-      "Defender",
-    ],
+    options: ["Range Rover", "Range Rover Sport", "Range Rover Sport SVR", "Range Rover Velar", "Range Rover Evoque", "Discovery", "Discovery Sport", "Defender"],
   },
   Jaguar: {
     label: "Model",
@@ -612,4 +548,28 @@ let motorcycleModelData = {
   Honda: { label: "Model", options: ["CBR-125R", "CBR-300R", "CBR-500R", "CBR-650R", "CBR-600RR", "CBR-1000RR"] },
 };
 
-export { carsMakeData, carsModelData, countries, firstRegistration, motorcycleMakeData, motorcycleModelData, prices, fuelTypes };
+let bodyTypes = [{ label: "Body Type", options: ["Sedan", "SUV", "Coupe", "Hatchback", "Wagon", "Convertible", "Van", "Pickup"] }];
+
+let transmissions = [{ label: "Transmission", options: ["Manual", "Automatic", "Semi-automatic"] }];
+
+let driveTypes = [{ label: "Drive Type", options: ["FWD", "RWD", "AWD", "4x4"] }];
+
+let colors = [{ label: "Color", options: ["Black", "White", "Silver", "Gray", "Blue", "Red", "Green", "Brown", "Beige", "Yellow", "Orange"] }];
+
+let sellerTypes = [{ label: "Seller Type", options: ["Private", "Dealer"] }];
+
+export {
+  carsMakeData,
+  carsModelData,
+  countries,
+  firstRegistration,
+  motorcycleMakeData,
+  motorcycleModelData,
+  prices,
+  fuelTypes,
+  bodyTypes,
+  transmissions,
+  driveTypes,
+  colors,
+  sellerTypes,
+};
