@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Heart, Share2, Printer, Mail, Facebook, Link as LinkIcon } from "lucide-react";
+import { ArrowLeft, Heart, Share2, Printer, Mail, Facebook, Link as LinkIcon, Eye } from "lucide-react";
 import * as DropdownMenu from "@/components/ui/dropdown-menu";
 import { Listing } from "@/lib/api";
 import Image from "next/image";
@@ -29,6 +29,21 @@ const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
 
         const data = await res.json();
         setListing(data);
+
+        // Record a unique view
+        const token = localStorage.getItem("authToken");
+        fetch(`http://127.0.0.1:8000/api/listings/${params.id}/view/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Token ${token}` } : {}),
+          },
+        })
+          .then((r) => r.json())
+          .then((d) => {
+            setListing((prev) => (prev ? { ...prev, view_count: d.view_count } : prev));
+          })
+          .catch(() => {});
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
@@ -238,6 +253,14 @@ const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
               {listing.make} {listing.model}
             </h1>
             <p className="text-blue-600 font-medium mb-4">{listing.city}</p>
+
+            {/* View Count */}
+            <div className="flex items-center gap-1.5 text-gray-500 text-sm mb-4">
+              <Eye size={16} />
+              <span>
+                {listing.view_count} {listing.view_count === 1 ? "view" : "views"}
+              </span>
+            </div>
 
             {/* Price */}
             <p className="text-4xl font-bold text-gray-900 mb-6">€ {listing.price.toLocaleString()}</p>

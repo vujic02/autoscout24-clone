@@ -33,6 +33,7 @@ export type Listing = {
   main_image: string | null;
   images?: ListingImage[];
   status: string;
+  view_count: number;
   created_at: string;
 };
 

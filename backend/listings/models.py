@@ -86,10 +86,24 @@ class Listing(models.Model):
 
     status = models.CharField(max_length=20, default='ACTIVE')
     featured = models.BooleanField(default=False)
+    view_count = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.title} - {self.price}€'
+
+
+class ListingView(models.Model):
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='views')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    viewed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-viewed_at']
+
+    def __str__(self):
+        return f'View on {self.listing.title}'
 
 
 class ListingImage(models.Model):

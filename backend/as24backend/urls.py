@@ -19,12 +19,13 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from listings.views import ListingListCreateView, ListingDetailView, RegisterView, LoginView, AdminListingsView, ToggleFeaturedView, CurrentUserView, BrandAveragePriceView
+from listings.views import ListingListCreateView, ListingDetailView, RegisterView, LoginView, AdminListingsView, ToggleFeaturedView, CurrentUserView, BrandAveragePriceView, RecordListingViewAPI
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/listings/', ListingListCreateView.as_view(), name='listings'),
     path('api/listings/<int:pk>/', ListingDetailView.as_view(), name='listing-detail'),
+    path('api/listings/<int:pk>/view/', RecordListingViewAPI.as_view(), name='listing-view'),
 
     path('api/auth/register/', RegisterView.as_view(), name='auth-register'),
     path('api/auth/login/', LoginView.as_view(), name='auth-login'),

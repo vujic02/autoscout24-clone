@@ -7,11 +7,12 @@ type Props = {
   data: customSelectData;
   setSelectedOption: React.Dispatch<React.SetStateAction<string>>;
   placeholder: string;
+  value?: string;
 };
 
-const CustomSelect = ({ data, disabled, setSelectedOption, placeholder }: Props) => {
+const CustomSelect = ({ data, disabled, setSelectedOption, placeholder, value }: Props) => {
   return (
-    <Select onValueChange={(value) => setSelectedOption(value)}>
+    <Select value={value || undefined} onValueChange={(value) => setSelectedOption(value)}>
       <SelectTrigger disabled={disabled && disabled} className="w-full border-[#949494]">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
