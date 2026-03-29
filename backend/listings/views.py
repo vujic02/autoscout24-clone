@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from .models import Listing, ListingImage
+from .models import Listing, ListingImage, ListingView
 from .serializers import ListingSerializer, ListingImageSerializer
 
 class CurrentUserView(APIView):
@@ -177,12 +177,30 @@ class LoginView(APIView):
 class AdminListingsView(generics.ListAPIView):
     serializer_class = ListingSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = None
 
     def get_queryset(self):
         # Only staff/admin users can view all listings
         if not self.request.user.is_staff:
             return Listing.objects.none()
-        return Listing.objects.all().order_by('-created_at')
+
+        queryset = Listing.objects.all().order_by('-created_at')
+        params = self.request.query_params
+
+        listing_id = params.get('id', '')
+        make = params.get('make', '')
+        model = params.get('model', '')
+
+        if listing_id:
+            queryset = queryset.filter(id__icontains=listing_id)
+
+        if make:
+            queryset = queryset.filter(make__icontains=make)
+
+        if model:
+            queryset = queryset.filter(model__icontains=model)
+
+        return queryset
 
 
 class ToggleFeaturedView(APIView):
@@ -233,3 +251,47 @@ class BrandAveragePriceView(APIView):
         ]
         
         return Response(data)
+
+
+class RecordListingViewAPI(APIView):
+    """Record a unique view on a listing (1 per user/IP per 24h)"""
+    permission_classes = [AllowAny]
+
+    def get_client_ip(self, request):
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            return x_forwarded_for.split(',')[0].strip()
+        return request.META.get('REMOTE_ADDR')
+
+    def post(self, request, pk):
+        from django.utils import timezone
+        from datetime import timedelta
+
+        try:
+            listing = Listing.objects.get(pk=pk)
+        except Listing.DoesNotExist:
+            return Response(
+                {'detail': 'Listing not found.'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        cutoff = timezone.now() - timedelta(hours=24)
+        user = request.user if request.user.is_authenticated else None
+        ip = self.get_client_ip(request)
+
+        # Check for existing view within 24h
+        if user:
+            already_viewed = ListingView.objects.filter(
+                listing=listing, user=user, viewed_at__gte=cutoff
+            ).exists()
+        else:
+            already_viewed = ListingView.objects.filter(
+                listing=listing, user__isnull=True, ip_address=ip, viewed_at__gte=cutoff
+            ).exists()
+
+        if not already_viewed:
+            ListingView.objects.create(listing=listing, user=user, ip_address=ip)
+            listing.view_count = listing.view_count + 1
+            listing.save(update_fields=['view_count'])
+
+        return Response({'view_count': listing.view_count})

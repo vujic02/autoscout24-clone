@@ -320,6 +320,7 @@ npm run lint                        # Run ESLint
 - **API calls**: Use `fetch` directly (no axios). Set `cache: "no-store"` for dynamic data.
 - **New pages**: Create under `app/<route>/page.tsx`. Follow App Router conventions.
 - **New components**: Create a folder under `components/ui/custom/<Feature>/`. Export from barrel if shared.
+- **Migrations**: Let Django auto-number (`0001`, `0002`, …). Use `--name` for clarity: `python manage.py makemigrations --name <short_description>` (e.g., `--name add_view_count`). Never manually rename or renumber migration files. Always commit migrations to version control.
 
 ---
 

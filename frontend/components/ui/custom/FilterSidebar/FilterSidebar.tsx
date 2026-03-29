@@ -27,6 +27,10 @@ const FilterSidebar = () => {
             <Sidebar
               modelData={modelData}
               selectedMake={selectedMake}
+              selectedModel={selectedModel}
+              selectedPrice={selectedPrice}
+              selectedRegistration={selectedRegistration}
+              selectedCountry={selectedCountry}
               setSelectedCountry={setSelectedCountry}
               setSelectedMake={setSelectedMake}
               setSelectedModel={setSelectedModel}
@@ -40,6 +44,10 @@ const FilterSidebar = () => {
         <Sidebar
           modelData={modelData}
           selectedMake={selectedMake}
+          selectedModel={selectedModel}
+          selectedPrice={selectedPrice}
+          selectedRegistration={selectedRegistration}
+          selectedCountry={selectedCountry}
           setSelectedCountry={setSelectedCountry}
           setSelectedMake={setSelectedMake}
           setSelectedModel={setSelectedModel}
