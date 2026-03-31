@@ -12,6 +12,7 @@ type Props = {
 
 const VehicleSearchedResultDesktop = ({ listing }: Props) => {
   const favorite = true;
+  const imageCount = (listing.images?.length || 0) + (listing.main_image && (!listing.images || listing.images.length === 0) ? 1 : 0);
 
   return (
     <Link href={`/vehicle/${listing.id}`} className="block">
@@ -80,7 +81,7 @@ const VehicleSearchedResultDesktop = ({ listing }: Props) => {
           >
             <img className={`${listing.main_image ? "w-full h-full" : "w-36 h-36"}`} alt="#" src={listing.main_image ? listing.main_image : "/bg404.png"} />
             <div className="absolute bottom-2 left-2 h-9 w-[50px] flex justify-center items-center bg-[#00000080] text-white border border-white rounded-sm font-light text-xs">
-              1 / 10
+              1 / {imageCount || 1}
             </div>
           </div>
           <div className="flex flex-col mt-4">
@@ -90,36 +91,54 @@ const VehicleSearchedResultDesktop = ({ listing }: Props) => {
                 <Image className="object-contain" width={24} height={24} alt="#" src="/icons/road.png"></Image>
                 <p className="text-[#333] font-normal text-base">{listing.mileage} km</p>
               </div>
-              <div className="flex gap-2">
-                <Image className="object-contain" width={24} height={24} alt="#" src="/icons/gearbox.png"></Image>
-                <p className="text-[#333] font-normal text-base">Automatic</p>
-              </div>
+              {listing.transmission && (
+                <div className="flex gap-2">
+                  <Image className="object-contain" width={24} height={24} alt="#" src="/icons/gearbox.png"></Image>
+                  <p className="text-[#333] font-normal text-base capitalize">{listing.transmission}</p>
+                </div>
+              )}
               <div className="flex gap-x-2">
                 <Image className="object-contain" width={24} height={24} alt="#" src="/icons/calendar.png"></Image>
                 <p className="text-[#333] font-normal text-base">{listing.registration_year}</p>
               </div>
               <div className="flex gap-x-2">
                 <Image className="object-contain" width={24} height={24} alt="#" src="/icons/gas.png"></Image>
-                <p className="text-[#333] font-normal text-base">{listing.fuel_type}</p>
+                <p className="text-[#333] font-normal text-base capitalize">{listing.fuel_type}</p>
               </div>
-              <div className="flex gap-x-2">
-                <Image className="object-contain" width={24} height={24} alt="#" src="/icons/speedometer.png"></Image>
-                <p className="text-[#333] font-normal text-base">220 kW (299 hp)</p>
-              </div>
+              {listing.horsepower && (
+                <div className="flex gap-x-2">
+                  <Image className="object-contain" width={24} height={24} alt="#" src="/icons/speedometer.png"></Image>
+                  <p className="text-[#333] font-normal text-base">{listing.horsepower} hp</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
         <div className="flex justify-between items-center mt-6 border-t border-t-[#eaeaea]">
-          <div className="mt-4 px-4">
+          <div className="mt-4 px-4 flex items-center gap-3">
+            {listing.seller?.seller_type === "dealer" && listing.seller.company_image && (
+              <div className="relative w-10 h-10 rounded overflow-hidden border border-gray-200 flex-shrink-0">
+                <Image src={`http://127.0.0.1:8000${listing.seller.company_image}`} alt="Dealer" fill className="object-contain" />
+              </div>
+            )}
             <div className="flex flex-col">
-              <p className="text-[#333] text-sm font-normal">PG Cars</p>
-              <p className="text-[#333] text-sm font-normal">Lukas Sternberger • AT-7423 Pinkafeld</p>
+              {listing.seller?.seller_type === "dealer" && listing.seller.company_name && (
+                <p className="text-[#333] text-sm font-medium">{listing.seller.company_name}</p>
+              )}
+              <p className="text-[#333] text-sm font-normal">
+                {listing.seller?.display_name || listing.seller?.username || "Private seller"}
+                {listing.seller?.location ? ` \u2022 ${listing.seller.location}` : listing.city ? ` \u2022 ${listing.city}, ${listing.country}` : ""}
+              </p>
             </div>
           </div>
           <div className="mt-4 px-4">
-            <a className="text-[#1166a8] text-base font-normal hover:text-[#1167a8cc] transition-colors duration-300" href="#">
+            <Link
+              href={`/search?seller=${listing.seller?.username || ""}`}
+              onClick={(e) => e.stopPropagation()}
+              className="text-[#1166a8] text-base font-normal hover:text-[#1167a8cc] transition-colors duration-300"
+            >
               + Show more vehicles
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -129,6 +148,7 @@ const VehicleSearchedResultDesktop = ({ listing }: Props) => {
 
 const VehicleSearchedResultMobile = ({ listing }: Props) => {
   const favorite = true;
+  const imageCount = (listing.images?.length || 0) + (listing.main_image && (!listing.images || listing.images.length === 0) ? 1 : 0);
 
   return (
     <Link href={`/vehicle/${listing.id}`} className="block">
@@ -140,7 +160,7 @@ const VehicleSearchedResultMobile = ({ listing }: Props) => {
           <div className={`relative ${listing.main_image ? "w-full h-full" : "flex justify-center items-center w-full min-h-72 h-full bg-slate-50"}`}>
             <img className={`${listing.main_image ? "w-full h-full" : "w-16 h-16"}`} alt="#" src={listing.main_image ? listing.main_image : "/bg404.png"} />
             <div className="absolute bottom-2 left-2 h-9 w-[50px] flex justify-center items-center bg-[#00000080] text-white border border-white rounded-sm font-light text-xs">
-              1 / 10
+              1 / {imageCount || 1}
             </div>
             <div className="flex absolute top-2 right-2 items-center gap-2 pr-2">
               <div className="rounded-full bg-[#f3f4f5] hover:bg-[#e8eaec] transition-all p-2 cursor-pointer">
@@ -208,36 +228,54 @@ const VehicleSearchedResultMobile = ({ listing }: Props) => {
                 <Image className="object-contain" width={20} height={20} alt="#" src="/icons/road.png"></Image>
                 <p className="text-[#333] font-normal text-sm">{listing.mileage} km</p>
               </div>
-              <div className="flex gap-2">
-                <Image className="object-contain" width={20} height={20} alt="#" src="/icons/gearbox.png"></Image>
-                <p className="text-[#333] font-normal text-sm">Automatic</p>
-              </div>
+              {listing.transmission && (
+                <div className="flex gap-2">
+                  <Image className="object-contain" width={20} height={20} alt="#" src="/icons/gearbox.png"></Image>
+                  <p className="text-[#333] font-normal text-sm capitalize">{listing.transmission}</p>
+                </div>
+              )}
               <div className="flex gap-x-2">
                 <Image className="object-contain" width={20} height={20} alt="#" src="/icons/calendar.png"></Image>
                 <p className="text-[#333] font-normal text-sm">{listing.registration_year}</p>
               </div>
               <div className="flex gap-x-2">
                 <Image className="object-contain" width={20} height={20} alt="#" src="/icons/gas.png"></Image>
-                <p className="text-[#333] font-normal text-sm">{listing.fuel_type}</p>
+                <p className="text-[#333] font-normal text-sm capitalize">{listing.fuel_type}</p>
               </div>
-              <div className="flex gap-x-2">
-                <Image className="object-contain" width={20} height={20} alt="#" src="/icons/speedometer.png"></Image>
-                <p className="text-[#333] font-normal text-sm">220 kW (299 hp)</p>
-              </div>
+              {listing.horsepower && (
+                <div className="flex gap-x-2">
+                  <Image className="object-contain" width={20} height={20} alt="#" src="/icons/speedometer.png"></Image>
+                  <p className="text-[#333] font-normal text-sm">{listing.horsepower} hp</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
         <div className="flex justify-between items-center mt-6 border-t border-t-[#eaeaea]">
-          <div className="mt-4 px-4">
+          <div className="mt-4 px-4 flex items-center gap-3">
+            {listing.seller?.seller_type === "dealer" && listing.seller.company_image && (
+              <div className="relative w-10 h-10 rounded overflow-hidden border border-gray-200 flex-shrink-0">
+                <Image src={`http://127.0.0.1:8000${listing.seller.company_image}`} alt="Dealer" fill className="object-contain" />
+              </div>
+            )}
             <div className="flex flex-col">
-              <p className="text-[#333] text-sm font-normal">PG Cars</p>
-              <p className="text-[#333] text-sm font-normal">Lukas Sternberger • AT-7423 Pinkafeld</p>
+              {listing.seller?.seller_type === "dealer" && listing.seller.company_name && (
+                <p className="text-[#333] text-sm font-medium">{listing.seller.company_name}</p>
+              )}
+              <p className="text-[#333] text-sm font-normal">
+                {listing.seller?.display_name || listing.seller?.username || "Private seller"}
+                {listing.seller?.location ? ` \u2022 ${listing.seller.location}` : listing.city ? ` \u2022 ${listing.city}, ${listing.country}` : ""}
+              </p>
             </div>
           </div>
           <div className="mt-4 px-4">
-            <a className="text-[#1166a8] text-base font-normal hover:text-[#1167a8cc] transition-colors duration-300" href="#">
+            <Link
+              href={`/search?seller=${listing.seller?.username || ""}`}
+              onClick={(e) => e.stopPropagation()}
+              className="text-[#1166a8] text-base font-normal hover:text-[#1167a8cc] transition-colors duration-300"
+            >
               + Show more vehicles
-            </a>
+            </Link>
           </div>
         </div>
       </div>

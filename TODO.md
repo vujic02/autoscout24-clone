@@ -16,17 +16,17 @@
 
 ## User / Contact Info
 
-- Add contact fields to User profile (phone, display name, location)
-- Show seller contact info on vehicle detail page (name, phone, email)
-- "Send Email" button on vehicle detail is non-functional — needs backend endpoint or mailto
+- ~~Add contact fields to User profile (phone, display name, location)~~
+- ~~Show seller contact info on vehicle detail page (name, phone, email)~~
+- ~~"Send Email" button on vehicle detail is non-functional — needs backend endpoint or mailto~~
 - ~~Replace hardcoded "Private seller" on detail page with actual data~~
 
 ## Listing Limits
 
-- Regular users can only have 1 active listing at a time
-- Must remove/deactivate current listing before adding another
-- Admin/staff users have no listing limit
-- Show remaining quota on add-listing page
+- ~~Regular users can only have 1 active listing at a time~~
+- ~~Must remove/deactivate current listing before adding another~~
+- ~~Admin/staff users have no listing limit~~
+- ~~Show remaining quota on add-listing page~~
 
 ## Vehicle Detail Page
 

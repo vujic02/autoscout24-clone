@@ -19,7 +19,7 @@ const Header = () => {
       try {
         const user = JSON.parse(authUser);
         setIsLoggedIn(true);
-        setUserEmail(user.email || user.username || "");
+        setUserEmail(user.username || user.email || "");
 
         // Verify admin status with backend (don't trust localStorage)
         const res = await fetch("http://127.0.0.1:8000/api/auth/current-user/", {

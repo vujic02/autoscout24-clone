@@ -6,21 +6,70 @@ from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from .models import Listing, ListingImage, ListingView
-from .serializers import ListingSerializer, ListingImageSerializer
+from django.db import models
+from .models import Listing, ListingImage, ListingView, UserProfile, DealerPhone, DealerAddress, ListingLimitRequest
+from .serializers import ListingSerializer, ListingImageSerializer, UserProfileSerializer, DealerPhoneSerializer, DealerAddressSerializer
+
+MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5MB
+MAX_IMAGES_PER_LISTING = 20
+ALLOWED_IMAGE_TYPES = {'image/jpeg', 'image/png', 'image/webp', 'image/avif'}
+
+
+def validate_uploaded_images(files):
+    """Validate image uploads for type, size, and count."""
+    if len(files) > MAX_IMAGES_PER_LISTING:
+        from rest_framework.exceptions import ValidationError
+        raise ValidationError(f'Maximum {MAX_IMAGES_PER_LISTING} images allowed per listing.')
+    for f in files:
+        if f.content_type not in ALLOWED_IMAGE_TYPES:
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError(f'Invalid image type: {f.content_type}. Allowed: JPEG, PNG, WebP, AVIF.')
+        if f.size > MAX_IMAGE_SIZE:
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError(f'Image {f.name} exceeds 5MB limit.')
+
+
+def get_user_response_data(user):
+    """Build a consistent user data dict including profile and listing quota."""
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+    active_count = Listing.objects.filter(user=user, status='ACTIVE').count()
+    limit = profile.get_listing_limit()
+
+    data = {
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
+        'is_staff': user.is_staff,
+        'profile': {
+            'display_name': profile.display_name,
+            'phone': profile.phone,
+            'location': profile.location,
+            'seller_type': profile.seller_type,
+            'dealer_request_status': profile.dealer_request_status,
+            'company_name': profile.company_name,
+            'company_image': profile.company_image.url if profile.company_image else None,
+        },
+        'listing_quota': {
+            'max': None if user.is_staff else limit,
+            'used': active_count,
+            'remaining': None if user.is_staff else max(0, limit - active_count),
+        },
+    }
+
+    # Include dealer details if user is an approved dealer
+    if profile.seller_type == 'dealer':
+        data['profile']['dealer_phones'] = DealerPhoneSerializer(profile.dealer_phones.all(), many=True).data
+        data['profile']['dealer_addresses'] = DealerAddressSerializer(profile.dealer_addresses.all(), many=True).data
+
+    return data
+
 
 class CurrentUserView(APIView):
     """Get current authenticated user's info, including verified admin status"""
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user = request.user
-        return Response({
-            'id': user.id,
-            'username': user.username,
-            'email': user.email,
-            'is_staff': user.is_staff,
-        })
+        return Response(get_user_response_data(request.user))
 
 class ListingListCreateView(generics.ListCreateAPIView):
     serializer_class = ListingSerializer
@@ -60,13 +109,32 @@ class ListingListCreateView(generics.ListCreateAPIView):
         if featured:
             queryset = queryset.filter(featured=True)
 
+        seller = params.get('seller', '')
+        if seller:
+            queryset = queryset.filter(user__username=seller)
+
         return queryset
 
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        if not user.is_staff:
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+            limit = profile.get_listing_limit()
+            active_count = Listing.objects.filter(user=user, status='ACTIVE').count()
+            if active_count >= limit:
+                return Response(
+                    {'detail': f'You can only have {limit} active listing(s). Please remove or deactivate a listing before adding another.'},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+        return super().create(request, *args, **kwargs)
+
     def perform_create(self, serializer):
-        listing = serializer.save(user=self.request.user)
+        profile, _ = UserProfile.objects.get_or_create(user=self.request.user)
+        images = self.request.FILES.getlist('images')
+        validate_uploaded_images(images)
+        listing = serializer.save(user=self.request.user, seller_type=profile.seller_type)
         
         # Handle multiple images
-        images = self.request.FILES.getlist('images')
         for image in images:
             ListingImage.objects.create(listing=listing, image=image)
 
@@ -79,11 +147,22 @@ class ListingDetailView(generics.RetrieveUpdateDestroyAPIView):
             return [permissions.AllowAny()]
         return [IsAuthenticated()]
 
+    def get_object(self):
+        obj = super().get_object()
+        if self.request.method in ('PUT', 'PATCH', 'DELETE'):
+            if obj.user != self.request.user and not self.request.user.is_staff:
+                from rest_framework.exceptions import PermissionDenied
+                raise PermissionDenied('You can only modify your own listings.')
+        return obj
+
     def perform_update(self, serializer):
-        listing = serializer.save()
+        profile, _ = UserProfile.objects.get_or_create(user=self.request.user)
+        images = self.request.FILES.getlist('images')
+        if images:
+            validate_uploaded_images(images)
+        listing = serializer.save(seller_type=profile.seller_type)
         
         # Handle multiple images on update
-        images = self.request.FILES.getlist('images')
         if images:
             for image in images:
                 ListingImage.objects.create(listing=listing, image=image)
@@ -114,18 +193,21 @@ class RegisterView(APIView):
             password=password,
         )
 
-        # automatski napravi token za novog user-a
-        token, _ = Token.objects.get_or_create(user=user)
-
-        return Response(
-            {
-                'id': user.id,
-                'username': user.username,
-                'email': user.email,
-                'token': token.key,
-            },
-            status=status.HTTP_201_CREATED,
+        # Create profile with optional contact fields
+        display_name = request.data.get('display_name', '')
+        phone = request.data.get('phone', '')
+        location = request.data.get('location', '')
+        UserProfile.objects.create(
+            user=user,
+            display_name=display_name,
+            phone=phone,
+            location=location,
         )
+
+        token, _ = Token.objects.get_or_create(user=user)
+        data = get_user_response_data(user)
+        data['token'] = token.key
+        return Response(data, status=status.HTTP_201_CREATED)
 
 class LoginView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -163,15 +245,9 @@ class LoginView(APIView):
 
         token, _ = Token.objects.get_or_create(user=user)
 
-        return Response(
-            {
-                'id': user.id,
-                'username': user.username,
-                'email': user.email,
-                'token': token.key,
-                'is_staff': user.is_staff,
-            }
-        )
+        data = get_user_response_data(user)
+        data['token'] = token.key
+        return Response(data)
 
 
 class AdminListingsView(generics.ListAPIView):
@@ -182,7 +258,8 @@ class AdminListingsView(generics.ListAPIView):
     def get_queryset(self):
         # Only staff/admin users can view all listings
         if not self.request.user.is_staff:
-            return Listing.objects.none()
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied('You do not have permission to view this.')
 
         queryset = Listing.objects.all().order_by('-created_at')
         params = self.request.query_params
@@ -192,7 +269,10 @@ class AdminListingsView(generics.ListAPIView):
         model = params.get('model', '')
 
         if listing_id:
-            queryset = queryset.filter(id__icontains=listing_id)
+            try:
+                queryset = queryset.filter(id=int(listing_id))
+            except (ValueError, TypeError):
+                queryset = queryset.none()
 
         if make:
             queryset = queryset.filter(make__icontains=make)
@@ -225,6 +305,18 @@ class ToggleFeaturedView(APIView):
                 {'detail': 'Listing not found.'},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+
+class UpdateProfileView(APIView):
+    """Update the current user's profile (display_name, phone, location)"""
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request):
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        serializer = UserProfileSerializer(profile, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(get_user_response_data(request.user))
 
 
 class BrandAveragePriceView(APIView):
@@ -291,7 +383,230 @@ class RecordListingViewAPI(APIView):
 
         if not already_viewed:
             ListingView.objects.create(listing=listing, user=user, ip_address=ip)
-            listing.view_count = listing.view_count + 1
-            listing.save(update_fields=['view_count'])
+            Listing.objects.filter(pk=pk).update(view_count=models.F('view_count') + 1)
+            listing.refresh_from_db(fields=['view_count'])
 
         return Response({'view_count': listing.view_count})
+
+
+class RequestDealerView(APIView):
+    """Request dealer account status"""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        if profile.seller_type == 'dealer':
+            return Response({'detail': 'You are already a dealer.'}, status=status.HTTP_400_BAD_REQUEST)
+        if profile.dealer_request_status == 'pending':
+            return Response({'detail': 'You already have a pending dealer request.'}, status=status.HTTP_400_BAD_REQUEST)
+        profile.dealer_request_status = 'pending'
+        profile.save(update_fields=['dealer_request_status'])
+        return Response(get_user_response_data(request.user))
+
+
+class AdminDealerRequestsView(APIView):
+    """List all pending dealer requests (admin only)"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if not request.user.is_staff:
+            return Response({'detail': 'Permission denied.'}, status=status.HTTP_403_FORBIDDEN)
+        pending = UserProfile.objects.filter(dealer_request_status='pending').select_related('user')
+        data = [
+            {
+                'user_id': p.user.id,
+                'username': p.user.username,
+                'email': p.user.email,
+                'display_name': p.display_name,
+                'phone': p.phone,
+                'location': p.location,
+            }
+            for p in pending
+        ]
+        return Response(data)
+
+
+class AdminHandleDealerRequestView(APIView):
+    """Approve or reject a dealer request (admin only)"""
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, user_id):
+        if not request.user.is_staff:
+            return Response({'detail': 'Permission denied.'}, status=status.HTTP_403_FORBIDDEN)
+
+        action = request.data.get('action')  # 'approve' or 'reject'
+        if action not in ('approve', 'reject'):
+            return Response({'detail': 'Invalid action. Use "approve" or "reject".'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            profile = UserProfile.objects.select_related('user').get(user_id=user_id)
+        except UserProfile.DoesNotExist:
+            return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        if profile.dealer_request_status != 'pending':
+            return Response({'detail': 'No pending request for this user.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if action == 'approve':
+            profile.seller_type = 'dealer'
+            profile.dealer_request_status = 'approved'
+        else:
+            profile.dealer_request_status = 'rejected'
+
+        profile.save(update_fields=['seller_type', 'dealer_request_status'])
+        return Response({'detail': f'Dealer request {action}d.', 'seller_type': profile.seller_type, 'dealer_request_status': profile.dealer_request_status})
+
+
+class UpdateDealerProfileView(APIView):
+    """Update dealer-specific profile fields (company name, image, phones, addresses)"""
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request):
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        if profile.seller_type != 'dealer':
+            return Response({'detail': 'Only dealers can update dealer profile.'}, status=status.HTTP_403_FORBIDDEN)
+
+        # Update company name
+        if 'company_name' in request.data:
+            profile.company_name = request.data['company_name']
+
+        # Update company image
+        if 'company_image' in request.FILES:
+            profile.company_image = request.FILES['company_image']
+
+        profile.save()
+        return Response(get_user_response_data(request.user))
+
+
+class DealerPhoneView(APIView):
+    """Manage dealer phone numbers"""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        if profile.seller_type != 'dealer':
+            return Response({'detail': 'Only dealers can manage dealer phones.'}, status=status.HTTP_403_FORBIDDEN)
+        serializer = DealerPhoneSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(profile=profile)
+        return Response(get_user_response_data(request.user), status=status.HTTP_201_CREATED)
+
+    def delete(self, request):
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        if profile.seller_type != 'dealer':
+            return Response({'detail': 'Only dealers can manage dealer phones.'}, status=status.HTTP_403_FORBIDDEN)
+        phone_id = request.data.get('id')
+        try:
+            phone = DealerPhone.objects.get(id=phone_id, profile=profile)
+            phone.delete()
+            return Response(get_user_response_data(request.user))
+        except DealerPhone.DoesNotExist:
+            return Response({'detail': 'Phone not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class DealerAddressView(APIView):
+    """Manage dealer addresses"""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        if profile.seller_type != 'dealer':
+            return Response({'detail': 'Only dealers can manage dealer addresses.'}, status=status.HTTP_403_FORBIDDEN)
+        serializer = DealerAddressSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(profile=profile)
+        return Response(get_user_response_data(request.user), status=status.HTTP_201_CREATED)
+
+    def delete(self, request):
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        if profile.seller_type != 'dealer':
+            return Response({'detail': 'Only dealers can manage dealer addresses.'}, status=status.HTTP_403_FORBIDDEN)
+        address_id = request.data.get('id')
+        try:
+            address = DealerAddress.objects.get(id=address_id, profile=profile)
+            address.delete()
+            return Response(get_user_response_data(request.user))
+        except DealerAddress.DoesNotExist:
+            return Response({'detail': 'Address not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class RequestMoreListingsView(APIView):
+    """Dealer requests more listing slots with a message"""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        if profile.seller_type != 'dealer':
+            return Response({'detail': 'Only dealers can request more listings.'}, status=status.HTTP_403_FORBIDDEN)
+
+        message = request.data.get('message', '').strip()
+        if not message:
+            return Response({'detail': 'Please provide a message explaining why you need more listings.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check for existing pending request
+        if ListingLimitRequest.objects.filter(user=request.user, status='pending').exists():
+            return Response({'detail': 'You already have a pending request.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        ListingLimitRequest.objects.create(user=request.user, message=message)
+        return Response({'detail': 'Your request has been submitted.'}, status=status.HTTP_201_CREATED)
+
+
+class AdminListingLimitRequestsView(APIView):
+    """List pending listing limit requests (admin only)"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if not request.user.is_staff:
+            return Response({'detail': 'Permission denied.'}, status=status.HTTP_403_FORBIDDEN)
+        pending = ListingLimitRequest.objects.filter(status='pending').select_related('user', 'user__profile')
+        data = []
+        for req in pending:
+            profile, _ = UserProfile.objects.get_or_create(user=req.user)
+            data.append({
+                'id': req.id,
+                'user_id': req.user.id,
+                'username': req.user.username,
+                'email': req.user.email,
+                'display_name': profile.display_name,
+                'company_name': profile.company_name,
+                'current_limit': profile.get_listing_limit(),
+                'message': req.message,
+                'created_at': req.created_at.isoformat(),
+            })
+        return Response(data)
+
+
+class AdminUpdateListingLimitView(APIView):
+    """Admin sets a user's listing limit and resolves the request"""
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, user_id):
+        if not request.user.is_staff:
+            return Response({'detail': 'Permission denied.'}, status=status.HTTP_403_FORBIDDEN)
+
+        new_limit = request.data.get('max_listings')
+        if new_limit is None:
+            return Response({'detail': 'max_listings is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            new_limit = int(new_limit)
+            if new_limit < 0:
+                raise ValueError
+        except (ValueError, TypeError):
+            return Response({'detail': 'max_listings must be a non-negative integer.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            profile = UserProfile.objects.get(user_id=user_id)
+        except UserProfile.DoesNotExist:
+            return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        profile.max_listings = new_limit
+        profile.save(update_fields=['max_listings'])
+
+        # Resolve any pending requests for this user
+        ListingLimitRequest.objects.filter(user_id=user_id, status='pending').update(status='resolved')
+
+        return Response({
+            'detail': f'Listing limit updated to {new_limit}.',
+            'user_id': user_id,
+            'max_listings': new_limit,
+        })

@@ -3,8 +3,9 @@ import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { carsMakeData, carsModelData, countries, fuelTypes, bodyTypes, transmissions, driveTypes, colors, sellerTypes } from "@/utils/tabsStatic";
+import { carsMakeData, carsModelData, countries, fuelTypes, bodyTypes, transmissions, driveTypes, colors } from "@/utils/tabsStatic";
 import CustomSelect from "@/components/ui/custom/Search/CustomSelect";
+import { fetchCurrentUser, ListingQuota } from "@/lib/api";
 
 const AddListingPage = () => {
   const router = useRouter();
@@ -13,8 +14,9 @@ const AddListingPage = () => {
   const isEditMode = !!listingId;
 
   const [loading, setLoading] = useState(false);
-  const [pageLoading, setPageLoading] = useState(isEditMode);
+  const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState("");
+  const [quota, setQuota] = useState<ListingQuota | null>(null);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [selectedMake, setSelectedMake] = useState("");
@@ -26,7 +28,6 @@ const AddListingPage = () => {
   const [selectedDriveType, setSelectedDriveType] = useState("");
   const [selectedExteriorColor, setSelectedExteriorColor] = useState("");
   const [selectedInteriorColor, setSelectedInteriorColor] = useState("");
-  const [selectedSellerType, setSelectedSellerType] = useState("");
 
   const [formData, setFormData] = useState({
     title: "",
@@ -47,7 +48,6 @@ const AddListingPage = () => {
     number_of_doors: "",
     number_of_seats: "",
     previous_owners: "",
-    seller_type: "",
     country: "",
     city: "",
     description: "",
@@ -74,7 +74,6 @@ const AddListingPage = () => {
       drive_type: selectedDriveType,
       exterior_color: selectedExteriorColor,
       interior_color: selectedInteriorColor,
-      seller_type: selectedSellerType,
     }));
   }, [
     selectedMake,
@@ -86,8 +85,27 @@ const AddListingPage = () => {
     selectedDriveType,
     selectedExteriorColor,
     selectedInteriorColor,
-    selectedSellerType,
   ]);
+
+  // Check auth + listing quota on mount
+  useEffect(() => {
+    const checkQuota = async () => {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+      try {
+        const user = await fetchCurrentUser(token);
+        setQuota(user.listing_quota);
+      } catch {
+        router.push("/login");
+      } finally {
+        if (!isEditMode) setPageLoading(false);
+      }
+    };
+    checkQuota();
+  }, [router, isEditMode]);
 
   // Fetch listing data for edit mode
   useEffect(() => {
@@ -136,7 +154,6 @@ const AddListingPage = () => {
           number_of_doors: data.number_of_doors || "",
           number_of_seats: data.number_of_seats || "",
           previous_owners: data.previous_owners ?? "",
-          seller_type: data.seller_type || "",
           country: data.country || "",
           city: data.city || "",
           description: data.description || "",
@@ -154,7 +171,6 @@ const AddListingPage = () => {
         setSelectedDriveType(data.drive_type || "");
         setSelectedExteriorColor(data.exterior_color || "");
         setSelectedInteriorColor(data.interior_color || "");
-        setSelectedSellerType(data.seller_type || "");
 
         // Set existing images
         if (data.images && data.images.length > 0) {
@@ -245,7 +261,6 @@ const AddListingPage = () => {
       if (formData.number_of_doors) formDataToSend.append("number_of_doors", String(formData.number_of_doors));
       if (formData.number_of_seats) formDataToSend.append("number_of_seats", String(formData.number_of_seats));
       if (formData.previous_owners !== "") formDataToSend.append("previous_owners", String(formData.previous_owners));
-      if (formData.seller_type) formDataToSend.append("seller_type", formData.seller_type.toLowerCase());
       formDataToSend.append("country", formData.country);
       formDataToSend.append("city", formData.city);
       formDataToSend.append("description", formData.description);
@@ -299,6 +314,31 @@ const AddListingPage = () => {
               ))}
             </div>
           </div>
+        </div>
+      </main>
+    );
+  }
+
+  // Show quota exceeded message for non-edit mode
+  if (!isEditMode && quota && quota.remaining !== null && quota.remaining <= 0) {
+    return (
+      <main className="flex min-h-screen flex-col items-center p-8">
+        <div className="max-w-2xl w-full bg-white rounded-lg shadow-sm p-8 text-center">
+          <div className="flex items-center gap-3 mb-6 justify-center">
+            <button onClick={() => router.back()} className="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="Back">
+              <ArrowLeft size={20} />
+            </button>
+            <h1 className="text-3xl font-bold">Listing Limit Reached</h1>
+          </div>
+          <div className="mb-6 p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-md">
+            <p className="font-medium mb-1">You already have {quota.used} active listing(s).</p>
+            <p className="text-sm">
+              Regular users can have a maximum of {quota.max} active listing at a time. Please remove or deactivate your current listing before adding another.
+            </p>
+          </div>
+          <Button onClick={() => router.push("/my-listings")} className="bg-black text-white hover:bg-gray-800">
+            Go to My Listings
+          </Button>
         </div>
       </main>
     );
@@ -499,16 +539,10 @@ const AddListingPage = () => {
             </div>
           </div>
 
-          {/* Drive Type and Seller Type */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className={labelClasses}>Drive Type</label>
-              <CustomSelect data={driveTypes} placeholder="Select drive type" setSelectedOption={setSelectedDriveType} />
-            </div>
-            <div>
-              <label className={labelClasses}>Seller Type</label>
-              <CustomSelect data={sellerTypes} placeholder="Select seller type" setSelectedOption={setSelectedSellerType} />
-            </div>
+          {/* Drive Type */}
+          <div>
+            <label className={labelClasses}>Drive Type</label>
+            <CustomSelect data={driveTypes} placeholder="Select drive type" setSelectedOption={setSelectedDriveType} />
           </div>
 
           {/* Horsepower and Engine Displacement */}
