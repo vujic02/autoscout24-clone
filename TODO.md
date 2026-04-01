@@ -16,15 +16,9 @@
 
 ## User / Contact Info -- DONE
 
-<<<<<<< Updated upstream
-- Add contact fields to User profile (phone, display name, location)
-- Show seller contact info on vehicle detail page (name, phone, email)
-- "Send Email" button on vehicle detail is non-functional — needs backend endpoint or mailto
-=======
 - ~~Add contact fields to User profile (phone, display name, location)~~
 - ~~Show seller contact info on vehicle detail page (name, phone, email)~~
 - ~~"Send Email" button on vehicle detail — removed (email hidden for privacy)~~
->>>>>>> Stashed changes
 - ~~Replace hardcoded "Private seller" on detail page with actual data~~
 
 ## Listing Limits -- DONE
@@ -60,8 +54,8 @@
 
 ## Admin Dashboard
 
-- No pagination on listings table
-- No search/filter on admin listings
+- ~~No pagination on listings table~~
+- ~~No search/filter on admin listings~~
 - No bulk actions (multi-select, bulk feature toggle)
 
 ## Translations & Localization
