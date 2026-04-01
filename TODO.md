@@ -11,17 +11,23 @@
 - ~~Add `drive_type` (FWD, RWD, AWD)~~
 - ~~Add `previous_owners` count~~
 - ~~Add `seller_type` (Private / Dealer)~~
-- Add `views_count` for popularity tracking
+- ~~Add `views_count` for popularity tracking~~
 - `status` field exists but is never used — always 'ACTIVE'
 
-## User / Contact Info
+## User / Contact Info -- DONE
 
+<<<<<<< Updated upstream
 - Add contact fields to User profile (phone, display name, location)
 - Show seller contact info on vehicle detail page (name, phone, email)
 - "Send Email" button on vehicle detail is non-functional — needs backend endpoint or mailto
+=======
+- ~~Add contact fields to User profile (phone, display name, location)~~
+- ~~Show seller contact info on vehicle detail page (name, phone, email)~~
+- ~~"Send Email" button on vehicle detail — removed (email hidden for privacy)~~
+>>>>>>> Stashed changes
 - ~~Replace hardcoded "Private seller" on detail page with actual data~~
 
-## Listing Limits
+## Listing Limits -- DONE
 
 - Regular users can only have 1 active listing at a time
 - Must remove/deactivate current listing before adding another
@@ -70,7 +76,7 @@
 - Login: no email format validation
 - Register: no password confirmation field, no strength indicator
 - Add-listing: no validation on price/mileage/year (negative values possible)
-- No max file size check on image uploads (frontend or backend)
+- ~~No max file size check on image uploads (frontend or backend) — added backend validation (type, 5MB, 20 files max)~~
 - Serializer has no field-level validators
 
 ## Error Handling & UX
@@ -93,3 +99,31 @@
 - LastSearchCard UI exists but not wired to real data
 - No localStorage or backend persistence for recent searches
 - No search alerts / notifications
+
+## Dealer System -- DONE
+
+- ~~Add dealer request flow (user requests dealer status, admin approves/rejects)~~
+- ~~Add DealerPhone and DealerAddress models for multi-contact dealer profiles~~
+- ~~Add company_name and company_image to UserProfile~~
+- ~~Admin dashboard: manage dealer requests (approve/reject)~~
+- ~~Admin dashboard: manage listing limit requests~~
+- ~~Auto-set seller_type from UserProfile on listing create/update (removed from form)~~
+
+## Search Result Cards -- DONE
+
+- ~~Show real seller data instead of hardcoded "PG Cars" / "Lukas Sternberger"~~
+- ~~Show dealer logo on search result cards (if dealer)~~
+- ~~Dynamic image count (1 / N from actual images)~~
+- ~~Dynamic transmission and horsepower display~~
+- ~~"Show more vehicles" links to /search?seller=username~~
+- ~~Add seller filter to listings API and search page~~
+
+## Security Hardening -- DONE
+
+- ~~Add owner permission check on listing edit/delete~~
+- ~~Remove email from public seller API response~~
+- ~~Restrict CORS to localhost origins~~
+- ~~Add DRF rate limiting (30/min anon, 120/min authenticated)~~
+- ~~Use F() expression for atomic view count increment~~
+- ~~Return 403 for non-staff on admin endpoints~~
+- ~~Add image upload validation (file type, size, count)~~
