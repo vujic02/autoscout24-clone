@@ -9,8 +9,11 @@ const API_BASE = "http://127.0.0.1:8000";
 const RegisterPage = () => {
   const router = useRouter();
 
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,8 +22,8 @@ const RegisterPage = () => {
 
     setError(null);
 
-    if (!email || !password) {
-      setError("Please enter e-mail and password.");
+    if (!username || !email || !password) {
+      setError("Please fill in username, e-mail, and password.");
       return;
     }
 
@@ -33,9 +36,12 @@ const RegisterPage = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: email,
+          username,
           email,
           password,
+          display_name: username,
+          phone,
+          location,
         }),
       });
 
@@ -93,10 +99,7 @@ const RegisterPage = () => {
           </ul>
 
           {/* Retailer link */}
-          <button
-            type="button"
-            className="w-full border border-[#1166a8] text-[#1166a8] text-sm font-medium rounded-md py-2 mb-4 hover:bg-[#1166a80a] transition-colors"
-          >
+          <button type="button" className="w-full border border-[#1166a8] text-[#1166a8] text-sm font-medium rounded-md py-2 mb-4 hover:bg-[#1166a80a] transition-colors">
             Are you a retailer? Click here!
           </button>
 
@@ -105,8 +108,23 @@ const RegisterPage = () => {
 
           <form className="space-y-3" onSubmit={handleSubmit}>
             <div className="space-y-1">
+              <label htmlFor="username" className="block text-sm font-medium text-gray-800">
+                Username <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="username"
+                type="text"
+                autoComplete="username"
+                placeholder="e.g. max_mustermann"
+                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#1166a8] focus:border-[#1166a8]"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-1">
               <label htmlFor="email" className="block text-sm font-medium text-gray-800">
-                E-mail address
+                E-mail address <span className="text-red-500">*</span>
               </label>
               <input
                 id="email"
@@ -121,7 +139,7 @@ const RegisterPage = () => {
 
             <div className="space-y-1">
               <label htmlFor="password" className="block text-sm font-medium text-gray-800">
-                Password
+                Password <span className="text-red-500">*</span>
               </label>
               <input
                 id="password"
@@ -132,6 +150,38 @@ const RegisterPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-800">
+                  Phone number
+                </label>
+                <input
+                  id="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  placeholder="+49 123 456789"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#1166a8] focus:border-[#1166a8]"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label htmlFor="location" className="block text-sm font-medium text-gray-800">
+                  Location
+                </label>
+                <input
+                  id="location"
+                  type="text"
+                  autoComplete="address-level2"
+                  placeholder="e.g. Munich, Germany"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#1166a8] focus:border-[#1166a8]"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                />
+              </div>
             </div>
 
             <button

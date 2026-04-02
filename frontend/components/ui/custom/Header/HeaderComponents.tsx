@@ -15,7 +15,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, LayoutDashboard, List, User, PlusCircle, LogOut } from "lucide-react";
 
 type PropsHeaderButtonDropdown = {
   variant: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost";
@@ -36,31 +36,19 @@ const HeaderButtonDropdown = ({ variant, customCSS, language, setLanguage }: Pro
         <DropdownMenuLabel>Language</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup value={language} onValueChange={(value) => setLanguage(value)}>
-          <DropdownMenuRadioItem
-            className="data-[state=checked]:bg-gray-400 flex justify-between cursor-pointer data-[state=checked]:cursor-default"
-            value="English"
-          >
+          <DropdownMenuRadioItem className="data-[state=checked]:bg-gray-400 flex justify-between cursor-pointer data-[state=checked]:cursor-default" value="English">
             English
             <Image className="ml-2" width={24} height={24} alt="#" src="https://flagsapi.com/GB/flat/24.png" />
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem
-            className="data-[state=checked]:bg-gray-400 flex justify-between cursor-pointer data-[state=checked]:cursor-default"
-            value="German"
-          >
+          <DropdownMenuRadioItem className="data-[state=checked]:bg-gray-400 flex justify-between cursor-pointer data-[state=checked]:cursor-default" value="German">
             German
             <Image className="ml-2" width={24} height={24} alt="#" src="https://flagsapi.com/DE/flat/24.png" />
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem
-            className="data-[state=checked]:bg-gray-400 flex justify-between cursor-pointer data-[state=checked]:cursor-default"
-            value="Italian"
-          >
+          <DropdownMenuRadioItem className="data-[state=checked]:bg-gray-400 flex justify-between cursor-pointer data-[state=checked]:cursor-default" value="Italian">
             Italian
             <Image className="ml-2" width={24} height={24} alt="#" src="https://flagsapi.com/IT/flat/24.png" />
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem
-            className="data-[state=checked]:bg-gray-400 flex justify-between cursor-pointer data-[state=checked]:cursor-default"
-            value="French"
-          >
+          <DropdownMenuRadioItem className="data-[state=checked]:bg-gray-400 flex justify-between cursor-pointer data-[state=checked]:cursor-default" value="French">
             French
             <Image className="ml-2" width={24} height={24} alt="#" src="https://flagsapi.com/FR/flat/24.png" />
           </DropdownMenuRadioItem>
@@ -158,26 +146,31 @@ const UserAuthDropdown = ({ isLoggedIn = false, userEmail, isAdmin = false }: Pr
         {isAdmin && (
           <>
             <DropdownMenuItem asChild>
-              <Link href="/admin" className="cursor-pointer">
-                Admin Dashboard
+              <Link href="/admin" className="cursor-pointer flex items-center gap-2">
+                <LayoutDashboard size={16} /> Admin Dashboard
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
           </>
         )}
         <DropdownMenuItem asChild>
-          <Link href="/my-listings" className="cursor-pointer">
-            My Listings
+          <Link href="/my-listings" className="cursor-pointer flex items-center gap-2">
+            <List size={16} /> My Listings
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/add-listing" className="cursor-pointer">
-            Add Listing
+          <Link href="/profile" className="cursor-pointer flex items-center gap-2">
+            <User size={16} /> My Profile
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/add-listing" className="cursor-pointer flex items-center gap-2">
+            <PlusCircle size={16} /> Add Listing
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600">
-          Log Out
+        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 flex items-center gap-2">
+          <LogOut size={16} /> Log Out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

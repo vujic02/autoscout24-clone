@@ -2,10 +2,28 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Star, Trash2, ArrowLeft, LogOut, TrendingUp, Package, DollarSign, AlertCircle, ChevronLeft, ChevronRight, SlidersHorizontal, Search } from "lucide-react";
+import {
+  Star,
+  Trash2,
+  ArrowLeft,
+  LogOut,
+  TrendingUp,
+  Package,
+  DollarSign,
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+  SlidersHorizontal,
+  Search,
+  Building2,
+  CheckCircle2,
+  XCircle,
+  MessageSquare,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Image from "next/image";
+import { fetchDealerRequests, handleDealerRequest, DealerRequest, fetchListingLimitRequests, updateUserListingLimit, ListingLimitRequest } from "@/lib/api";
 
 interface Listing {
   id: number;
@@ -35,6 +53,11 @@ const AdminDashboard = () => {
   const [filterById, setFilterById] = useState("");
   const [filterByMake, setFilterByMake] = useState("");
   const [filterByModel, setFilterByModel] = useState("");
+  const [dealerRequests, setDealerRequests] = useState<DealerRequest[]>([]);
+  const [dealerLoading, setDealerLoading] = useState(false);
+  const [limitRequests, setLimitRequests] = useState<ListingLimitRequest[]>([]);
+  const [limitEditValues, setLimitEditValues] = useState<Record<number, string>>({});
+  const [limitUpdating, setLimitUpdating] = useState<number | null>(null);
   const ITEMS_PER_PAGE = 10;
 
   useEffect(() => {
@@ -141,6 +164,32 @@ const AdminDashboard = () => {
 
     fetchAdminListings(undefined, true);
     fetchBrandPrices();
+
+    // Fetch dealer requests
+    const loadDealerRequests = async () => {
+      const token = localStorage.getItem("authToken");
+      if (!token) return;
+      try {
+        const data = await fetchDealerRequests(token);
+        setDealerRequests(data);
+      } catch (err) {
+        console.error("Failed to fetch dealer requests:", err);
+      }
+    };
+    loadDealerRequests();
+
+    // Fetch listing limit requests
+    const loadLimitRequests = async () => {
+      const token = localStorage.getItem("authToken");
+      if (!token) return;
+      try {
+        const data = await fetchListingLimitRequests(token);
+        setLimitRequests(data);
+      } catch (err) {
+        console.error("Failed to fetch limit requests:", err);
+      }
+    };
+    loadLimitRequests();
   }, [isAdmin, fetchAdminListings]);
 
   // Debounced fetch when filters change
@@ -260,6 +309,44 @@ const AdminDashboard = () => {
     localStorage.removeItem("authUser");
     localStorage.removeItem("isAdmin");
     router.push("/");
+  };
+
+  const handleDealerAction = async (userId: number, action: "approve" | "reject") => {
+    const token = localStorage.getItem("authToken");
+    if (!token) return;
+    setDealerLoading(true);
+    try {
+      await handleDealerRequest(token, userId, action);
+      setDealerRequests((prev) => prev.filter((r) => r.user_id !== userId));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to handle dealer request");
+    } finally {
+      setDealerLoading(false);
+    }
+  };
+
+  const handleUpdateLimit = async (userId: number) => {
+    const token = localStorage.getItem("authToken");
+    if (!token) return;
+    const newLimit = parseInt(limitEditValues[userId]);
+    if (isNaN(newLimit) || newLimit < 1) {
+      alert("Please enter a valid number (minimum 1).");
+      return;
+    }
+    setLimitUpdating(userId);
+    try {
+      await updateUserListingLimit(token, userId, newLimit);
+      setLimitRequests((prev) => prev.filter((r) => r.user_id !== userId));
+      setLimitEditValues((prev) => {
+        const copy = { ...prev };
+        delete copy[userId];
+        return copy;
+      });
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to update listing limit");
+    } finally {
+      setLimitUpdating(null);
+    }
   };
 
   if (!isAdmin) {
@@ -507,6 +594,91 @@ const AdminDashboard = () => {
           <span>X-Axis: Top 12 Brands</span>
         </div>
       </div>
+
+      {/* Dealer Requests */}
+      {dealerRequests.length > 0 && (
+        <div className="mb-8 bg-white border border-orange-200 rounded-lg shadow-sm overflow-hidden">
+          <div className="px-6 py-4 bg-orange-50 border-b border-orange-200 flex items-center gap-2">
+            <Building2 size={20} className="text-orange-600" />
+            <h3 className="text-lg font-semibold text-gray-900">Pending Dealer Requests ({dealerRequests.length})</h3>
+          </div>
+          <div className="divide-y divide-gray-100">
+            {dealerRequests.map((req) => (
+              <div key={req.user_id} className="px-6 py-4 flex items-center justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="font-medium text-gray-900">{req.display_name || req.username}</p>
+                  <p className="text-sm text-gray-500">{req.email}</p>
+                  <div className="flex gap-4 mt-1 text-xs text-gray-400">
+                    {req.phone && <span>📞 {req.phone}</span>}
+                    {req.location && <span>📍 {req.location}</span>}
+                  </div>
+                </div>
+                <div className="flex gap-2 shrink-0">
+                  <button
+                    onClick={() => handleDealerAction(req.user_id, "approve")}
+                    disabled={dealerLoading}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-sm font-medium rounded-md transition-colors"
+                  >
+                    <CheckCircle2 size={16} /> Approve
+                  </button>
+                  <button
+                    onClick={() => handleDealerAction(req.user_id, "reject")}
+                    disabled={dealerLoading}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white text-sm font-medium rounded-md transition-colors"
+                  >
+                    <XCircle size={16} /> Reject
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Listing Limit Requests */}
+      {limitRequests.length > 0 && (
+        <div className="mb-8 bg-white border border-blue-200 rounded-lg shadow-sm overflow-hidden">
+          <div className="px-6 py-4 bg-blue-50 border-b border-blue-200 flex items-center gap-2">
+            <MessageSquare size={20} className="text-blue-600" />
+            <h3 className="text-lg font-semibold text-gray-900">Listing Limit Requests ({limitRequests.length})</h3>
+          </div>
+          <div className="divide-y divide-gray-100">
+            {limitRequests.map((req) => (
+              <div key={req.id} className="px-6 py-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-gray-900">{req.display_name || req.username}</p>
+                    <p className="text-sm text-gray-500">{req.email}</p>
+                    {req.company_name && <p className="text-sm text-gray-500">Company: {req.company_name}</p>}
+                    <p className="text-sm text-gray-600 mt-2 bg-gray-50 rounded-md p-2.5 border border-gray-200 italic">&ldquo;{req.message}&rdquo;</p>
+                    <p className="text-xs text-gray-400 mt-1.5">
+                      Current limit: <span className="font-semibold text-gray-600">{req.current_limit}</span> &middot; Requested{" "}
+                      {new Date(req.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0 pt-1">
+                    <label className="text-sm text-gray-600 font-medium">New limit:</label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={limitEditValues[req.user_id] ?? String(req.current_limit)}
+                      onChange={(e) => setLimitEditValues((prev) => ({ ...prev, [req.user_id]: e.target.value }))}
+                      className="w-20 px-2 py-1.5 border border-gray-300 rounded-md text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <button
+                      onClick={() => handleUpdateLimit(req.user_id)}
+                      disabled={limitUpdating === req.user_id}
+                      className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium rounded-md transition-colors"
+                    >
+                      <CheckCircle2 size={16} /> {limitUpdating === req.user_id ? "Saving..." : "Update"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {error && <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded mb-6">{error}</div>}
 

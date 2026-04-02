@@ -1,9 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Heart, Share2, Printer, Mail, Facebook, Link as LinkIcon, Eye } from "lucide-react";
+import { ArrowLeft, Heart, Share2, Printer, Mail, Facebook, Link as LinkIcon, Eye, Phone, MapPin, User, Building2 } from "lucide-react";
 import * as DropdownMenu from "@/components/ui/dropdown-menu";
-import { Listing } from "@/lib/api";
+import { Listing, SellerInfo } from "@/lib/api";
 import Image from "next/image";
 
 const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
@@ -265,9 +265,6 @@ const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
             {/* Price */}
             <p className="text-4xl font-bold text-gray-900 mb-6">€ {listing.price.toLocaleString()}</p>
 
-            {/* Primary CTA */}
-            <button className="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors mb-4">Send Email</button>
-
             {/* Action Buttons */}
             <div className="grid grid-cols-3 gap-2">
               <button
@@ -309,6 +306,75 @@ const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
               </button>
             </div>
           </div>
+
+          {/* Seller Info */}
+          {listing.seller && (
+            <div className="bg-white rounded-lg p-4 mb-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Seller</h3>
+                {listing.seller.seller_type === "dealer" && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full">
+                    <Building2 size={12} /> Dealer
+                  </span>
+                )}
+              </div>
+
+              {/* Company info for dealers */}
+              {listing.seller.seller_type === "dealer" && listing.seller.company_image && (
+                <div className="mb-3">
+                  <div className="relative w-16 h-16 rounded-lg overflow-hidden border border-gray-200">
+                    <Image src={`http://127.0.0.1:8000${listing.seller.company_image}`} alt="Company" fill className="object-contain" />
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <User size={16} className="text-gray-400" />
+                  <span className="font-medium">
+                    {listing.seller.seller_type === "dealer" && listing.seller.company_name
+                      ? listing.seller.company_name
+                      : listing.seller.display_name || listing.seller.username}
+                  </span>
+                </div>
+                {listing.seller.phone && (
+                  <div className="flex items-center gap-2">
+                    <Phone size={16} className="text-gray-400" />
+                    <a href={`tel:${listing.seller.phone}`} className="text-blue-600 hover:underline">
+                      {listing.seller.phone}
+                    </a>
+                  </div>
+                )}
+
+                {/* Dealer extra phones */}
+                {listing.seller.dealer_phones?.map((p) => (
+                  <div key={p.id} className="flex items-center gap-2">
+                    <Phone size={16} className="text-gray-400" />
+                    <a href={`tel:${p.number}`} className="text-blue-600 hover:underline">
+                      {p.number}
+                    </a>
+                    {p.label && <span className="text-xs text-gray-400">({p.label})</span>}
+                  </div>
+                ))}
+
+                {listing.seller.location && (
+                  <div className="flex items-center gap-2">
+                    <MapPin size={16} className="text-gray-400" />
+                    <span className="text-gray-700">{listing.seller.location}</span>
+                  </div>
+                )}
+
+                {/* Dealer extra addresses */}
+                {listing.seller.dealer_addresses?.map((a) => (
+                  <div key={a.id} className="flex items-center gap-2">
+                    <MapPin size={16} className="text-gray-400" />
+                    <span className="text-gray-700">{a.address}</span>
+                    {a.label && <span className="text-xs text-gray-400">({a.label})</span>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Additional Info Box */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">

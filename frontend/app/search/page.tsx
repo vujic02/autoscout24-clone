@@ -17,6 +17,7 @@ type SearchPageProps = {
     price?: string;
     registration?: string;
     country?: string;
+    seller?: string;
   };
 };
 
@@ -97,6 +98,7 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
           price: searchParams.price,
           registration: searchParams.registration,
           country: searchParams.country,
+          seller: searchParams.seller,
           page: String(currentPage),
         });
         setListings(data.results);
