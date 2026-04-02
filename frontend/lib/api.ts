@@ -97,6 +97,8 @@ export type ListingFilters = {
   registration?: string; // year
   country?: string;
   fuel_type?: string;
+  body_type?: string;
+  min_doors?: string;
   featured?: string;
   seller?: string;
   page?: string;
@@ -118,6 +120,8 @@ function buildQuery(params: ListingFilters): string {
   if (params.registration) searchParams.set("registration", params.registration);
   if (params.country) searchParams.set("country", params.country);
   if (params.fuel_type) searchParams.set("fuel_type", params.fuel_type);
+  if (params.body_type) searchParams.set("body_type", params.body_type);
+  if (params.min_doors) searchParams.set("min_doors", params.min_doors);
   if (params.featured) searchParams.set("featured", params.featured);
   if (params.seller) searchParams.set("seller", params.seller);
   if (params.page) searchParams.set("page", params.page);
@@ -374,4 +378,81 @@ export async function updateUserListingLimit(token: string, userId: number, maxL
     const data = await res.json();
     throw new Error(data.detail || "Failed to update listing limit");
   }
+}
+
+// --- Favorites API ---
+
+function getAuthHeaders(): Record<string, string> {
+  const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+  return token ? { Authorization: `Token ${token}`, "Content-Type": "application/json" } : {};
+}
+
+export async function fetchFavoriteIds(): Promise<number[]> {
+  const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+  if (!token) return [];
+
+  const res = await fetch(`${API_BASE}/api/favorites/ids/`, {
+    headers: getAuthHeaders(),
+    cache: "no-store",
+  });
+
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function fetchFavoriteListings(): Promise<Listing[]> {
+  const res = await fetch(`${API_BASE}/api/favorites/`, {
+    headers: getAuthHeaders(),
+    cache: "no-store",
+  });
+
+  if (!res.ok) throw new Error("Failed to fetch favorites");
+  return res.json();
+}
+
+export async function addFavorite(listingId: number): Promise<void> {
+  await fetch(`${API_BASE}/api/favorites/`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ listing_id: listingId }),
+  });
+}
+
+export async function removeFavorite(listingId: number): Promise<void> {
+  await fetch(`${API_BASE}/api/favorites/${listingId}/`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
+}
+
+// --- Last Search (localStorage) ---
+
+export type LastSearch = {
+  query: ListingFilters;
+  label: string;
+  subtitle: string;
+  thumbnails: string[];
+  timestamp: number;
+};
+
+const LAST_SEARCHES_KEY = "as24_last_searches";
+const MAX_LAST_SEARCHES = 3;
+
+export function getLastSearches(): LastSearch[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(LAST_SEARCHES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveLastSearch(search: Omit<LastSearch, "timestamp">): void {
+  if (typeof window === "undefined") return;
+  const existing = getLastSearches();
+  // Avoid duplicate consecutive searches with same label
+  if (existing.length > 0 && existing[0].label === search.label) return;
+  const updated = [{ ...search, timestamp: Date.now() }, ...existing].slice(0, MAX_LAST_SEARCHES);
+  localStorage.setItem(LAST_SEARCHES_KEY, JSON.stringify(updated));
 }

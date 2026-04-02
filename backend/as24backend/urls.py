@@ -19,7 +19,7 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from listings.views import ListingListCreateView, ListingDetailView, RegisterView, LoginView, AdminListingsView, ToggleFeaturedView, CurrentUserView, BrandAveragePriceView, RecordListingViewAPI, UpdateProfileView, RequestDealerView, AdminDealerRequestsView, AdminHandleDealerRequestView, UpdateDealerProfileView, DealerPhoneView, DealerAddressView, RequestMoreListingsView, AdminListingLimitRequestsView, AdminUpdateListingLimitView
+from listings.views import ListingListCreateView, ListingDetailView, RegisterView, LoginView, AdminListingsView, ToggleFeaturedView, CurrentUserView, BrandAveragePriceView, RecordListingViewAPI, UpdateProfileView, RequestDealerView, AdminDealerRequestsView, AdminHandleDealerRequestView, UpdateDealerProfileView, DealerPhoneView, DealerAddressView, RequestMoreListingsView, AdminListingLimitRequestsView, AdminUpdateListingLimitView, FavoriteListView, FavoriteDeleteView, FavoriteIdsView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -45,6 +45,11 @@ urlpatterns = [
     path('api/admin/dealer-requests/<int:user_id>/', AdminHandleDealerRequestView.as_view(), name='admin-handle-dealer-request'),
     path('api/admin/listing-limit-requests/', AdminListingLimitRequestsView.as_view(), name='admin-listing-limit-requests'),
     path('api/admin/users/<int:user_id>/listing-limit/', AdminUpdateListingLimitView.as_view(), name='admin-update-listing-limit'),
+
+    # Favorites
+    path('api/favorites/', FavoriteListView.as_view(), name='favorites'),
+    path('api/favorites/<int:listing_id>/', FavoriteDeleteView.as_view(), name='favorite-delete'),
+    path('api/favorites/ids/', FavoriteIdsView.as_view(), name='favorite-ids'),
 ]
 
 

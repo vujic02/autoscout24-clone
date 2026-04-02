@@ -1,17 +1,44 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Star, Mail, Facebook, Link as LinkIcon, Share2 } from "lucide-react";
 import * as DropdownMenu from "@/components/ui/dropdown-menu";
 import Image from "next/image";
 import Link from "next/link";
 import type { Listing } from "@/lib/api";
+import { addFavorite, removeFavorite, fetchFavoriteIds } from "@/lib/api";
 
 type Props = {
   listing: Listing;
 };
 
+const useFavorite = (listingId: number) => {
+  const [favorite, setFavorite] = useState(false);
+
+  useEffect(() => {
+    fetchFavoriteIds().then((ids) => {
+      if (ids.includes(listingId)) setFavorite(true);
+    });
+  }, [listingId]);
+
+  const toggleFavorite = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const token = localStorage.getItem("authToken");
+    if (!token) return;
+    const newState = !favorite;
+    setFavorite(newState);
+    if (newState) {
+      await addFavorite(listingId);
+    } else {
+      await removeFavorite(listingId);
+    }
+  };
+
+  return { favorite, toggleFavorite };
+};
+
 const VehicleSearchedResultDesktop = ({ listing }: Props) => {
-  const favorite = true;
+  const { favorite, toggleFavorite } = useFavorite(listing.id);
   const imageCount = (listing.images?.length || 0) + (listing.main_image && (!listing.images || listing.images.length === 0) ? 1 : 0);
 
   return (
@@ -25,7 +52,7 @@ const VehicleSearchedResultDesktop = ({ listing }: Props) => {
             <p className="text-[#333] font-normal text-base">{listing.title}</p>
           </div>
           <div className="flex items-center gap-2 pr-2">
-            <div className="rounded-full bg-[#f3f4f5] hover:bg-[#e8eaec] transition-all p-2 cursor-pointer">
+            <div onClick={toggleFavorite} className="rounded-full bg-[#f3f4f5] hover:bg-[#e8eaec] transition-all p-2 cursor-pointer">
               <Star width={20} height={20} className={`${favorite ? "fill-black" : "fill-trasparent"}`} />
             </div>
             <div className="rounded-full bg-[#f3f4f5] hover:bg-[#e8eaec] transition-all p-2 cursor-pointer">
@@ -147,7 +174,7 @@ const VehicleSearchedResultDesktop = ({ listing }: Props) => {
 };
 
 const VehicleSearchedResultMobile = ({ listing }: Props) => {
-  const favorite = true;
+  const { favorite, toggleFavorite } = useFavorite(listing.id);
   const imageCount = (listing.images?.length || 0) + (listing.main_image && (!listing.images || listing.images.length === 0) ? 1 : 0);
 
   return (
@@ -163,7 +190,7 @@ const VehicleSearchedResultMobile = ({ listing }: Props) => {
               1 / {imageCount || 1}
             </div>
             <div className="flex absolute top-2 right-2 items-center gap-2 pr-2">
-              <div className="rounded-full bg-[#f3f4f5] hover:bg-[#e8eaec] transition-all p-2 cursor-pointer">
+              <div onClick={toggleFavorite} className="rounded-full bg-[#f3f4f5] hover:bg-[#e8eaec] transition-all p-2 cursor-pointer">
                 <Star width={20} height={20} className={`${favorite ? "fill-black" : "fill-trasparent"}`} />
               </div>
               <div className="rounded-full bg-[#f3f4f5] hover:bg-[#e8eaec] transition-all p-2 cursor-pointer">

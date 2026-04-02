@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import VehicleCard from "../VehicleCard/VehicleCard";
-import { Listing, fetchListings } from "@/lib/api";
+import { Listing, fetchListings, fetchFavoriteIds } from "@/lib/api";
 
 const FeaturedVehicles = () => {
   const router = useRouter();
@@ -15,8 +15,11 @@ const FeaturedVehicles = () => {
     const loadFeaturedListings = async () => {
       try {
         setLoading(true);
-        const data = await fetchListings({ featured: "true" });
-        setListings(data.results.slice(0, 4)); // Get first 4
+        const [data, favIds] = await Promise.all([fetchListings({ featured: "true" }), fetchFavoriteIds()]);
+        setListings(data.results.slice(0, 4));
+        const favMap: Record<number, boolean> = {};
+        favIds.forEach((id) => (favMap[id] = true));
+        setFavorites(favMap);
         setError("");
       } catch (err) {
         console.error("Failed to fetch featured listings:", err);
@@ -62,6 +65,7 @@ const FeaturedVehicles = () => {
         {listings.map((listing) => (
           <VehicleCard
             key={listing.id}
+            listingId={listing.id}
             registration={new Date(listing.registration_year, 0, 1)}
             fuelType={listing.fuel_type as "Gasoline" | "Diesel"}
             kilometerage={listing.mileage}
@@ -70,11 +74,8 @@ const FeaturedVehicles = () => {
             location={listing.city}
             image={listing.main_image || undefined}
             favorite={favorites[listing.id] || false}
-            setFavorite={(state) => {
-              setFavorites((prev) => ({
-                ...prev,
-                [listing.id]: typeof state === "function" ? state(prev[listing.id] || false) : state,
-              }));
+            onFavoriteToggle={(id, newState) => {
+              setFavorites((prev) => ({ ...prev, [id]: newState }));
             }}
             onClick={() => router.push(`/vehicle/${listing.id}`)}
           />

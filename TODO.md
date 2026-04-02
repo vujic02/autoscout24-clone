@@ -21,7 +21,7 @@
 - ~~"Send Email" button on vehicle detail is non-functional — needs backend endpoint or mailto~~
 - ~~Replace hardcoded "Private seller" on detail page with actual data~~
 
-## Listing Limits -- DONE
+## ~~Listing Limits -- DONE~~
 
 - ~~Regular users can only have 1 active listing at a time~~
 - ~~Must remove/deactivate current listing before adding another~~
@@ -33,8 +33,6 @@
 - ~~Gearbox shows "-" — wire to actual `transmission` field~~
 - ~~Power shows hardcoded value — wire to `horsepower` field~~
 - ~~Add body type, color, drivetrain, doors, seats, previous owners~~
-- Share buttons (Facebook, Email, Copy Link) are non-functional
-- Print button is non-functional
 - Favorites heart is local state only — lost on refresh
 
 ## Homepage — Non-functional Buttons/Links

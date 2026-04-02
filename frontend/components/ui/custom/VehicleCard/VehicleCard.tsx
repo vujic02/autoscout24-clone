@@ -1,8 +1,10 @@
 import React from "react";
 import { MapPin, Star } from "lucide-react";
 import Image from "next/image";
+import { addFavorite, removeFavorite } from "@/lib/api";
 
 type Props = {
+  listingId: number;
   registration: Date;
   fuelType: "Gasoline" | "Diesel";
   kilometerage: Number;
@@ -11,21 +13,29 @@ type Props = {
   location: String;
   image?: string;
   favorite: boolean;
-  setFavorite: React.Dispatch<React.SetStateAction<boolean>>;
+  onFavoriteToggle: (id: number, newState: boolean) => void;
   onClick?: () => void;
 };
 
-const VehicleCard = ({ registration, fuelType, kilometerage, location, name, price, image, favorite, setFavorite, onClick }: Props) => {
+const VehicleCard = ({ listingId, registration, fuelType, kilometerage, location, name, price, image, favorite, onFavoriteToggle, onClick }: Props) => {
+  const handleFavoriteClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const token = localStorage.getItem("authToken");
+    if (!token) return;
+
+    const newState = !favorite;
+    onFavoriteToggle(listingId, newState);
+    if (newState) {
+      await addFavorite(listingId);
+    } else {
+      await removeFavorite(listingId);
+    }
+  };
+
   return (
-    <div
-      className="relative flex flex-col hover:shadow-md transition-all cursor-pointer border border-transparent active:border-black rounded-md"
-      onClick={onClick}
-    >
+    <div className="relative flex flex-col hover:shadow-md transition-all cursor-pointer border border-transparent active:border-black rounded-md" onClick={onClick}>
       <div className="relative bg-[#eaeaea] flex justify-center items-center w-full h-48 rounded-t-sm">
-        <div
-          onClick={() => setFavorite((prev) => !prev)}
-          className="absolute top-2 right-2 flex justify-center items-center p-2 rounded-full bg-white"
-        >
+        <div onClick={handleFavoriteClick} className="absolute top-2 right-2 flex justify-center items-center p-2 rounded-full bg-white z-10">
           <Star className={`${favorite ? "fill-black" : "fill-white"}`} />
         </div>
         {image ? (
