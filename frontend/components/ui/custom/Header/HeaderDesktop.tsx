@@ -19,8 +19,9 @@ const HeaderDesktop = ({ language, setLanguage, isLoggedIn, userEmail, isAdmin }
         <Link href="/" className="hover:opacity-80 transition-opacity">
           <Image alt="AutoScout24" width={126} height={30} src="./icons/as24.svg" />
         </Link>
-        <HeaderButton text="Used and New Cars" />
-        <HeaderButton text="Motorbikes" />
+        <HeaderButton text="Used Cars" href="/search" />
+        <HeaderButton text="New Cars" href="/search?registration=2026" />
+        <HeaderButton text="Motorbikes" href="/search?body_type=motorcycle" />
       </div>
 
       <div className="flex gap-3">

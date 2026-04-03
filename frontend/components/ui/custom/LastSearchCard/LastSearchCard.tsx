@@ -28,10 +28,22 @@ const CarPlaceholderIcon = () => (
 const LastSearchCard: React.FC<{ search?: LastSearch }> = ({ search }) => {
   const router = useRouter();
   const [suggestedBrand, setSuggestedBrand] = useState(SUGGESTION_BRANDS[0]);
+  const [suggestionThumbnails, setSuggestionThumbnails] = useState<string[]>([]);
 
   useEffect(() => {
-    setSuggestedBrand(SUGGESTION_BRANDS[Math.floor(Math.random() * SUGGESTION_BRANDS.length)]);
-  }, []);
+    const brand = SUGGESTION_BRANDS[Math.floor(Math.random() * SUGGESTION_BRANDS.length)];
+    setSuggestedBrand(brand);
+
+    if (!search) {
+      fetch(`http://127.0.0.1:8000/api/listings/?make=${encodeURIComponent(brand)}`, { cache: "no-store" })
+        .then((r) => r.json())
+        .then((data) => {
+          const imgs = (data.results || []).slice(0, 3).map((l: any) => l.main_image || "");
+          setSuggestionThumbnails(imgs);
+        })
+        .catch(() => {});
+    }
+  }, [search]);
 
   const handleClick = () => {
     if (search) {
@@ -66,21 +78,19 @@ const LastSearchCard: React.FC<{ search?: LastSearch }> = ({ search }) => {
       </div>
 
       <div className="border-t border-[#e2e2e2] flex items-center h-full px-4 py-1">
-        {search && (
-          <div className="flex -space-x-1">
-            {search.thumbnails.slice(0, 4).map((src, idx) => (
-              <div key={idx} className="w-12 h-12 rounded-sm overflow-hidden border-2 border-white bg-[#ddd]">
-                {src ? (
-                  <img src={src} alt={`Result ${idx + 1}`} width={48} height={48} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-[#eaeaea]">
-                    <CarPlaceholderIcon />
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="flex -space-x-1">
+          {(search ? search.thumbnails.slice(0, 3) : suggestionThumbnails).map((src, idx) => (
+            <div key={idx} className="w-12 h-12 rounded-sm overflow-hidden border-2 border-white bg-[#ddd]">
+              {src ? (
+                <img src={src} alt={`Result ${idx + 1}`} width={48} height={48} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-[#eaeaea]">
+                  <CarPlaceholderIcon />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
 
         <button type="button" onClick={handleClick} className="text-xs md:text-sm text-[#1166a8] font-medium hover:text-[#0f5790] ml-4">
           {search ? "More results" : "Search now"}
