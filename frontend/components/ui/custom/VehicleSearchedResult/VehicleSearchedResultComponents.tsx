@@ -1,11 +1,11 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Star, Mail, Facebook, Link as LinkIcon, Share2 } from "lucide-react";
 import * as DropdownMenu from "@/components/ui/dropdown-menu";
 import Image from "next/image";
 import Link from "next/link";
 import type { Listing } from "@/lib/api";
-import { addFavorite, removeFavorite, fetchFavoriteIds } from "@/lib/api";
+import { isFavorite, addFavorite, removeFavorite } from "@/lib/api";
 
 type Props = {
   listing: Listing;
@@ -14,23 +14,23 @@ type Props = {
 const useFavorite = (listingId: number) => {
   const [favorite, setFavorite] = useState(false);
 
-  useEffect(() => {
-    fetchFavoriteIds().then((ids) => {
-      if (ids.includes(listingId)) setFavorite(true);
-    });
+  const sync = useCallback(() => {
+    setFavorite(isFavorite(listingId));
   }, [listingId]);
 
-  const toggleFavorite = async (e: React.MouseEvent) => {
+  useEffect(() => {
+    sync();
+    window.addEventListener("favoritesChange", sync);
+    return () => window.removeEventListener("favoritesChange", sync);
+  }, [sync]);
+
+  const toggleFavorite = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const token = localStorage.getItem("authToken");
-    if (!token) return;
-    const newState = !favorite;
-    setFavorite(newState);
-    if (newState) {
-      await addFavorite(listingId);
+    if (favorite) {
+      removeFavorite(listingId);
     } else {
-      await removeFavorite(listingId);
+      addFavorite(listingId);
     }
   };
 

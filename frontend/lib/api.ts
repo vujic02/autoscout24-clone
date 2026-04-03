@@ -380,49 +380,37 @@ export async function updateUserListingLimit(token: string, userId: number, maxL
   }
 }
 
-// --- Favorites API ---
+// --- Favorites (localStorage) ---
 
-function getAuthHeaders(): Record<string, string> {
-  const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
-  return token ? { Authorization: `Token ${token}`, "Content-Type": "application/json" } : {};
+const FAVORITES_KEY = "as24_favorites";
+
+export function getFavoriteIds(): number[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(FAVORITES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
 }
 
-export async function fetchFavoriteIds(): Promise<number[]> {
-  const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
-  if (!token) return [];
-
-  const res = await fetch(`${API_BASE}/api/favorites/ids/`, {
-    headers: getAuthHeaders(),
-    cache: "no-store",
-  });
-
-  if (!res.ok) return [];
-  return res.json();
+export function isFavorite(listingId: number): boolean {
+  return getFavoriteIds().includes(listingId);
 }
 
-export async function fetchFavoriteListings(): Promise<Listing[]> {
-  const res = await fetch(`${API_BASE}/api/favorites/`, {
-    headers: getAuthHeaders(),
-    cache: "no-store",
-  });
-
-  if (!res.ok) throw new Error("Failed to fetch favorites");
-  return res.json();
+export function addFavorite(listingId: number): void {
+  const ids = getFavoriteIds();
+  if (!ids.includes(listingId)) {
+    ids.push(listingId);
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(ids));
+    window.dispatchEvent(new Event("favoritesChange"));
+  }
 }
 
-export async function addFavorite(listingId: number): Promise<void> {
-  await fetch(`${API_BASE}/api/favorites/`, {
-    method: "POST",
-    headers: getAuthHeaders(),
-    body: JSON.stringify({ listing_id: listingId }),
-  });
-}
-
-export async function removeFavorite(listingId: number): Promise<void> {
-  await fetch(`${API_BASE}/api/favorites/${listingId}/`, {
-    method: "DELETE",
-    headers: getAuthHeaders(),
-  });
+export function removeFavorite(listingId: number): void {
+  const ids = getFavoriteIds().filter((id) => id !== listingId);
+  localStorage.setItem(FAVORITES_KEY, JSON.stringify(ids));
+  window.dispatchEvent(new Event("favoritesChange"));
 }
 
 // --- Last Search (localStorage) ---

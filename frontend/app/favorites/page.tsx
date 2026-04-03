@@ -1,44 +1,43 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Heart, ArrowLeft } from "lucide-react";
-import { Listing, fetchFavoriteListings, removeFavorite } from "@/lib/api";
+import { Listing, getFavoriteIds } from "@/lib/api";
 import VehicleSearchedResult from "@/components/ui/custom/VehicleSearchedResult/VehicleSearchedResult";
 
 export default function FavoritesPage() {
   const router = useRouter();
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (!token) {
-      router.push("/login");
+  const loadFavorites = useCallback(async () => {
+    const ids = getFavoriteIds();
+    if (ids.length === 0) {
+      setListings([]);
+      setLoading(false);
       return;
     }
-    setIsLoggedIn(true);
+    try {
+      const results = await Promise.all(
+        ids.map((id) =>
+          fetch(`http://127.0.0.1:8000/api/listings/${id}/`, { cache: "no-store" })
+            .then((r) => (r.ok ? r.json() : null))
+            .catch(() => null),
+        ),
+      );
+      setListings(results.filter(Boolean) as Listing[]);
+    } catch (err) {
+      console.error("Failed to load favorites:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-    const loadFavorites = async () => {
-      try {
-        const data = await fetchFavoriteListings();
-        setListings(data);
-      } catch (err) {
-        console.error("Failed to load favorites:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
+  useEffect(() => {
     loadFavorites();
-  }, [router]);
-
-  const handleRemove = async (listingId: number) => {
-    await removeFavorite(listingId);
-    setListings((prev) => prev.filter((l) => l.id !== listingId));
-  };
-
-  if (!isLoggedIn) return null;
+    window.addEventListener("favoritesChange", loadFavorites);
+    return () => window.removeEventListener("favoritesChange", loadFavorites);
+  }, [loadFavorites]);
 
   return (
     <main className="max-w-[1100px] w-full mx-auto py-8 px-4">
@@ -46,7 +45,6 @@ export default function FavoritesPage() {
         <button onClick={() => router.back()} className="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="Back">
           <ArrowLeft size={20} />
         </button>
-        <Heart className="fill-black" size={24} />
         <h1 className="text-2xl font-semibold">My Favorites</h1>
         <span className="text-sm text-gray-500">({listings.length} vehicles)</span>
       </div>
@@ -69,16 +67,7 @@ export default function FavoritesPage() {
       ) : (
         <div className="space-y-4">
           {listings.map((listing) => (
-            <div key={listing.id} className="relative">
-              <VehicleSearchedResult listing={listing} />
-              <button
-                onClick={() => handleRemove(listing.id)}
-                className="absolute top-4 right-4 z-10 bg-white rounded-full p-2 shadow-md hover:bg-red-50 transition-colors"
-                title="Remove from favorites"
-              >
-                <Heart size={20} className="fill-red-500 text-red-500" />
-              </button>
-            </div>
+            <VehicleSearchedResult key={listing.id} listing={listing} />
           ))}
         </div>
       )}

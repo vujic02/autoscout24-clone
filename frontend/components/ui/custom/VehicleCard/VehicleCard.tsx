@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { MapPin, Star } from "lucide-react";
 import Image from "next/image";
-import { addFavorite, removeFavorite } from "@/lib/api";
+import { isFavorite, addFavorite, removeFavorite } from "@/lib/api";
 
 type Props = {
   listingId: number;
@@ -12,23 +12,28 @@ type Props = {
   name: String;
   location: String;
   image?: string;
-  favorite: boolean;
-  onFavoriteToggle: (id: number, newState: boolean) => void;
   onClick?: () => void;
 };
 
-const VehicleCard = ({ listingId, registration, fuelType, kilometerage, location, name, price, image, favorite, onFavoriteToggle, onClick }: Props) => {
-  const handleFavoriteClick = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const token = localStorage.getItem("authToken");
-    if (!token) return;
+const VehicleCard = ({ listingId, registration, fuelType, kilometerage, location, name, price, image, onClick }: Props) => {
+  const [favorite, setFavorite] = useState(false);
 
-    const newState = !favorite;
-    onFavoriteToggle(listingId, newState);
-    if (newState) {
-      await addFavorite(listingId);
+  const syncFavorite = useCallback(() => {
+    setFavorite(isFavorite(listingId));
+  }, [listingId]);
+
+  useEffect(() => {
+    syncFavorite();
+    window.addEventListener("favoritesChange", syncFavorite);
+    return () => window.removeEventListener("favoritesChange", syncFavorite);
+  }, [syncFavorite]);
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (favorite) {
+      removeFavorite(listingId);
     } else {
-      await removeFavorite(listingId);
+      addFavorite(listingId);
     }
   };
 

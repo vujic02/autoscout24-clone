@@ -2,24 +2,20 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import VehicleCard from "../VehicleCard/VehicleCard";
-import { Listing, fetchListings, fetchFavoriteIds } from "@/lib/api";
+import { Listing, fetchListings } from "@/lib/api";
 
 const FeaturedVehicles = () => {
   const router = useRouter();
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [favorites, setFavorites] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     const loadFeaturedListings = async () => {
       try {
         setLoading(true);
-        const [data, favIds] = await Promise.all([fetchListings({ featured: "true" }), fetchFavoriteIds()]);
+        const data = await fetchListings({ featured: "true" });
         setListings(data.results.slice(0, 4));
-        const favMap: Record<number, boolean> = {};
-        favIds.forEach((id) => (favMap[id] = true));
-        setFavorites(favMap);
         setError("");
       } catch (err) {
         console.error("Failed to fetch featured listings:", err);
@@ -73,10 +69,6 @@ const FeaturedVehicles = () => {
             name={`${listing.make} ${listing.model}`}
             location={listing.city}
             image={listing.main_image || undefined}
-            favorite={favorites[listing.id] || false}
-            onFavoriteToggle={(id, newState) => {
-              setFavorites((prev) => ({ ...prev, [id]: newState }));
-            }}
             onClick={() => router.push(`/vehicle/${listing.id}`)}
           />
         ))}
