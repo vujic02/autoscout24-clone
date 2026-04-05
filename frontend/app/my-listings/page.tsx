@@ -289,7 +289,7 @@ const MyListingsPage = () => {
 
       {listings.length === 0 ? (
         <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
-          <p className="text-gray-600 text-lg mb-4">You haven't created any listings yet.</p>
+          <p className="text-gray-600 text-lg mb-4">You haven&apos;t created any listings yet.</p>
           <Link href="/add-listing">
             <Button className="bg-blue-600 hover:bg-blue-700 text-white">Create Your First Listing</Button>
           </Link>

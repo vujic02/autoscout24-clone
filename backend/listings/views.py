@@ -7,7 +7,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from django.db import models
-from .models import Listing, ListingImage, ListingView, UserProfile, DealerPhone, DealerAddress, ListingLimitRequest
+from .models import Listing, ListingImage, ListingView, UserProfile, DealerPhone, DealerAddress, ListingLimitRequest, Favorite
 from .serializers import ListingSerializer, ListingImageSerializer, UserProfileSerializer, DealerPhoneSerializer, DealerAddressSerializer
 
 MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5MB
@@ -90,6 +90,8 @@ class ListingListCreateView(generics.ListCreateAPIView):
         registration = params.get('registration', '')
         country = params.get('country', '')
         featured = params.get('featured', '')
+        fuel_type = params.get('fuel_type', '')
+        body_type = params.get('body_type', '')
 
         if make:
             queryset = queryset.filter(make__icontains=make)
@@ -112,6 +114,16 @@ class ListingListCreateView(generics.ListCreateAPIView):
         seller = params.get('seller', '')
         if seller:
             queryset = queryset.filter(user__username=seller)
+
+        if fuel_type:
+            queryset = queryset.filter(fuel_type__iexact=fuel_type)
+
+        if body_type:
+            queryset = queryset.filter(body_type__iexact=body_type)
+
+        min_doors = params.get('min_doors', '')
+        if min_doors:
+            queryset = queryset.filter(number_of_doors__gte=int(min_doors))
 
         return queryset
 
@@ -610,3 +622,58 @@ class AdminUpdateListingLimitView(APIView):
             'user_id': user_id,
             'max_listings': new_limit,
         })
+
+
+class FavoriteListView(APIView):
+    """List user's favorites and add a favorite"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        favorites = Favorite.objects.filter(user=request.user).select_related('listing')
+        listing_ids = list(favorites.values_list('listing_id', flat=True))
+        listings = Listing.objects.filter(id__in=listing_ids).order_by('-favorited_by__created_at')
+        serializer = ListingSerializer(listings, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        listing_id = request.data.get('listing_id')
+        if not listing_id:
+            return Response(
+                {'detail': 'listing_id is required.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            listing = Listing.objects.get(id=listing_id)
+        except Listing.DoesNotExist:
+            return Response(
+                {'detail': 'Listing not found.'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        _, created = Favorite.objects.get_or_create(user=request.user, listing=listing)
+        if not created:
+            return Response({'detail': 'Already in favorites.'}, status=status.HTTP_200_OK)
+        return Response({'detail': 'Added to favorites.'}, status=status.HTTP_201_CREATED)
+
+
+class FavoriteDeleteView(APIView):
+    """Remove a listing from favorites"""
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, listing_id):
+        deleted, _ = Favorite.objects.filter(user=request.user, listing_id=listing_id).delete()
+        if not deleted:
+            return Response(
+                {'detail': 'Favorite not found.'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class FavoriteIdsView(APIView):
+    """Get list of favorited listing IDs for the current user"""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        ids = list(Favorite.objects.filter(user=request.user).values_list('listing_id', flat=True))
+        return Response(ids)

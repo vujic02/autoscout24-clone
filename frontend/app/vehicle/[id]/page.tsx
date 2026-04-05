@@ -1,9 +1,9 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Heart, Share2, Printer, Mail, Facebook, Link as LinkIcon, Eye, Phone, MapPin, User, Building2 } from "lucide-react";
 import * as DropdownMenu from "@/components/ui/dropdown-menu";
-import { Listing, SellerInfo } from "@/lib/api";
+import { Listing, SellerInfo, isFavorite, addFavorite, removeFavorite } from "@/lib/api";
 import Image from "next/image";
 
 const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
@@ -53,6 +53,16 @@ const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
 
     fetchListing();
   }, [params.id]);
+
+  const syncFavorite = useCallback(() => {
+    if (listing) setFavorite(isFavorite(listing.id));
+  }, [listing]);
+
+  useEffect(() => {
+    syncFavorite();
+    window.addEventListener("favoritesChange", syncFavorite);
+    return () => window.removeEventListener("favoritesChange", syncFavorite);
+  }, [syncFavorite]);
 
   if (loading) {
     return (
@@ -268,12 +278,19 @@ const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
             {/* Action Buttons */}
             <div className="grid grid-cols-3 gap-2">
               <button
-                onClick={() => setFavorite(!favorite)}
+                onClick={() => {
+                  if (!listing) return;
+                  if (favorite) {
+                    removeFavorite(listing.id);
+                  } else {
+                    addFavorite(listing.id);
+                  }
+                }}
                 className="flex items-center justify-center gap-1 py-3 px-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors text-xs"
                 title="Add to favorites"
               >
                 <Heart size={18} className={favorite ? "fill-red-500 text-red-500" : "text-gray-600"} />
-                <span>Add to list</span>
+                <span>{favorite ? "Saved" : "Add to list"}</span>
               </button>
 
               <DropdownMenu.DropdownMenu modal={false}>

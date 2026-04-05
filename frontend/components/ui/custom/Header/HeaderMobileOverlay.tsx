@@ -14,10 +14,7 @@ type Props = {
 
 const HeaderMobileOverlay = ({ isLanguagesMobileOpen, isMobileOpen, language, setLanguage, setIsLanguagesMobileOpen }: Props) => {
   return (
-    <div
-      id="mobile-header-overlay"
-      className={`absolute z-50 top-[72px] w-full h-screen p-4 bg-[#f4f4f4] ${isMobileOpen ? "flex flex-col md:hidden" : "hidden"}`}
-    >
+    <div id="mobile-header-overlay" className={`absolute z-50 top-[72px] w-full h-screen p-4 bg-[#f4f4f4] ${isMobileOpen ? "flex flex-col md:hidden" : "hidden"}`}>
       {isLanguagesMobileOpen ? (
         <>
           <div
@@ -76,13 +73,21 @@ const HeaderMobileOverlay = ({ isLanguagesMobileOpen, isMobileOpen, language, se
         <>
           <HeaderButton
             customCSS="bg-white flex justify-between items-center rounded-none font-light text-black py-6"
-            text="Used and New Cars"
+            text="Used Cars"
             icon={<ArrowRight />}
+            href="/search"
+          />
+          <HeaderButton
+            customCSS="bg-white flex justify-between items-center rounded-none font-light mt-[1px] text-black py-6"
+            text="New Cars"
+            icon={<ArrowRight />}
+            href="/search?registration=2026"
           />
           <HeaderButton
             customCSS="bg-white flex justify-between items-center rounded-none font-light mt-[1px] text-black py-6"
             text="Motorbikes"
             icon={<ArrowRight />}
+            href="/search?body_type=motorcycle"
           />
           <div className="w-full" onClick={() => setIsLanguagesMobileOpen(true)}>
             <HeaderButton

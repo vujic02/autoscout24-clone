@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { MapPin, Star } from "lucide-react";
 import Image from "next/image";
+import { isFavorite, addFavorite, removeFavorite } from "@/lib/api";
 
 type Props = {
+  listingId: number;
   registration: Date;
   fuelType: "Gasoline" | "Diesel";
   kilometerage: Number;
@@ -10,22 +12,35 @@ type Props = {
   name: String;
   location: String;
   image?: string;
-  favorite: boolean;
-  setFavorite: React.Dispatch<React.SetStateAction<boolean>>;
   onClick?: () => void;
 };
 
-const VehicleCard = ({ registration, fuelType, kilometerage, location, name, price, image, favorite, setFavorite, onClick }: Props) => {
+const VehicleCard = ({ listingId, registration, fuelType, kilometerage, location, name, price, image, onClick }: Props) => {
+  const [favorite, setFavorite] = useState(false);
+
+  const syncFavorite = useCallback(() => {
+    setFavorite(isFavorite(listingId));
+  }, [listingId]);
+
+  useEffect(() => {
+    syncFavorite();
+    window.addEventListener("favoritesChange", syncFavorite);
+    return () => window.removeEventListener("favoritesChange", syncFavorite);
+  }, [syncFavorite]);
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (favorite) {
+      removeFavorite(listingId);
+    } else {
+      addFavorite(listingId);
+    }
+  };
+
   return (
-    <div
-      className="relative flex flex-col hover:shadow-md transition-all cursor-pointer border border-transparent active:border-black rounded-md"
-      onClick={onClick}
-    >
+    <div className="relative flex flex-col hover:shadow-md transition-all cursor-pointer border border-transparent active:border-black rounded-md" onClick={onClick}>
       <div className="relative bg-[#eaeaea] flex justify-center items-center w-full h-48 rounded-t-sm">
-        <div
-          onClick={() => setFavorite((prev) => !prev)}
-          className="absolute top-2 right-2 flex justify-center items-center p-2 rounded-full bg-white"
-        >
+        <div onClick={handleFavoriteClick} className="absolute top-2 right-2 flex justify-center items-center p-2 rounded-full bg-white z-10">
           <Star className={`${favorite ? "fill-black" : "fill-white"}`} />
         </div>
         {image ? (

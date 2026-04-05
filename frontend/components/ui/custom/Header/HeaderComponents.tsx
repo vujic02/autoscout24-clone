@@ -62,15 +62,20 @@ type PropsHeaderButton = {
   text?: String;
   icon?: ReactNode;
   customCSS?: String;
+  href?: string;
 };
 
-const HeaderButton = ({ text, icon, customCSS }: PropsHeaderButton) => {
-  return (
+const HeaderButton = ({ text, icon, customCSS, href }: PropsHeaderButton) => {
+  const btn = (
     <Button variant="ghost" className={`group text-base ${customCSS}`}>
       {text && text}
       {icon && icon}
     </Button>
   );
+  if (href) {
+    return <a href={href}>{btn}</a>;
+  }
+  return btn;
 };
 
 type PropsMenuIcon = {

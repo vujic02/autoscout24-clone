@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -7,7 +7,15 @@ import { carsMakeData, carsModelData, countries, fuelTypes, bodyTypes, transmiss
 import CustomSelect from "@/components/ui/custom/Search/CustomSelect";
 import { fetchCurrentUser, ListingQuota } from "@/lib/api";
 
-const AddListingPage = () => {
+export default function AddListingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-100" />}>
+      <AddListingContent />
+    </Suspense>
+  );
+}
+
+const AddListingContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const listingId = searchParams.get("id");
@@ -690,5 +698,3 @@ const AddListingPage = () => {
     </main>
   );
 };
-
-export default AddListingPage;

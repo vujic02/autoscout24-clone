@@ -21,7 +21,7 @@
 - ~~"Send Email" button on vehicle detail is non-functional — needs backend endpoint or mailto~~
 - ~~Replace hardcoded "Private seller" on detail page with actual data~~
 
-## Listing Limits -- DONE
+## ~~Listing Limits -- DONE~~
 
 - ~~Regular users can only have 1 active listing at a time~~
 - ~~Must remove/deactivate current listing before adding another~~
@@ -33,22 +33,20 @@
 - ~~Gearbox shows "-" — wire to actual `transmission` field~~
 - ~~Power shows hardcoded value — wire to `horsepower` field~~
 - ~~Add body type, color, drivetrain, doors, seats, previous owners~~
-- Share buttons (Facebook, Email, Copy Link) are non-functional
-- Print button is non-functional
-- Favorites heart is local state only — lost on refresh
+- ~~Favorites heart is local state only — lost on refresh~~
 
-## Homepage — Non-functional Buttons/Links
+## Homepage — Non-functional Buttons/Links -- DONE
 
-- BodyTypeSearch — clicking Sedan/SUV/etc does nothing, should navigate to `/search?body_type=...`
-- CurrentlyInDemand — "Electric cars", "New cars" buttons don't filter
-- FuelTypeSearch — component folder is empty, no files
-- LastSearchCard — hardcoded "BMW 320d" test data, "More results" button does nothing
-- Favorites link in header goes to `/favorites` which doesn't exist
+- ~~BodyTypeSearch — clicking Sedan/SUV/etc does nothing, should navigate to `/search?body_type=...`~~
+- ~~CurrentlyInDemand — "Electric cars", "New cars" buttons don't filter~~
+- ~~FuelTypeSearch — component folder is empty, no files~~
+- ~~LastSearchCard — hardcoded "BMW 320d" test data, "More results" button does nothing~~
+- ~~Favorites link in header goes to `/favorites` which doesn't exist~~
 
 ## Search & Filtering
 
 - Motorcycles tab search doesn't pass `fuel_type` to search results
-- No `body_type` filter (needs DB field first)
+- ~~No `body_type` filter (needs DB field first)~~
 - No `transmission` filter
 - No sort options (price low/high, newest, mileage)
 
@@ -82,16 +80,16 @@
 - No confirmation dialog before delete (besides browser default)
 - No loading spinners on delete/update operations
 
-## Favorites System
+## ~~Favorites System~~ -- DONE
 
-- Heart icon state is local only — not persisted
-- No backend endpoint for favorites CRUD
-- No `/favorites` page
+- ~~Heart icon state is local only — not persisted~~
+- ~~No backend endpoint for favorites CRUD~~
+- ~~No `/favorites` page~~
 
-## Saved Searches
+## ~~Saved Searches~~ -- DONE
 
-- LastSearchCard UI exists but not wired to real data
-- No localStorage or backend persistence for recent searches
+- ~~LastSearchCard UI exists but not wired to real data~~
+- ~~No localStorage or backend persistence for recent searches~~
 - No search alerts / notifications
 
 ## Dealer System -- DONE

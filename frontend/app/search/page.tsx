@@ -1,8 +1,8 @@
 "use client";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { ArrowLeft, ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
-import { useEffect, useState, useCallback, useRef } from "react";
-import { fetchListings, Listing } from "@/lib/api";
+import { useEffect, useState, useCallback, useRef, Suspense } from "react";
+import { fetchListings, Listing, saveLastSearch } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { carsModelData } from "@/utils/tabsStatic";
 import { customSelectDataDynamic } from "@/types/Home";
@@ -10,18 +10,15 @@ import { Sidebar } from "@/components/ui/custom/FilterSidebar/FilterSidebarCompo
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import VehicleSearchedResult from "@/components/ui/custom/VehicleSearchedResult/VehicleSearchedResult";
 
-type SearchPageProps = {
-  searchParams: {
-    make?: string;
-    model?: string;
-    price?: string;
-    registration?: string;
-    country?: string;
-    seller?: string;
-  };
-};
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-100" />}>
+      <SearchPageContent />
+    </Suspense>
+  );
+}
 
-export default function SearchPage({ searchParams }: SearchPageProps) {
+function SearchPageContent() {
   const router = useRouter();
   const pathname = usePathname();
   const urlSearchParams = useSearchParams();
@@ -32,11 +29,11 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
   const [hasPrevious, setHasPrevious] = useState(false);
 
   // Filter state initialized from URL params
-  const [selectedMake, setSelectedMake] = useState(searchParams.make || "");
-  const [selectedModel, setSelectedModel] = useState(searchParams.model || "");
-  const [selectedPrice, setSelectedPrice] = useState(searchParams.price || "");
-  const [selectedRegistration, setSelectedRegistration] = useState(searchParams.registration || "");
-  const [selectedCountry, setSelectedCountry] = useState(searchParams.country || "");
+  const [selectedMake, setSelectedMake] = useState(urlSearchParams.get("make") || "");
+  const [selectedModel, setSelectedModel] = useState(urlSearchParams.get("model") || "");
+  const [selectedPrice, setSelectedPrice] = useState(urlSearchParams.get("price") || "");
+  const [selectedRegistration, setSelectedRegistration] = useState(urlSearchParams.get("registration") || "");
+  const [selectedCountry, setSelectedCountry] = useState(urlSearchParams.get("country") || "");
 
   const model: customSelectDataDynamic = carsModelData;
   const modelData = model[selectedMake];
@@ -66,6 +63,15 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
       if (selectedPrice) params.set("price", selectedPrice);
       if (selectedRegistration) params.set("registration", selectedRegistration);
       if (selectedCountry) params.set("country", selectedCountry);
+      // Preserve filters not managed by sidebar state
+      const bodyType = urlSearchParams.get("body_type");
+      const fuelType = urlSearchParams.get("fuel_type");
+      const seller = urlSearchParams.get("seller");
+      const minDoors = urlSearchParams.get("min_doors");
+      if (bodyType) params.set("body_type", bodyType);
+      if (fuelType) params.set("fuel_type", fuelType);
+      if (seller) params.set("seller", seller);
+      if (minDoors) params.set("min_doors", minDoors);
       // Reset to page 1 when filters change
       const query = params.toString();
       router.push(`${pathname}${query ? `?${query}` : ""}`, { scroll: false });
@@ -92,19 +98,46 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
     const loadListings = async () => {
       try {
         setLoading(true);
-        const data = await fetchListings({
-          make: searchParams.make,
-          model: searchParams.model,
-          price: searchParams.price,
-          registration: searchParams.registration,
-          country: searchParams.country,
-          seller: searchParams.seller,
+        const filters = {
+          make: urlSearchParams.get("make") || undefined,
+          model: urlSearchParams.get("model") || undefined,
+          price: urlSearchParams.get("price") || undefined,
+          registration: urlSearchParams.get("registration") || undefined,
+          country: urlSearchParams.get("country") || undefined,
+          seller: urlSearchParams.get("seller") || undefined,
+          fuel_type: urlSearchParams.get("fuel_type") || undefined,
+          body_type: urlSearchParams.get("body_type") || undefined,
+          min_doors: urlSearchParams.get("min_doors") || undefined,
           page: String(currentPage),
-        });
+        };
+        const data = await fetchListings(filters);
         setListings(data.results);
         setTotalCount(data.count);
         setHasNext(!!data.next);
         setHasPrevious(!!data.previous);
+
+        // Save this search to localStorage
+        const activeFilters = Object.entries(filters).filter(([k, v]) => v && k !== "page");
+        if (activeFilters.length > 0) {
+          const parts: string[] = [];
+          if (filters.make) parts.push(filters.make);
+          if (filters.model) parts.push(filters.model);
+          if (filters.body_type) parts.push(filters.body_type);
+          if (filters.fuel_type) parts.push(filters.fuel_type);
+          const label = parts.length > 0 ? parts.join(" ") : "All vehicles";
+          const subtitleParts: string[] = [];
+          if (filters.price) subtitleParts.push(`up to €${filters.price}`);
+          if (filters.registration) subtitleParts.push(`from ${filters.registration}`);
+          if (filters.country) subtitleParts.push(filters.country);
+          subtitleParts.push(`${data.count} results`);
+
+          saveLastSearch({
+            query: filters,
+            label,
+            subtitle: subtitleParts.join(" · "),
+            thumbnails: data.results.slice(0, 4).map((l) => l.main_image || ""),
+          });
+        }
       } catch (error) {
         console.error("Failed to fetch listings:", error);
       } finally {
@@ -113,7 +146,7 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
     };
 
     loadListings();
-  }, [searchParams, currentPage]);
+  }, [urlSearchParams, currentPage]);
 
   const sidebarProps = {
     modelData,
@@ -136,7 +169,7 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
         <button onClick={() => router.back()} className="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="Back">
           <ArrowLeft size={20} />
         </button>
-        <h1 className="text-2xl font-semibold">Search results {searchParams.make && `for ${searchParams.make}`}</h1>
+        <h1 className="text-2xl font-semibold">Search results {urlSearchParams.get("make") && `for ${urlSearchParams.get("make")}`}</h1>
         <span className="text-sm text-gray-500">({totalCount} vehicles found)</span>
       </div>
 

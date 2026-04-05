@@ -9,14 +9,13 @@ const FeaturedVehicles = () => {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [favorites, setFavorites] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     const loadFeaturedListings = async () => {
       try {
         setLoading(true);
         const data = await fetchListings({ featured: "true" });
-        setListings(data.results.slice(0, 4)); // Get first 4
+        setListings(data.results.slice(0, 4));
         setError("");
       } catch (err) {
         console.error("Failed to fetch featured listings:", err);
@@ -62,6 +61,7 @@ const FeaturedVehicles = () => {
         {listings.map((listing) => (
           <VehicleCard
             key={listing.id}
+            listingId={listing.id}
             registration={new Date(listing.registration_year, 0, 1)}
             fuelType={listing.fuel_type as "Gasoline" | "Diesel"}
             kilometerage={listing.mileage}
@@ -69,13 +69,6 @@ const FeaturedVehicles = () => {
             name={`${listing.make} ${listing.model}`}
             location={listing.city}
             image={listing.main_image || undefined}
-            favorite={favorites[listing.id] || false}
-            setFavorite={(state) => {
-              setFavorites((prev) => ({
-                ...prev,
-                [listing.id]: typeof state === "function" ? state(prev[listing.id] || false) : state,
-              }));
-            }}
             onClick={() => router.push(`/vehicle/${listing.id}`)}
           />
         ))}

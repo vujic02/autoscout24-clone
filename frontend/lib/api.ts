@@ -97,6 +97,8 @@ export type ListingFilters = {
   registration?: string; // year
   country?: string;
   fuel_type?: string;
+  body_type?: string;
+  min_doors?: string;
   featured?: string;
   seller?: string;
   page?: string;
@@ -118,6 +120,8 @@ function buildQuery(params: ListingFilters): string {
   if (params.registration) searchParams.set("registration", params.registration);
   if (params.country) searchParams.set("country", params.country);
   if (params.fuel_type) searchParams.set("fuel_type", params.fuel_type);
+  if (params.body_type) searchParams.set("body_type", params.body_type);
+  if (params.min_doors) searchParams.set("min_doors", params.min_doors);
   if (params.featured) searchParams.set("featured", params.featured);
   if (params.seller) searchParams.set("seller", params.seller);
   if (params.page) searchParams.set("page", params.page);
@@ -374,4 +378,69 @@ export async function updateUserListingLimit(token: string, userId: number, maxL
     const data = await res.json();
     throw new Error(data.detail || "Failed to update listing limit");
   }
+}
+
+// --- Favorites (localStorage) ---
+
+const FAVORITES_KEY = "as24_favorites";
+
+export function getFavoriteIds(): number[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(FAVORITES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function isFavorite(listingId: number): boolean {
+  return getFavoriteIds().includes(listingId);
+}
+
+export function addFavorite(listingId: number): void {
+  const ids = getFavoriteIds();
+  if (!ids.includes(listingId)) {
+    ids.push(listingId);
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(ids));
+    window.dispatchEvent(new Event("favoritesChange"));
+  }
+}
+
+export function removeFavorite(listingId: number): void {
+  const ids = getFavoriteIds().filter((id) => id !== listingId);
+  localStorage.setItem(FAVORITES_KEY, JSON.stringify(ids));
+  window.dispatchEvent(new Event("favoritesChange"));
+}
+
+// --- Last Search (localStorage) ---
+
+export type LastSearch = {
+  query: ListingFilters;
+  label: string;
+  subtitle: string;
+  thumbnails: string[];
+  timestamp: number;
+};
+
+const LAST_SEARCHES_KEY = "as24_last_searches";
+const MAX_LAST_SEARCHES = 3;
+
+export function getLastSearches(): LastSearch[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(LAST_SEARCHES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveLastSearch(search: Omit<LastSearch, "timestamp">): void {
+  if (typeof window === "undefined") return;
+  const existing = getLastSearches();
+  // Avoid duplicate consecutive searches with same label
+  if (existing.length > 0 && existing[0].label === search.label) return;
+  const updated = [{ ...search, timestamp: Date.now() }, ...existing].slice(0, MAX_LAST_SEARCHES);
+  localStorage.setItem(LAST_SEARCHES_KEY, JSON.stringify(updated));
 }
