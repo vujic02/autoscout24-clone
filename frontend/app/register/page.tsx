@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const API_BASE = "http://127.0.0.1:8000";
 
@@ -61,7 +62,7 @@ const RegisterPage = () => {
         window.dispatchEvent(new Event("authChange"));
       }
 
-      // redirect – promeni na šta želiš (home, profile…)
+      toast.success("Account created successfully!");
       router.push("/");
     } catch (err) {
       console.error(err);

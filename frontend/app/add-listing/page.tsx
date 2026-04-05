@@ -1,11 +1,12 @@
 "use client";
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { carsMakeData, carsModelData, countries, fuelTypes, bodyTypes, transmissions, driveTypes, colors } from "@/utils/tabsStatic";
 import CustomSelect from "@/components/ui/custom/Search/CustomSelect";
 import { fetchCurrentUser, ListingQuota } from "@/lib/api";
+import { toast } from "sonner";
 
 export default function AddListingPage() {
   return (
@@ -27,6 +28,8 @@ const AddListingContent = () => {
   const [quota, setQuota] = useState<ListingQuota | null>(null);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>([]);
+  const hasUnsavedChanges = useRef(false);
+  const isInitialSync = useRef(true);
   const [selectedMake, setSelectedMake] = useState("");
   const [selectedModel, setSelectedModel] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
@@ -71,6 +74,11 @@ const AddListingContent = () => {
 
   // Sync wrapper states with formData
   useEffect(() => {
+    if (isInitialSync.current) {
+      isInitialSync.current = false;
+    } else {
+      hasUnsavedChanges.current = true;
+    }
     setFormData((prev) => ({
       ...prev,
       make: selectedMake,
@@ -94,6 +102,17 @@ const AddListingContent = () => {
     selectedExteriorColor,
     selectedInteriorColor,
   ]);
+
+  // Warn before leaving with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges.current) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
 
   // Check auth + listing quota on mount
   useEffect(() => {
@@ -186,6 +205,9 @@ const AddListingContent = () => {
         } else if (data.main_image) {
           setExistingImages([data.main_image]);
         }
+
+        // Reset dirty flag after loading edit data
+        setTimeout(() => { hasUnsavedChanges.current = false; }, 0);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load listing");
       } finally {
@@ -197,6 +219,7 @@ const AddListingContent = () => {
   }, [isEditMode, listingId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    hasUnsavedChanges.current = true;
     const { name, value } = e.target;
     const numericFields = ["mileage", "price", "year", "registration_year", "horsepower", "engine_displacement", "number_of_doors", "number_of_seats", "previous_owners"];
     setFormData((prev) => ({
@@ -208,6 +231,7 @@ const AddListingContent = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
+      hasUnsavedChanges.current = true;
       const newFiles = Array.from(files);
       setFormData((prev) => ({
         ...prev,
@@ -226,6 +250,7 @@ const AddListingContent = () => {
   };
 
   const removeImage = (index: number) => {
+    hasUnsavedChanges.current = true;
     setImagePreviews((prev) => prev.filter((_, i) => i !== index));
     setFormData((prev) => ({
       ...prev,
@@ -234,6 +259,7 @@ const AddListingContent = () => {
   };
 
   const removeExistingImage = (index: number) => {
+    hasUnsavedChanges.current = true;
     setExistingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -300,6 +326,8 @@ const AddListingContent = () => {
         throw new Error(responseData.detail || JSON.stringify(responseData) || `Failed to ${isEditMode ? "update" : "create"} listing`);
       }
 
+      hasUnsavedChanges.current = false;
+      toast.success(isEditMode ? "Listing updated successfully!" : "Listing created successfully!");
       router.push(isEditMode ? `/vehicle/${listingId}` : "/");
     } catch (err) {
       console.error("Error:", err);

@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const API_BASE = "http://127.0.0.1:8000";
 
@@ -58,6 +59,8 @@ const LoginPage = () => {
         window.dispatchEvent(new Event("authChange"));
       }
 
+      toast.success("Welcome back!");
+
       // Redirect to admin if staff, else home
       if (data.is_staff) {
         router.push("/admin");
@@ -99,6 +102,7 @@ const LoginPage = () => {
 
           {/* Email input */}
           <form className="space-y-4" onSubmit={handleSubmit}>
+            {error && <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-md px-3 py-2">{error}</div>}
             <div className="space-y-1">
               <label htmlFor="email" className="block text-sm font-medium text-gray-800">
                 E-mail address

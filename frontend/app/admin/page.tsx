@@ -23,6 +23,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Image from "next/image";
+import { toast } from "sonner";
 import { fetchDealerRequests, handleDealerRequest, DealerRequest, fetchListingLimitRequests, updateUserListingLimit, ListingLimitRequest } from "@/lib/api";
 
 interface Listing {
@@ -299,8 +300,9 @@ const AdminDashboard = () => {
 
       const updatedListing = await res.json();
       setListings(listings.map((listing) => (listing.id === listingId ? updatedListing : listing)));
+      toast.success(updatedListing.featured ? "Listing featured" : "Listing unfeatured");
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed to toggle featured");
+      toast.error(err instanceof Error ? err.message : "Failed to toggle featured");
     }
   };
 
@@ -318,8 +320,9 @@ const AdminDashboard = () => {
     try {
       await handleDealerRequest(token, userId, action);
       setDealerRequests((prev) => prev.filter((r) => r.user_id !== userId));
+      toast.success(`Dealer request ${action}d successfully`);
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed to handle dealer request");
+      toast.error(err instanceof Error ? err.message : "Failed to handle dealer request");
     } finally {
       setDealerLoading(false);
     }
@@ -330,7 +333,7 @@ const AdminDashboard = () => {
     if (!token) return;
     const newLimit = parseInt(limitEditValues[userId]);
     if (isNaN(newLimit) || newLimit < 1) {
-      alert("Please enter a valid number (minimum 1).");
+      toast.error("Please enter a valid number (minimum 1).");
       return;
     }
     setLimitUpdating(userId);
@@ -342,8 +345,9 @@ const AdminDashboard = () => {
         delete copy[userId];
         return copy;
       });
+      toast.success("Listing limit updated successfully");
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed to update listing limit");
+      toast.error(err instanceof Error ? err.message : "Failed to update listing limit");
     } finally {
       setLimitUpdating(null);
     }

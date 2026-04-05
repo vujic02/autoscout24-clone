@@ -70,14 +70,14 @@
 - ~~No max file size check on image uploads (frontend or backend) — added backend validation (type, 5MB, 20 files max)~~
 - Serializer has no field-level validators
 
-## Error Handling & UX
+## ~~Error Handling & UX~~ -- DONE
 
-- No toast notification system (success/error)
-- Errors only shown inline or logged to console
-- No global error boundary
-- No "unsaved changes" warning on add-listing page
-- No confirmation dialog before delete (besides browser default)
-- No loading spinners on delete/update operations
+- ~~No toast notification system (success/error)~~
+- ~~Errors only shown inline or logged to console~~
+- ~~No global error boundary~~
+- ~~No "unsaved changes" warning on add-listing page~~
+- ~~No confirmation dialog before delete (besides browser default)~~
+- ~~No loading spinners on delete/update operations~~
 
 ## ~~Favorites System~~ -- DONE
 

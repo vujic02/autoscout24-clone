@@ -2,9 +2,21 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Edit, Trash2, ArrowLeft, TrendingUp, Package, DollarSign, Zap } from "lucide-react";
+import { Edit, Trash2, ArrowLeft, TrendingUp, Package, DollarSign, Zap, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface Listing {
   id: number;
@@ -27,6 +39,7 @@ const MyListingsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [userId, setUserId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   useEffect(() => {
     const checkAuth = () => {
@@ -86,10 +99,7 @@ const MyListingsPage = () => {
   }, [userId]);
 
   const handleDelete = async (listingId: number) => {
-    if (!window.confirm("Are you sure you want to delete this listing?")) {
-      return;
-    }
-
+    setDeletingId(listingId);
     try {
       const token = localStorage.getItem("authToken");
       if (!token) {
@@ -109,8 +119,11 @@ const MyListingsPage = () => {
       }
 
       setListings(listings.filter((listing) => listing.id !== listingId));
+      toast.success("Listing deleted successfully");
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed to delete listing");
+      toast.error(err instanceof Error ? err.message : "Failed to delete listing");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -358,13 +371,29 @@ const MyListingsPage = () => {
                         Edit
                       </button>
                     </Link>
-                    <button
-                      onClick={() => handleDelete(listing.id)}
-                      className="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-900 rounded-md transition-colors flex items-center gap-2"
-                    >
-                      <Trash2 size={18} />
-                      Delete
-                    </button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <button
+                          disabled={deletingId === listing.id}
+                          className="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-900 rounded-md transition-colors flex items-center gap-2 disabled:opacity-50"
+                        >
+                          {deletingId === listing.id ? <Loader2 size={18} className="animate-spin" /> : <Trash2 size={18} />}
+                          Delete
+                        </button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete listing</AlertDialogTitle>
+                          <AlertDialogDescription>Are you sure you want to delete &quot;{listing.title}&quot;? This action cannot be undone.</AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDelete(listing.id)} className="bg-red-600 hover:bg-red-700 text-white">
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
               </div>
