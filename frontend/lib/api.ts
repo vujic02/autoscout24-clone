@@ -98,9 +98,17 @@ export type ListingFilters = {
   country?: string;
   fuel_type?: string;
   body_type?: string;
+  transmission?: string;
+  drive_type?: string;
+  exterior_color?: string;
+  mileage_from?: string;
+  mileage_to?: string;
+  hp_from?: string;
+  hp_to?: string;
   min_doors?: string;
   featured?: string;
   seller?: string;
+  sort?: string;
   page?: string;
 };
 
@@ -121,9 +129,17 @@ function buildQuery(params: ListingFilters): string {
   if (params.country) searchParams.set("country", params.country);
   if (params.fuel_type) searchParams.set("fuel_type", params.fuel_type);
   if (params.body_type) searchParams.set("body_type", params.body_type);
+  if (params.transmission) searchParams.set("transmission", params.transmission);
+  if (params.drive_type) searchParams.set("drive_type", params.drive_type);
+  if (params.exterior_color) searchParams.set("exterior_color", params.exterior_color);
+  if (params.mileage_from) searchParams.set("mileage_from", params.mileage_from);
+  if (params.mileage_to) searchParams.set("mileage_to", params.mileage_to);
+  if (params.hp_from) searchParams.set("hp_from", params.hp_from);
+  if (params.hp_to) searchParams.set("hp_to", params.hp_to);
   if (params.min_doors) searchParams.set("min_doors", params.min_doors);
   if (params.featured) searchParams.set("featured", params.featured);
   if (params.seller) searchParams.set("seller", params.seller);
+  if (params.sort) searchParams.set("sort", params.sort);
   if (params.page) searchParams.set("page", params.page);
 
   const query = searchParams.toString();

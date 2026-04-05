@@ -121,9 +121,49 @@ class ListingListCreateView(generics.ListCreateAPIView):
         if body_type:
             queryset = queryset.filter(body_type__iexact=body_type)
 
+        transmission = params.get('transmission', '')
+        if transmission:
+            queryset = queryset.filter(transmission__iexact=transmission)
+
+        drive_type = params.get('drive_type', '')
+        if drive_type:
+            queryset = queryset.filter(drive_type__iexact=drive_type)
+
+        exterior_color = params.get('exterior_color', '')
+        if exterior_color:
+            queryset = queryset.filter(exterior_color__iexact=exterior_color)
+
+        mileage_from = params.get('mileage_from', '')
+        if mileage_from:
+            queryset = queryset.filter(mileage__gte=int(mileage_from))
+
+        mileage_to = params.get('mileage_to', '')
+        if mileage_to:
+            queryset = queryset.filter(mileage__lte=int(mileage_to))
+
+        hp_from = params.get('hp_from', '')
+        if hp_from:
+            queryset = queryset.filter(horsepower__gte=int(hp_from))
+
+        hp_to = params.get('hp_to', '')
+        if hp_to:
+            queryset = queryset.filter(horsepower__lte=int(hp_to))
+
         min_doors = params.get('min_doors', '')
         if min_doors:
             queryset = queryset.filter(number_of_doors__gte=int(min_doors))
+
+        # Sorting
+        sort = params.get('sort', '')
+        sort_map = {
+            'price_asc': 'price',
+            'price_desc': '-price',
+            'newest': '-created_at',
+            'mileage_asc': 'mileage',
+            'year_desc': '-registration_year',
+        }
+        if sort and sort in sort_map:
+            queryset = queryset.order_by(sort_map[sort])
 
         return queryset
 

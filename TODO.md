@@ -45,10 +45,9 @@
 
 ## Search & Filtering
 
-- Motorcycles tab search doesn't pass `fuel_type` to search results
 - ~~No `body_type` filter (needs DB field first)~~
-- No `transmission` filter
-- No sort options (price low/high, newest, mileage)
+- ~~No `transmission` filter~~
+- ~~No sort options (price low/high, newest, mileage)~~
 
 ## Admin Dashboard
 

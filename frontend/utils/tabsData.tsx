@@ -1,5 +1,20 @@
 import { CarsComponent, MotorcyclesComponent } from "@/components/ui/custom/Search/SearchComponents";
-import { carsMakeData, carsModelData, countries, firstRegistration, motorcycleMakeData, motorcycleModelData, prices, fuelTypes } from "./tabsStatic";
+import {
+  carsMakeData,
+  carsModelData,
+  countries,
+  firstRegistration,
+  motorcycleMakeData,
+  motorcycleModelData,
+  prices,
+  fuelTypes,
+  bodyTypes,
+  transmissions,
+  driveTypes,
+  colors,
+  mileageOptions,
+  horsepowerOptions,
+} from "./tabsStatic";
 
 const tabsListData = [
   { value: "cars", image: "./icons/cars.svg" },
@@ -17,6 +32,12 @@ const tabsContentData = [
         firstRegistration={firstRegistration}
         countries={countries}
         fuelTypes={fuelTypes}
+        bodyTypes={bodyTypes}
+        transmissions={transmissions}
+        driveTypes={driveTypes}
+        colors={colors}
+        mileageOptions={mileageOptions}
+        horsepowerOptions={horsepowerOptions}
       />
     ),
   },
@@ -29,7 +50,11 @@ const tabsContentData = [
         prices={prices}
         firstRegistration={firstRegistration}
         countries={countries}
-        fuelTypes={fuelTypes}
+        transmissions={transmissions}
+        driveTypes={driveTypes}
+        colors={colors}
+        mileageOptions={mileageOptions}
+        horsepowerOptions={horsepowerOptions}
       />
     ),
   },
