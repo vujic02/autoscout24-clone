@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Image from "next/image";
 import { toast } from "sonner";
+import { useTranslation, usePageTitle } from "@/lib/i18n";
 import { fetchDealerRequests, handleDealerRequest, DealerRequest, fetchListingLimitRequests, updateUserListingLimit, ListingLimitRequest } from "@/lib/api";
 
 interface Listing {
@@ -44,6 +45,8 @@ interface Listing {
 
 const AdminDashboard = () => {
   const router = useRouter();
+  const { t } = useTranslation();
+  usePageTitle(t("titles.admin"));
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterLoading, setFilterLoading] = useState(false);
@@ -300,7 +303,7 @@ const AdminDashboard = () => {
 
       const updatedListing = await res.json();
       setListings(listings.map((listing) => (listing.id === listingId ? updatedListing : listing)));
-      toast.success(updatedListing.featured ? "Listing featured" : "Listing unfeatured");
+      toast.success(updatedListing.featured ? t("admin.listingFeatured") : t("admin.listingUnfeatured"));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to toggle featured");
     }
@@ -320,7 +323,7 @@ const AdminDashboard = () => {
     try {
       await handleDealerRequest(token, userId, action);
       setDealerRequests((prev) => prev.filter((r) => r.user_id !== userId));
-      toast.success(`Dealer request ${action}d successfully`);
+      toast.success(t("admin.dealerRequestSuccess", { action }));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to handle dealer request");
     } finally {
@@ -345,7 +348,7 @@ const AdminDashboard = () => {
         delete copy[userId];
         return copy;
       });
-      toast.success("Listing limit updated successfully");
+      toast.success(t("admin.limitUpdated"));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to update listing limit");
     } finally {
@@ -376,13 +379,13 @@ const AdminDashboard = () => {
             <button onClick={() => router.back()} className=" hover:bg-gray-100 rounded-lg transition-colors" title="Back">
               <ArrowLeft size={20} />
             </button>
-            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{t("admin.adminDashboard")}</h1>
           </div>
-          <p className="text-gray-600">Manage and monitor all listings</p>
+          <p className="text-gray-600">{t("admin.manageAndMonitor")}</p>
         </div>
         <button onClick={handleLogout} className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors">
           <LogOut size={18} />
-          Logout
+          {t("admin.logout")}
         </button>
       </div>
 
@@ -391,7 +394,7 @@ const AdminDashboard = () => {
         <div className="bg-[#f5f200] text-[#1c1c2e] rounded-lg p-6 shadow-lg">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[#1c1c2e]/70 text-sm font-medium">Total Listings</p>
+              <p className="text-[#1c1c2e]/70 text-sm font-medium">{t("admin.totalListings")}</p>
               <p className="text-3xl font-bold mt-2">{statistics.totalListings}</p>
             </div>
             <Package size={40} className="opacity-20" />
@@ -401,7 +404,7 @@ const AdminDashboard = () => {
         <div className="bg-[#1c1c2e] text-white rounded-lg p-6 shadow-lg">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-white/70 text-sm font-medium">Average Price</p>
+              <p className="text-white/70 text-sm font-medium">{t("admin.averagePrice")}</p>
               <p className="text-3xl font-bold mt-2">€{statistics.averagePrice.toLocaleString()}</p>
             </div>
             <DollarSign size={40} className="opacity-20" />
@@ -411,7 +414,7 @@ const AdminDashboard = () => {
         <div className="bg-[#f5f200] text-[#1c1c2e] rounded-lg p-6 shadow-lg">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[#1c1c2e]/70 text-sm font-medium">Featured</p>
+              <p className="text-[#1c1c2e]/70 text-sm font-medium">{t("admin.featured")}</p>
               <p className="text-3xl font-bold mt-2">{statistics.featuredCount}</p>
             </div>
             <Star size={40} className="opacity-20" />
@@ -421,7 +424,7 @@ const AdminDashboard = () => {
         <div className="bg-[#1c1c2e] text-white rounded-lg p-6 shadow-lg">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-white/70 text-sm font-medium">Total Value</p>
+              <p className="text-white/70 text-sm font-medium">{t("admin.totalValue")}</p>
               <p className="text-3xl font-bold mt-2">€{(statistics.totalValue / 1000000).toFixed(1)}M</p>
             </div>
             <TrendingUp size={40} className="opacity-20" />
@@ -433,7 +436,7 @@ const AdminDashboard = () => {
       <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Price Range Pie Chart */}
         <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Price Range Distribution</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">{t("admin.priceRangeDistribution")}</h3>
           <div className="flex items-center justify-center gap-8">
             <div className="relative w-32 h-32">
               <svg viewBox="0 0 100 100" className="transform -rotate-90">
@@ -499,7 +502,7 @@ const AdminDashboard = () => {
 
         {/* Fuel Type Pie Chart */}
         <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Fuel Type Distribution</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">{t("admin.fuelTypeDistribution")}</h3>
           <div className="space-y-3">
             {statistics.fuelTypeBreakdown.map((item, idx) => {
               const colors = ["bg-blue-600", "bg-green-600", "bg-red-600", "bg-gray-600"];
@@ -527,7 +530,7 @@ const AdminDashboard = () => {
 
         {/* Top Brands Bar Chart */}
         <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Top Brands</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">{t("admin.topBrands")}</h3>
           <div className="space-y-3">
             {statistics.brandBreakdown.slice(0, 8).map((item, idx) => (
               <div key={idx}>
@@ -550,7 +553,7 @@ const AdminDashboard = () => {
 
         {/* Top Countries Bar Chart */}
         <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Top Countries</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">{t("admin.topCountries")}</h3>
           <div className="space-y-3">
             {statistics.countryBreakdown.map((item, idx) => (
               <div key={idx}>
@@ -574,7 +577,7 @@ const AdminDashboard = () => {
 
       {/* Line Graph - Average Price by Brand */}
       <div className="mb-8 bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">Average Price by Brand</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">{t("admin.averagePriceByBrand")}</h3>
         <div className="overflow-x-auto">
           <div className="flex items-end justify-start gap-4 p-4 min-w-max" style={{ height: "300px" }}>
             {brandAveragePrices.slice(0, 12).map((brand) => {
@@ -594,8 +597,8 @@ const AdminDashboard = () => {
           </div>
         </div>
         <div className="mt-4 flex justify-between text-xs text-gray-600 px-4">
-          <span>Y-Axis: Average Price (€)</span>
-          <span>X-Axis: Top 12 Brands</span>
+          <span>{t("admin.yAxisLabel")}</span>
+          <span>{t("admin.xAxisLabel")}</span>
         </div>
       </div>
 
@@ -604,7 +607,9 @@ const AdminDashboard = () => {
         <div className="mb-8 bg-white border border-orange-200 rounded-lg shadow-sm overflow-hidden">
           <div className="px-6 py-4 bg-orange-50 border-b border-orange-200 flex items-center gap-2">
             <Building2 size={20} className="text-orange-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Pending Dealer Requests ({dealerRequests.length})</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              {t("admin.pendingDealerRequests")} ({dealerRequests.length})
+            </h3>
           </div>
           <div className="divide-y divide-gray-100">
             {dealerRequests.map((req) => (
@@ -623,14 +628,14 @@ const AdminDashboard = () => {
                     disabled={dealerLoading}
                     className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-sm font-medium rounded-md transition-colors"
                   >
-                    <CheckCircle2 size={16} /> Approve
+                    <CheckCircle2 size={16} /> {t("admin.approve")}
                   </button>
                   <button
                     onClick={() => handleDealerAction(req.user_id, "reject")}
                     disabled={dealerLoading}
                     className="flex items-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white text-sm font-medium rounded-md transition-colors"
                   >
-                    <XCircle size={16} /> Reject
+                    <XCircle size={16} /> {t("admin.reject")}
                   </button>
                 </div>
               </div>
@@ -644,7 +649,9 @@ const AdminDashboard = () => {
         <div className="mb-8 bg-white border border-blue-200 rounded-lg shadow-sm overflow-hidden">
           <div className="px-6 py-4 bg-blue-50 border-b border-blue-200 flex items-center gap-2">
             <MessageSquare size={20} className="text-blue-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Listing Limit Requests ({limitRequests.length})</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              {t("admin.listingLimitRequests")} ({limitRequests.length})
+            </h3>
           </div>
           <div className="divide-y divide-gray-100">
             {limitRequests.map((req) => (
@@ -653,15 +660,19 @@ const AdminDashboard = () => {
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-gray-900">{req.display_name || req.username}</p>
                     <p className="text-sm text-gray-500">{req.email}</p>
-                    {req.company_name && <p className="text-sm text-gray-500">Company: {req.company_name}</p>}
+                    {req.company_name && (
+                      <p className="text-sm text-gray-500">
+                        {t("admin.company")} {req.company_name}
+                      </p>
+                    )}
                     <p className="text-sm text-gray-600 mt-2 bg-gray-50 rounded-md p-2.5 border border-gray-200 italic">&ldquo;{req.message}&rdquo;</p>
                     <p className="text-xs text-gray-400 mt-1.5">
-                      Current limit: <span className="font-semibold text-gray-600">{req.current_limit}</span> &middot; Requested{" "}
+                      {t("admin.currentLimit")} <span className="font-semibold text-gray-600">{req.current_limit}</span> &middot; {t("admin.requested")}{" "}
                       {new Date(req.created_at).toLocaleDateString()}
                     </p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0 pt-1">
-                    <label className="text-sm text-gray-600 font-medium">New limit:</label>
+                    <label className="text-sm text-gray-600 font-medium">{t("admin.newLimit")}</label>
                     <input
                       type="number"
                       min="1"
@@ -674,7 +685,7 @@ const AdminDashboard = () => {
                       disabled={limitUpdating === req.user_id}
                       className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium rounded-md transition-colors"
                     >
-                      <CheckCircle2 size={16} /> {limitUpdating === req.user_id ? "Saving..." : "Update"}
+                      <CheckCircle2 size={16} /> {limitUpdating === req.user_id ? t("common.saving") : t("admin.update")}
                     </button>
                   </div>
                 </div>
@@ -692,7 +703,7 @@ const AdminDashboard = () => {
         <div className="md:hidden fixed bottom-4 right-4 z-50">
           <Sheet>
             <SheetTrigger className="flex items-center gap-2 bg-[#1c1c2e] text-white px-4 py-3 rounded-full shadow-lg text-sm font-medium">
-              <SlidersHorizontal size={16} /> Filters
+              <SlidersHorizontal size={16} /> {t("common.filters")}
               {hasActiveFilters && <span className="w-2 h-2 bg-[#f5f200] rounded-full"></span>}
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-[300px]">
@@ -730,7 +741,7 @@ const AdminDashboard = () => {
         <div className="flex-1 min-w-0">
           {listings.length === 0 ? (
             <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
-              <p className="text-gray-600 text-lg">No listings found.</p>
+              <p className="text-gray-600 text-lg">{t("admin.noListingsFound")}</p>
               {hasActiveFilters && (
                 <button
                   onClick={() => {
@@ -740,7 +751,7 @@ const AdminDashboard = () => {
                   }}
                   className="mt-2 text-sm text-blue-600 hover:text-blue-800 underline"
                 >
-                  Clear all filters
+                  {t("common.clearAllFilters")}
                 </button>
               )}
             </div>
@@ -748,15 +759,13 @@ const AdminDashboard = () => {
             <div className={`space-y-3 transition-opacity ${filterLoading ? "opacity-50 pointer-events-none" : ""}`}>
               <div className="flex items-center justify-between text-sm text-gray-600 bg-white border border-gray-200 rounded-lg px-4 py-3">
                 <div>
-                  Showing{" "}
-                  <span className="font-bold">
-                    {(currentPage - 1) * ITEMS_PER_PAGE + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, listings.length)}
-                  </span>{" "}
-                  of <span className="font-bold">{listings.length}</span> listings
+                  {t("admin.showingRange", {
+                    from: String((currentPage - 1) * ITEMS_PER_PAGE + 1),
+                    to: String(Math.min(currentPage * ITEMS_PER_PAGE, listings.length)),
+                    total: String(listings.length),
+                  })}
                 </div>
-                <div>
-                  Page {currentPage} of {totalPages}
-                </div>
+                <div>{t("admin.pageOfTotal", { current: String(currentPage), total: String(totalPages) })}</div>
               </div>
 
               {paginatedListings.map((listing) => (
@@ -768,7 +777,7 @@ const AdminDashboard = () => {
                         <Image src={listing.main_image} alt={`${listing.make} ${listing.model}`} fill className="object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                          <span className="text-gray-400">No image</span>
+                          <span className="text-gray-400">{t("admin.noImage")}</span>
                         </div>
                       )}
                     </div>
@@ -781,7 +790,9 @@ const AdminDashboard = () => {
                             {listing.year} {listing.make} {listing.model}
                           </h2>
                           <p className="text-gray-600">{listing.title}</p>
-                          <p className="text-gray-500 text-sm mt-1">User ID: {listing.user}</p>
+                          <p className="text-gray-500 text-sm mt-1">
+                            {t("admin.userId")} {listing.user}
+                          </p>
                         </div>
                         <div className="text-right">
                           <p className="text-2xl font-bold text-blue-600">€{listing.price.toLocaleString()}</p>
@@ -793,21 +804,23 @@ const AdminDashboard = () => {
 
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 my-4 text-sm">
                         <div>
-                          <p className="text-gray-600">Mileage</p>
-                          <p className="font-semibold">{listing.mileage.toLocaleString()} km</p>
+                          <p className="text-gray-600">{t("admin.mileage")}</p>
+                          <p className="font-semibold">
+                            {listing.mileage.toLocaleString()} {t("common.km")}
+                          </p>
                         </div>
                         <div>
-                          <p className="text-gray-600">Fuel Type</p>
+                          <p className="text-gray-600">{t("admin.fuelType")}</p>
                           <p className="font-semibold">{listing.fuel_type}</p>
                         </div>
                         <div>
-                          <p className="text-gray-600">Location</p>
+                          <p className="text-gray-600">{t("admin.location")}</p>
                           <p className="font-semibold">
                             {listing.city}, {listing.country}
                           </p>
                         </div>
                         <div>
-                          <p className="text-gray-600">Listing ID</p>
+                          <p className="text-gray-600">{t("admin.listingId")}</p>
                           <p className="font-semibold">#{listing.id}</p>
                         </div>
                       </div>
@@ -816,7 +829,7 @@ const AdminDashboard = () => {
                       <div className="flex gap-2 mt-4">
                         <Link href={`/vehicle/${listing.id}`} className="flex-1">
                           <Button variant="outline" className="w-full">
-                            View Listing
+                            {t("admin.viewListing")}
                           </Button>
                         </Link>
                         <button
@@ -826,7 +839,7 @@ const AdminDashboard = () => {
                           }`}
                         >
                           <Star size={18} className={listing.featured ? "fill-yellow-500" : ""} />
-                          {listing.featured ? "Remove Featured" : "Mark Featured"}
+                          {listing.featured ? t("admin.removeFeatured") : t("admin.markFeatured")}
                         </button>
                       </div>
                     </div>
@@ -842,7 +855,7 @@ const AdminDashboard = () => {
                     disabled={currentPage === 1}
                     className="flex items-center gap-1 px-3 py-2 rounded-lg border border-gray-300 text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
                   >
-                    <ChevronLeft size={16} /> Previous
+                    <ChevronLeft size={16} /> {t("common.previous")}
                   </button>
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                     <button
@@ -860,7 +873,7 @@ const AdminDashboard = () => {
                     disabled={currentPage === totalPages}
                     className="flex items-center gap-1 px-3 py-2 rounded-lg border border-gray-300 text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
                   >
-                    Next <ChevronRight size={16} />
+                    {t("common.next")} <ChevronRight size={16} />
                   </button>
                 </div>
               )}
@@ -893,13 +906,15 @@ function AdminFilterSidebar({
 }) {
   const hasActiveFilters = filterById || filterByMake || filterByModel;
   const activeCount = [filterById, filterByMake, filterByModel].filter(Boolean).length;
+  const { t } = useTranslation();
 
   return (
     <div className="px-4 py-5">
       <div className="flex items-center justify-between mb-4">
         <p className="text-base text-[#333] font-semibold flex items-center gap-2">
           <Search size={16} />
-          Filter listings{activeCount > 0 && ` (${activeCount})`}
+          {t("filters.filterListings")}
+          {activeCount > 0 && ` (${activeCount})`}
         </p>
         {hasActiveFilters && (
           <button
@@ -910,43 +925,43 @@ function AdminFilterSidebar({
             }}
             className="text-xs text-blue-600 hover:text-blue-800 underline"
           >
-            Clear all
+            {t("common.clearAll")}
           </button>
         )}
       </div>
 
       <div className="text-sm text-gray-500 mb-4">
-        {resultCount} listing{resultCount !== 1 ? "s" : ""} found | {featuredCount} featured
+        {resultCount} {t("common.listingsFound")} | {featuredCount} {t("admin.featured").toLowerCase()}
       </div>
 
       <div className="border-t border-gray-200 pt-4 space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Listing ID</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t("admin.listingId")}</label>
           <input
             type="text"
             value={filterById}
             onChange={(e) => setFilterById(e.target.value)}
-            placeholder="Search by ID..."
+            placeholder={t("filters.searchById")}
             className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Make</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t("admin.make")}</label>
           <input
             type="text"
             value={filterByMake}
             onChange={(e) => setFilterByMake(e.target.value)}
-            placeholder="Search by make..."
+            placeholder={t("filters.searchByMake")}
             className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Model</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t("admin.model")}</label>
           <input
             type="text"
             value={filterByModel}
             onChange={(e) => setFilterByModel(e.target.value)}
-            placeholder="Search by model..."
+            placeholder={t("filters.searchByModel")}
             className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>

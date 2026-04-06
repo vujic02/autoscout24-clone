@@ -4,6 +4,7 @@ import { ArrowLeft, ChevronLeft, ChevronRight, SlidersHorizontal, ChevronDown } 
 import { useEffect, useState, useCallback, useRef, Suspense } from "react";
 import { fetchListings, Listing, saveLastSearch } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { useTranslation, usePageTitle } from "@/lib/i18n";
 import { carsModelData } from "@/utils/tabsStatic";
 import { customSelectDataDynamic, SearchFilters } from "@/types/Home";
 import { Sidebar } from "@/components/ui/custom/FilterSidebar/FilterSidebarComponents";
@@ -19,6 +20,8 @@ export default function SearchPage() {
 }
 
 function SearchPageContent() {
+  const { t } = useTranslation();
+  usePageTitle(t("titles.search"));
   const router = useRouter();
   const pathname = usePathname();
   const urlSearchParams = useSearchParams();
@@ -176,14 +179,14 @@ function SearchPageContent() {
   };
 
   const sortOptions = [
-    { value: "", label: "Best results" },
-    { value: "price_asc", label: "Price (lowest)" },
-    { value: "price_desc", label: "Price (highest)" },
-    { value: "newest", label: "Newest" },
-    { value: "mileage_asc", label: "Mileage (lowest)" },
-    { value: "year_desc", label: "Year (newest)" },
+    { value: "", label: t("search.bestResults") },
+    { value: "price_asc", label: t("search.priceLowest") },
+    { value: "price_desc", label: t("search.priceHighest") },
+    { value: "newest", label: t("search.newest") },
+    { value: "mileage_asc", label: t("search.mileageLowest") },
+    { value: "year_desc", label: t("search.yearNewest") },
   ];
-  const currentSortLabel = sortOptions.find((o) => o.value === filters.sort)?.label || "Best results";
+  const currentSortLabel = sortOptions.find((o) => o.value === filters.sort)?.label || t("search.bestResults");
 
   return (
     <main className="max-w-[1100px] w-full mx-auto py-8 px-4">
@@ -191,8 +194,12 @@ function SearchPageContent() {
         <button onClick={() => router.back()} className="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="Back">
           <ArrowLeft size={20} />
         </button>
-        <h1 className="text-2xl font-semibold">Search results {urlSearchParams.get("make") && `for ${urlSearchParams.get("make")}`}</h1>
-        <span className="text-sm text-gray-500">({totalCount} vehicles found)</span>
+        <h1 className="text-2xl font-semibold">
+          {t("search.searchResults")} {urlSearchParams.get("make") && `${t("search.for")} ${urlSearchParams.get("make")}`}
+        </h1>
+        <span className="text-sm text-gray-500">
+          ({totalCount} {t("search.vehiclesFound")})
+        </span>
       </div>
 
       <div className="flex gap-6">
@@ -200,7 +207,7 @@ function SearchPageContent() {
         <div className="md:hidden mb-4">
           <Sheet>
             <SheetTrigger className="flex items-center gap-2 bg-[#333] text-white px-3 py-2 rounded-md text-sm">
-              <SlidersHorizontal width={16} height={16} /> Filters
+              <SlidersHorizontal width={16} height={16} /> {t("common.filters")}
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-[320px]">
               <Sidebar {...sidebarProps} />
@@ -220,7 +227,10 @@ function SearchPageContent() {
           {/* Results header with count and sort */}
           <div className="flex items-center justify-between mb-4 bg-white border border-gray-200 rounded-lg px-4 py-3">
             <p className="text-sm">
-              <span className="font-bold text-[#333]">{totalCount} Offers</span> <span className="text-gray-500">for your search</span>
+              <span className="font-bold text-[#333]">
+                {totalCount} {t("search.offers")}
+              </span>{" "}
+              <span className="text-gray-500">{t("search.forYourSearch")}</span>
             </p>
             <div className="relative">
               <button onClick={() => setSortOpen(!sortOpen)} className="flex items-center gap-1 text-sm text-[#1166a8] font-medium hover:underline">
@@ -256,7 +266,7 @@ function SearchPageContent() {
               <div className="h-32 bg-gray-200 rounded"></div>
             </div>
           ) : listings.length === 0 ? (
-            <p className="text-sm text-gray-500">No vehicles found for this filter.</p>
+            <p className="text-sm text-gray-500">{t("search.noVehiclesFound")}</p>
           ) : (
             <>
               <div className="space-y-4">
@@ -273,7 +283,7 @@ function SearchPageContent() {
                     className="flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   >
                     <ChevronLeft size={16} />
-                    Previous
+                    {t("common.previous")}
                   </button>
 
                   <div className="flex items-center gap-1">
@@ -300,7 +310,7 @@ function SearchPageContent() {
                     disabled={!hasNext}
                     className="flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   >
-                    Next
+                    {t("common.next")}
                     <ChevronRight size={16} />
                   </button>
                 </div>

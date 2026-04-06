@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import type { LastSearch } from "@/lib/api";
+import { useTranslation } from "@/lib/i18n";
 
 const SUGGESTION_BRANDS = ["BMW", "Mercedes-Benz", "Audi", "Volkswagen", "Toyota", "Porsche", "Volvo", "Ford"];
 
@@ -27,6 +28,7 @@ const CarPlaceholderIcon = () => (
 
 const LastSearchCard: React.FC<{ search?: LastSearch }> = ({ search }) => {
   const router = useRouter();
+  const { t } = useTranslation();
   const [suggestedBrand, setSuggestedBrand] = useState(SUGGESTION_BRANDS[0]);
   const [suggestionThumbnails, setSuggestionThumbnails] = useState<string[]>([]);
 
@@ -57,9 +59,9 @@ const LastSearchCard: React.FC<{ search?: LastSearch }> = ({ search }) => {
     }
   };
 
-  const label = search ? search.label : `Try searching for ${suggestedBrand}`;
-  const subtitle = search ? search.subtitle : "Discover vehicles on the marketplace";
-  const headerLabel = search ? "Recent search" : "Search suggestion";
+  const label = search ? search.label : t("home.trySearchingFor", { brand: suggestedBrand });
+  const subtitle = search ? search.subtitle : t("home.discoverVehicles");
+  const headerLabel = search ? t("home.recentSearch") : t("home.searchSuggestion");
 
   return (
     <section className="flex flex-col bg-white rounded-lg border border-[#e2e2e2] shadow-sm w-full">
@@ -93,7 +95,7 @@ const LastSearchCard: React.FC<{ search?: LastSearch }> = ({ search }) => {
         </div>
 
         <button type="button" onClick={handleClick} className="text-xs md:text-sm text-[#1166a8] font-medium hover:text-[#0f5790] ml-4">
-          {search ? "More results" : "Search now"}
+          {search ? t("home.moreResults") : t("home.searchNow")}
         </button>
       </div>
     </section>

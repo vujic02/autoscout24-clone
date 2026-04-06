@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useTranslation, usePageTitle } from "@/lib/i18n";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -8,6 +9,8 @@ import { toast } from "sonner";
 const API_BASE = "http://127.0.0.1:8000";
 
 const LoginPage = () => {
+  const { t } = useTranslation();
+  usePageTitle(t("titles.login"));
   const router = useRouter();
 
   const [email, setEmail] = useState("");
@@ -20,13 +23,13 @@ const LoginPage = () => {
     setError(null);
 
     if (!email || !password) {
-      setError("Please enter e-mail and password.");
+      setError(t("login.pleaseEnterEmailAndPassword"));
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError("Please enter a valid e-mail address.");
+      setError(t("login.pleaseEnterValidEmail"));
       return;
     }
 
@@ -47,7 +50,7 @@ const LoginPage = () => {
       const data = await res.json();
 
       if (!res.ok) {
-        const msg = data.detail || "Login failed. Check your credentials.";
+        const msg = data.detail || t("login.loginFailed");
         setError(msg);
         toast.error(msg);
         return;
@@ -67,7 +70,7 @@ const LoginPage = () => {
         window.dispatchEvent(new Event("authChange"));
       }
 
-      toast.success("Welcome back!");
+      toast.success(t("login.welcomeBack"));
 
       // Redirect to admin if staff, else home
       if (data.is_staff) {
@@ -77,8 +80,8 @@ const LoginPage = () => {
       }
     } catch (err) {
       console.error(err);
-      setError("Something went wrong. Please try again.");
-      toast.error("Something went wrong. Please try again.");
+      setError(t("common.somethingWentWrong"));
+      toast.error(t("common.somethingWentWrong"));
     } finally {
       setLoading(false);
     }
@@ -105,23 +108,23 @@ const LoginPage = () => {
           </div>
 
           {/* Title */}
-          <h1 className="text-xl font-semibold text-gray-900 text-center mb-2">Sign in</h1>
+          <h1 className="text-xl font-semibold text-gray-900 text-center mb-2">{t("login.signIn")}</h1>
 
-          <p className="text-sm text-gray-600 text-center mb-6">Log in with your email address to access your account.</p>
+          <p className="text-sm text-gray-600 text-center mb-6">{t("login.signInDescription")}</p>
 
           {/* Email input */}
           <form className="space-y-4" onSubmit={handleSubmit}>
             {error && <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-md px-3 py-2">{error}</div>}
             <div className="space-y-1">
               <label htmlFor="email" className="block text-sm font-medium text-gray-800">
-                E-mail address
+                {t("login.emailAddress")}
               </label>
 
               <input
                 id="email"
                 type="email"
                 autoComplete="email"
-                placeholder="e.g. max.mustermann@example.com"
+                placeholder={t("login.emailPlaceholder")}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#1166a8] focus:border-[#1166a8]"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -130,14 +133,14 @@ const LoginPage = () => {
 
             <div className="space-y-1">
               <label htmlFor="password" className="block text-sm font-medium text-gray-800">
-                Password
+                {t("login.password")}
               </label>
 
               <input
                 id="password"
                 type="password"
                 autoComplete="current-password"
-                placeholder="Your password"
+                placeholder={t("login.passwordPlaceholder")}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#1166a8] focus:border-[#1166a8]"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -149,29 +152,29 @@ const LoginPage = () => {
               disabled={loading}
               className="w-full bg-[#1166a8] hover:bg-[#0e568f] disabled:opacity-60 disabled:cursor-not-allowed text-white text-sm font-medium rounded-md py-2.5 mt-2 transition-colors"
             >
-              {loading ? "Signing in..." : "Sign in"}
+              {loading ? t("login.signingIn") : t("login.signIn")}
             </button>
           </form>
 
           {/* Forgot password */}
           <div className="text-center mt-4">
             <a className="text-xs text-[#1166a8] hover:underline cursor-pointer" href="#">
-              Forgot your password?
+              {t("login.forgotPassword")}
             </a>
           </div>
 
           {/* Divider */}
           <div className="flex items-center my-4">
             <div className="flex-1 h-px bg-gray-200" />
-            <span className="px-3 text-xs text-gray-500">New here?</span>
+            <span className="px-3 text-xs text-gray-500">{t("login.newHere")}</span>
             <div className="flex-1 h-px bg-gray-200" />
           </div>
 
           {/* Register redirect */}
           <p className="text-center text-sm text-gray-600">
-            Don’t have an account?{" "}
+            {t("login.dontHaveAccount")}{" "}
             <Link href="/register" className="text-[#1166a8] font-medium hover:underline">
-              Register now
+              {t("login.registerNow")}
             </Link>
           </p>
         </div>

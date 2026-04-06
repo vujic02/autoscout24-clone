@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { carsMakeData, carsModelData, countries, fuelTypes, bodyTypes, transmissions, driveTypes, colors } from "@/utils/tabsStatic";
 import CustomSelect from "@/components/ui/custom/Search/CustomSelect";
 import { fetchCurrentUser, ListingQuota } from "@/lib/api";
+import { useTranslation, usePageTitle } from "@/lib/i18n";
 import { toast } from "sonner";
 
 export default function AddListingPage() {
@@ -17,10 +18,12 @@ export default function AddListingPage() {
 }
 
 const AddListingContent = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const listingId = searchParams.get("id");
   const isEditMode = !!listingId;
+  usePageTitle(t(isEditMode ? "titles.editListing" : "titles.addListing"));
 
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
@@ -274,35 +277,33 @@ const AddListingContent = () => {
     const currentYear = new Date().getFullYear();
     const validationErrors: string[] = [];
 
-    if (!formData.title.trim()) validationErrors.push("Title is required.");
-    if (!formData.make) validationErrors.push("Make is required.");
-    if (!formData.model) validationErrors.push("Model is required.");
-    if (!formData.country) validationErrors.push("Country is required.");
-    if (!formData.city.trim()) validationErrors.push("City is required.");
+    if (!formData.title.trim()) validationErrors.push(t("addListing.titleRequired"));
+    if (!formData.make) validationErrors.push(t("addListing.makeRequired"));
+    if (!formData.model) validationErrors.push(t("addListing.modelRequired"));
+    if (!formData.country) validationErrors.push(t("addListing.countryRequired"));
+    if (!formData.city.trim()) validationErrors.push(t("addListing.cityRequired"));
 
     const price = Number(formData.price);
-    if (!formData.price || price <= 0) validationErrors.push("Price must be a positive number.");
+    if (!formData.price || price <= 0) validationErrors.push(t("addListing.pricePositive"));
 
     const mileage = Number(formData.mileage);
     if (!formData.mileage && formData.mileage !== 0) {
-      validationErrors.push("Mileage is required.");
+      validationErrors.push(t("addListing.mileageRequired"));
     } else if (mileage < 0) {
-      validationErrors.push("Mileage cannot be negative.");
+      validationErrors.push(t("addListing.mileageNonNegative"));
     }
 
     const year = Number(formData.year);
-    if (year < 1900 || year > currentYear + 1) validationErrors.push(`Year must be between 1900 and ${currentYear + 1}.`);
+    if (year < 1900 || year > currentYear + 1) validationErrors.push(t("addListing.yearRange", { year: String(currentYear + 1) }));
 
     const regYear = Number(formData.registration_year);
-    if (regYear < 1900 || regYear > currentYear + 1) validationErrors.push(`Registration year must be between 1900 and ${currentYear + 1}.`);
+    if (regYear < 1900 || regYear > currentYear + 1) validationErrors.push(t("addListing.registrationYearRange", { year: String(currentYear + 1) }));
 
-    if (formData.horsepower && Number(formData.horsepower) < 0) validationErrors.push("Horsepower cannot be negative.");
-    if (formData.engine_displacement && Number(formData.engine_displacement) < 0) validationErrors.push("Engine displacement cannot be negative.");
-    if (formData.number_of_doors && (Number(formData.number_of_doors) < 2 || Number(formData.number_of_doors) > 5))
-      validationErrors.push("Doors must be between 2 and 5.");
-    if (formData.number_of_seats && (Number(formData.number_of_seats) < 1 || Number(formData.number_of_seats) > 9))
-      validationErrors.push("Seats must be between 1 and 9.");
-    if (formData.previous_owners !== "" && Number(formData.previous_owners) < 0) validationErrors.push("Previous owners cannot be negative.");
+    if (formData.horsepower && Number(formData.horsepower) < 0) validationErrors.push(t("addListing.horsepowerNonNegative"));
+    if (formData.engine_displacement && Number(formData.engine_displacement) < 0) validationErrors.push(t("addListing.displacementNonNegative"));
+    if (formData.number_of_doors && (Number(formData.number_of_doors) < 2 || Number(formData.number_of_doors) > 5)) validationErrors.push(t("addListing.doorsRange"));
+    if (formData.number_of_seats && (Number(formData.number_of_seats) < 1 || Number(formData.number_of_seats) > 9)) validationErrors.push(t("addListing.seatsRange"));
+    if (formData.previous_owners !== "" && Number(formData.previous_owners) < 0) validationErrors.push(t("addListing.previousOwnersNonNegative"));
 
     if (validationErrors.length > 0) {
       const msg = validationErrors.join(" ");
@@ -371,7 +372,7 @@ const AddListingContent = () => {
       }
 
       hasUnsavedChanges.current = false;
-      toast.success(isEditMode ? "Listing updated successfully!" : "Listing created successfully!");
+      toast.success(isEditMode ? t("addListing.listingUpdated") : t("addListing.listingCreated"));
       router.push(isEditMode ? `/vehicle/${listingId}` : "/");
     } catch (err) {
       console.error("Error:", err);
@@ -410,16 +411,14 @@ const AddListingContent = () => {
             <button onClick={() => router.back()} className="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="Back">
               <ArrowLeft size={20} />
             </button>
-            <h1 className="text-3xl font-bold">Listing Limit Reached</h1>
+            <h1 className="text-3xl font-bold">{t("addListing.listingLimitReached")}</h1>
           </div>
           <div className="mb-6 p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-md">
-            <p className="font-medium mb-1">You already have {quota.used} active listing(s).</p>
-            <p className="text-sm">
-              Regular users can have a maximum of {quota.max} active listing at a time. Please remove or deactivate your current listing before adding another.
-            </p>
+            <p className="font-medium mb-1">{t("addListing.alreadyHaveListings", { count: String(quota.used) })}</p>
+            <p className="text-sm">{t("addListing.maxListingsMessage", { max: String(quota.max) })}</p>
           </div>
           <Button onClick={() => router.push("/my-listings")} className="bg-black text-white hover:bg-gray-800">
-            Go to My Listings
+            {t("addListing.goToMyListings")}
           </Button>
         </div>
       </main>
@@ -436,16 +435,16 @@ const AddListingContent = () => {
           <button onClick={() => router.back()} className="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="Back">
             <ArrowLeft size={20} />
           </button>
-          <h1 className="text-3xl font-bold">{isEditMode ? "Edit Listing" : "Create a Listing"}</h1>
+          <h1 className="text-3xl font-bold">{isEditMode ? t("addListing.editListing") : t("addListing.createListing")}</h1>
         </div>
-        <p className="text-gray-600 mb-8 pl-12">{isEditMode ? "Update your vehicle details" : "Fill in the details of your vehicle"}</p>
+        <p className="text-gray-600 mb-8 pl-12">{isEditMode ? t("addListing.updateDetails") : t("addListing.fillDetails")}</p>
 
         {error && <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-md">{error}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Image Upload */}
           <div>
-            <label className={labelClasses}>Vehicle Images</label>
+            <label className={labelClasses}>{t("addListing.vehicleImages")}</label>
             <div className="relative">
               <input
                 type="file"
@@ -457,7 +456,7 @@ const AddListingContent = () => {
               {/* Display existing images */}
               {existingImages.length > 0 && (
                 <div className="mt-3 space-y-2">
-                  <p className="text-sm font-medium text-gray-600">Existing Images:</p>
+                  <p className="text-sm font-medium text-gray-600">{t("addListing.existingImages")}</p>
                   <div className="grid grid-cols-4 gap-2">
                     {existingImages.map((img, idx) => (
                       <div key={idx} className="relative">
@@ -477,7 +476,7 @@ const AddListingContent = () => {
               {/* Display new image previews */}
               {imagePreviews.length > 0 && (
                 <div className="mt-3 space-y-2">
-                  <p className="text-sm font-medium text-gray-600">New Images:</p>
+                  <p className="text-sm font-medium text-gray-600">{t("addListing.newImages")}</p>
                   <div className="grid grid-cols-4 gap-2">
                     {imagePreviews.map((preview, idx) => (
                       <div key={idx} className="relative">
@@ -500,7 +499,7 @@ const AddListingContent = () => {
           {/* Title */}
           <div>
             <label htmlFor="title" className={labelClasses}>
-              Title
+              {t("addListing.title")}
             </label>
             <input
               type="text"
@@ -508,7 +507,7 @@ const AddListingContent = () => {
               name="title"
               value={formData.title}
               onChange={handleInputChange}
-              placeholder="e.g., BMW 320d M Sport"
+              placeholder={t("addListing.titlePlaceholder")}
               className={inputClasses}
               required
             />
@@ -517,14 +516,14 @@ const AddListingContent = () => {
           {/* Make and Model */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={labelClasses}>Make</label>
-              <CustomSelect data={carsMakeData} placeholder="Select a make" setSelectedOption={setSelectedMake} />
+              <label className={labelClasses}>{t("addListing.make")}</label>
+              <CustomSelect data={carsMakeData} placeholder={t("addListing.selectMake")} setSelectedOption={setSelectedMake} />
             </div>
             <div>
-              <label className={labelClasses}>Model</label>
+              <label className={labelClasses}>{t("addListing.model")}</label>
               <CustomSelect
                 data={selectedMake ? [{ label: "Models", options: modelOptions }] : [{ label: "Models", options: [] }]}
-                placeholder="Select a model"
+                placeholder={t("addListing.selectModel")}
                 disabled={!selectedMake}
                 setSelectedOption={setSelectedModel}
               />
@@ -535,7 +534,7 @@ const AddListingContent = () => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="year" className={labelClasses}>
-                Year
+                {t("addListing.year")}
               </label>
               <input
                 type="number"
@@ -551,7 +550,7 @@ const AddListingContent = () => {
             </div>
             <div>
               <label htmlFor="registration_year" className={labelClasses}>
-                Registration Year
+                {t("addListing.registrationYear")}
               </label>
               <input
                 type="number"
@@ -571,7 +570,7 @@ const AddListingContent = () => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="mileage" className={labelClasses}>
-                Mileage (km)
+                {t("addListing.mileageKm")}
               </label>
               <input
                 type="number"
@@ -579,7 +578,7 @@ const AddListingContent = () => {
                 name="mileage"
                 value={formData.mileage}
                 onChange={handleInputChange}
-                placeholder="e.g., 50000"
+                placeholder={t("addListing.mileagePlaceholder")}
                 min="0"
                 className={inputClasses}
                 required
@@ -587,7 +586,7 @@ const AddListingContent = () => {
             </div>
             <div>
               <label htmlFor="price" className={labelClasses}>
-                Price (€)
+                {t("addListing.priceEur")}
               </label>
               <input
                 type="number"
@@ -595,7 +594,7 @@ const AddListingContent = () => {
                 name="price"
                 value={formData.price}
                 onChange={handleInputChange}
-                placeholder="e.g., 25000"
+                placeholder={t("addListing.pricePlaceholder")}
                 min="0"
                 className={inputClasses}
                 required
@@ -605,33 +604,33 @@ const AddListingContent = () => {
 
           {/* Fuel Type */}
           <div>
-            <label className={labelClasses}>Fuel Type</label>
-            <CustomSelect data={fuelTypes} placeholder="Select fuel type" setSelectedOption={setSelectedFuel} />
+            <label className={labelClasses}>{t("addListing.fuelType")}</label>
+            <CustomSelect data={fuelTypes} placeholder={t("addListing.selectFuelType")} setSelectedOption={setSelectedFuel} />
           </div>
 
           {/* Body Type and Transmission */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={labelClasses}>Body Type</label>
-              <CustomSelect data={bodyTypes} placeholder="Select body type" setSelectedOption={setSelectedBodyType} />
+              <label className={labelClasses}>{t("addListing.bodyType")}</label>
+              <CustomSelect data={bodyTypes} placeholder={t("addListing.selectBodyType")} setSelectedOption={setSelectedBodyType} />
             </div>
             <div>
-              <label className={labelClasses}>Transmission</label>
-              <CustomSelect data={transmissions} placeholder="Select transmission" setSelectedOption={setSelectedTransmission} />
+              <label className={labelClasses}>{t("addListing.transmission")}</label>
+              <CustomSelect data={transmissions} placeholder={t("addListing.selectTransmission")} setSelectedOption={setSelectedTransmission} />
             </div>
           </div>
 
           {/* Drive Type */}
           <div>
-            <label className={labelClasses}>Drive Type</label>
-            <CustomSelect data={driveTypes} placeholder="Select drive type" setSelectedOption={setSelectedDriveType} />
+            <label className={labelClasses}>{t("addListing.driveType")}</label>
+            <CustomSelect data={driveTypes} placeholder={t("addListing.selectDriveType")} setSelectedOption={setSelectedDriveType} />
           </div>
 
           {/* Horsepower and Engine Displacement */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="horsepower" className={labelClasses}>
-                Horsepower (hp)
+                {t("addListing.horsepowerHp")}
               </label>
               <input
                 type="number"
@@ -639,14 +638,14 @@ const AddListingContent = () => {
                 name="horsepower"
                 value={formData.horsepower}
                 onChange={handleInputChange}
-                placeholder="e.g., 150"
+                placeholder={t("addListing.horsepowerPlaceholder")}
                 min="0"
                 className={inputClasses}
               />
             </div>
             <div>
               <label htmlFor="engine_displacement" className={labelClasses}>
-                Engine Displacement (cc)
+                {t("addListing.engineDisplacementCc")}
               </label>
               <input
                 type="number"
@@ -654,7 +653,7 @@ const AddListingContent = () => {
                 name="engine_displacement"
                 value={formData.engine_displacement}
                 onChange={handleInputChange}
-                placeholder="e.g., 1998"
+                placeholder={t("addListing.engineDisplacementPlaceholder")}
                 min="0"
                 className={inputClasses}
               />
@@ -664,12 +663,12 @@ const AddListingContent = () => {
           {/* Exterior and Interior Color */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={labelClasses}>Exterior Color</label>
-              <CustomSelect data={colors} placeholder="Select exterior color" setSelectedOption={setSelectedExteriorColor} />
+              <label className={labelClasses}>{t("addListing.exteriorColor")}</label>
+              <CustomSelect data={colors} placeholder={t("addListing.selectExteriorColor")} setSelectedOption={setSelectedExteriorColor} />
             </div>
             <div>
-              <label className={labelClasses}>Interior Color</label>
-              <CustomSelect data={colors} placeholder="Select interior color" setSelectedOption={setSelectedInteriorColor} />
+              <label className={labelClasses}>{t("addListing.interiorColor")}</label>
+              <CustomSelect data={colors} placeholder={t("addListing.selectInteriorColor")} setSelectedOption={setSelectedInteriorColor} />
             </div>
           </div>
 
@@ -677,7 +676,7 @@ const AddListingContent = () => {
           <div className="grid grid-cols-3 gap-4">
             <div>
               <label htmlFor="number_of_doors" className={labelClasses}>
-                Doors
+                {t("addListing.doors")}
               </label>
               <input
                 type="number"
@@ -685,7 +684,7 @@ const AddListingContent = () => {
                 name="number_of_doors"
                 value={formData.number_of_doors}
                 onChange={handleInputChange}
-                placeholder="e.g., 4"
+                placeholder={t("addListing.doorsPlaceholder")}
                 min="2"
                 max="5"
                 className={inputClasses}
@@ -693,7 +692,7 @@ const AddListingContent = () => {
             </div>
             <div>
               <label htmlFor="number_of_seats" className={labelClasses}>
-                Seats
+                {t("addListing.seats")}
               </label>
               <input
                 type="number"
@@ -701,7 +700,7 @@ const AddListingContent = () => {
                 name="number_of_seats"
                 value={formData.number_of_seats}
                 onChange={handleInputChange}
-                placeholder="e.g., 5"
+                placeholder={t("addListing.seatsPlaceholder")}
                 min="1"
                 max="9"
                 className={inputClasses}
@@ -709,7 +708,7 @@ const AddListingContent = () => {
             </div>
             <div>
               <label htmlFor="previous_owners" className={labelClasses}>
-                Previous Owners
+                {t("addListing.previousOwners")}
               </label>
               <input
                 type="number"
@@ -717,7 +716,7 @@ const AddListingContent = () => {
                 name="previous_owners"
                 value={formData.previous_owners}
                 onChange={handleInputChange}
-                placeholder="e.g., 1"
+                placeholder={t("addListing.previousOwnersPlaceholder")}
                 min="0"
                 className={inputClasses}
               />
@@ -727,28 +726,37 @@ const AddListingContent = () => {
           {/* Country and City */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={labelClasses}>Country</label>
-              <CustomSelect data={countries} placeholder="Select a country" setSelectedOption={setSelectedCountry} />
+              <label className={labelClasses}>{t("addListing.country")}</label>
+              <CustomSelect data={countries} placeholder={t("addListing.selectCountry")} setSelectedOption={setSelectedCountry} />
             </div>
             <div>
               <label htmlFor="city" className={labelClasses}>
-                City
+                {t("addListing.city")}
               </label>
-              <input type="text" id="city" name="city" value={formData.city} onChange={handleInputChange} placeholder="e.g., Munich" className={inputClasses} required />
+              <input
+                type="text"
+                id="city"
+                name="city"
+                value={formData.city}
+                onChange={handleInputChange}
+                placeholder={t("addListing.cityPlaceholder")}
+                className={inputClasses}
+                required
+              />
             </div>
           </div>
 
           {/* Description */}
           <div>
             <label htmlFor="description" className={labelClasses}>
-              Description
+              {t("addListing.description")}
             </label>
             <textarea
               id="description"
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              placeholder="Add any additional details about the vehicle..."
+              placeholder={t("addListing.descriptionPlaceholder")}
               rows={5}
               className={inputClasses}
             />
@@ -761,10 +769,16 @@ const AddListingContent = () => {
               disabled={loading}
               className="flex-1 bg-black text-white py-3 rounded-md font-medium hover:bg-gray-800 transition-colors disabled:opacity-50"
             >
-              {loading ? (isEditMode ? "Updating..." : "Creating...") : isEditMode ? "Update Listing" : "Create Listing"}
+              {loading
+                ? isEditMode
+                  ? t("addListing.updating")
+                  : t("addListing.creating")
+                : isEditMode
+                  ? t("addListing.updateListingBtn")
+                  : t("addListing.createListingBtn")}
             </Button>
             <Button type="button" onClick={() => router.back()} className="flex-1 bg-gray-200 text-black py-3 rounded-md font-medium hover:bg-gray-300 transition-colors">
-              Cancel
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

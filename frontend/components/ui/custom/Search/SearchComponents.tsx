@@ -4,6 +4,7 @@ import CustomSelect from "@/components/ui/custom/Search/CustomSelect";
 import { customSelectData, customSelectDataDynamic } from "@/types/Home";
 import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 
 interface VehicleSelectProps {
   make: customSelectData;
@@ -51,6 +52,7 @@ const CarsComponent = ({
   const [selectedHpTo, setSelectedHpTo] = useState("");
   const modelData = model[selectedMake];
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -78,15 +80,20 @@ const CarsComponent = ({
   return (
     <div className="flex flex-col gap-3">
       <div className="grid grid-cols-3 gap-3">
-        <CustomSelect placeholder="Make" data={make} setSelectedOption={setSelectedMake} />
-        <CustomSelect placeholder="Model" disabled={selectedMake === "" ? true : false} data={modelData && [modelData]} setSelectedOption={setSelectedModel} />
-        <CustomSelect placeholder="Price up to (€)" data={prices} setSelectedOption={setSelectedPrice} />
+        <CustomSelect placeholder={t("filters.make")} data={make} setSelectedOption={setSelectedMake} />
+        <CustomSelect
+          placeholder={t("filters.model")}
+          disabled={selectedMake === "" ? true : false}
+          data={modelData && [modelData]}
+          setSelectedOption={setSelectedModel}
+        />
+        <CustomSelect placeholder={t("filters.priceUpTo")} data={prices} setSelectedOption={setSelectedPrice} />
       </div>
       <div className="grid grid-cols-3 gap-3">
-        <CustomSelect placeholder="First registration from" data={firstRegistration} setSelectedOption={setSelectedRegistration} />
+        <CustomSelect placeholder={t("filters.firstRegistrationFrom")} data={firstRegistration} setSelectedOption={setSelectedRegistration} />
         <div className="grid grid-cols-2 gap-3">
-          <CustomSelect placeholder="Europe" data={countries} setSelectedOption={setSelectedCountry} />
-          {fuelTypes && <CustomSelect placeholder="Fuel Type" data={fuelTypes} setSelectedOption={setSelectedFuelType} />}
+          <CustomSelect placeholder={t("filters.europe")} data={countries} setSelectedOption={setSelectedCountry} />
+          {fuelTypes && <CustomSelect placeholder={t("filters.fuelType")} data={fuelTypes} setSelectedOption={setSelectedFuelType} />}
         </div>
         <button
           style={{
@@ -95,25 +102,25 @@ const CarsComponent = ({
           onClick={() => handleSearch()}
           className="w-full bg-[#f5f200] hover:bg-[#fffb19] rounded-sm text-sm font-medium"
         >
-          Search
+          {t("common.search")}
         </button>
       </div>
 
       {showRefine && (
         <div className="flex flex-col gap-3 pt-1">
           <div className="grid grid-cols-3 gap-3">
-            {bodyTypes && <CustomSelect placeholder="Body Type" data={bodyTypes} setSelectedOption={setSelectedBodyType} />}
-            {transmissions && <CustomSelect placeholder="Transmission" data={transmissions} setSelectedOption={setSelectedTransmission} />}
-            {driveTypes && <CustomSelect placeholder="Drive Type" data={driveTypes} setSelectedOption={setSelectedDriveType} />}
+            {bodyTypes && <CustomSelect placeholder={t("filters.bodyType")} data={bodyTypes} setSelectedOption={setSelectedBodyType} />}
+            {transmissions && <CustomSelect placeholder={t("filters.transmission")} data={transmissions} setSelectedOption={setSelectedTransmission} />}
+            {driveTypes && <CustomSelect placeholder={t("filters.driveType")} data={driveTypes} setSelectedOption={setSelectedDriveType} />}
           </div>
           <div className="grid grid-cols-3 gap-3">
-            {colors && <CustomSelect placeholder="Exterior Color" data={colors} setSelectedOption={setSelectedColor} />}
-            {mileageOptions && <CustomSelect placeholder="Mileage from" data={mileageOptions} setSelectedOption={setSelectedMileageFrom} />}
-            {mileageOptions && <CustomSelect placeholder="Mileage to" data={mileageOptions} setSelectedOption={setSelectedMileageTo} />}
+            {colors && <CustomSelect placeholder={t("filters.exteriorColor")} data={colors} setSelectedOption={setSelectedColor} />}
+            {mileageOptions && <CustomSelect placeholder={t("filters.mileageFrom")} data={mileageOptions} setSelectedOption={setSelectedMileageFrom} />}
+            {mileageOptions && <CustomSelect placeholder={t("filters.mileageTo")} data={mileageOptions} setSelectedOption={setSelectedMileageTo} />}
           </div>
           <div className="grid grid-cols-3 gap-3">
-            {horsepowerOptions && <CustomSelect placeholder="HP from" data={horsepowerOptions} setSelectedOption={setSelectedHpFrom} />}
-            {horsepowerOptions && <CustomSelect placeholder="HP to" data={horsepowerOptions} setSelectedOption={setSelectedHpTo} />}
+            {horsepowerOptions && <CustomSelect placeholder={t("filters.hpFrom")} data={horsepowerOptions} setSelectedOption={setSelectedHpFrom} />}
+            {horsepowerOptions && <CustomSelect placeholder={t("filters.hpTo")} data={horsepowerOptions} setSelectedOption={setSelectedHpTo} />}
             <div />
           </div>
         </div>
@@ -123,7 +130,7 @@ const CarsComponent = ({
         onClick={() => setShowRefine(!showRefine)}
         className="flex items-center justify-center gap-1 text-[#2a6dc9] text-sm font-medium hover:underline cursor-pointer mx-auto"
       >
-        Refine search
+        {t("filters.refineSearch")}
         {showRefine ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
       </button>
     </div>
@@ -157,6 +164,7 @@ const MotorcyclesComponent = ({
   const [selectedHpTo, setSelectedHpTo] = useState("");
   const modelData = model[selectedMake];
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -183,13 +191,18 @@ const MotorcyclesComponent = ({
   return (
     <div className="flex flex-col gap-3">
       <div className="grid grid-cols-3 gap-3">
-        <CustomSelect placeholder="Make" data={make} setSelectedOption={setSelectedMake} />
-        <CustomSelect placeholder="Model" disabled={selectedMake === "" ? true : false} data={modelData && [modelData]} setSelectedOption={setSelectedModel} />
-        <CustomSelect placeholder="Price up to (€)" data={prices} setSelectedOption={setSelectedPrice} />
+        <CustomSelect placeholder={t("filters.make")} data={make} setSelectedOption={setSelectedMake} />
+        <CustomSelect
+          placeholder={t("filters.model")}
+          disabled={selectedMake === "" ? true : false}
+          data={modelData && [modelData]}
+          setSelectedOption={setSelectedModel}
+        />
+        <CustomSelect placeholder={t("filters.priceUpTo")} data={prices} setSelectedOption={setSelectedPrice} />
       </div>
       <div className="grid grid-cols-3 gap-3">
-        <CustomSelect placeholder="First registration from" data={firstRegistration} setSelectedOption={setSelectedRegistration} />
-        <CustomSelect placeholder="Europe" data={countries} setSelectedOption={setSelectedCountry} />
+        <CustomSelect placeholder={t("filters.firstRegistrationFrom")} data={firstRegistration} setSelectedOption={setSelectedRegistration} />
+        <CustomSelect placeholder={t("filters.europe")} data={countries} setSelectedOption={setSelectedCountry} />
         <button
           style={{
             boxShadow: "0 1px 3px 0 rgba(0,0,0,.5)",
@@ -197,24 +210,24 @@ const MotorcyclesComponent = ({
           onClick={() => handleSearch()}
           className="w-full bg-[#f5f200] hover:bg-[#fffb19] rounded-sm text-sm font-medium"
         >
-          Search
+          {t("common.search")}
         </button>
       </div>
 
       {showRefine && (
         <div className="flex flex-col gap-3 pt-1">
           <div className="grid grid-cols-3 gap-3">
-            {transmissions && <CustomSelect placeholder="Transmission" data={transmissions} setSelectedOption={setSelectedTransmission} />}
-            {driveTypes && <CustomSelect placeholder="Drive Type" data={driveTypes} setSelectedOption={setSelectedDriveType} />}
-            {colors && <CustomSelect placeholder="Exterior Color" data={colors} setSelectedOption={setSelectedColor} />}
+            {transmissions && <CustomSelect placeholder={t("filters.transmission")} data={transmissions} setSelectedOption={setSelectedTransmission} />}
+            {driveTypes && <CustomSelect placeholder={t("filters.driveType")} data={driveTypes} setSelectedOption={setSelectedDriveType} />}
+            {colors && <CustomSelect placeholder={t("filters.exteriorColor")} data={colors} setSelectedOption={setSelectedColor} />}
           </div>
           <div className="grid grid-cols-3 gap-3">
-            {mileageOptions && <CustomSelect placeholder="Mileage from" data={mileageOptions} setSelectedOption={setSelectedMileageFrom} />}
-            {mileageOptions && <CustomSelect placeholder="Mileage to" data={mileageOptions} setSelectedOption={setSelectedMileageTo} />}
-            {horsepowerOptions && <CustomSelect placeholder="HP from" data={horsepowerOptions} setSelectedOption={setSelectedHpFrom} />}
+            {mileageOptions && <CustomSelect placeholder={t("filters.mileageFrom")} data={mileageOptions} setSelectedOption={setSelectedMileageFrom} />}
+            {mileageOptions && <CustomSelect placeholder={t("filters.mileageTo")} data={mileageOptions} setSelectedOption={setSelectedMileageTo} />}
+            {horsepowerOptions && <CustomSelect placeholder={t("filters.hpFrom")} data={horsepowerOptions} setSelectedOption={setSelectedHpFrom} />}
           </div>
           <div className="grid grid-cols-3 gap-3">
-            {horsepowerOptions && <CustomSelect placeholder="HP to" data={horsepowerOptions} setSelectedOption={setSelectedHpTo} />}
+            {horsepowerOptions && <CustomSelect placeholder={t("filters.hpTo")} data={horsepowerOptions} setSelectedOption={setSelectedHpTo} />}
             <div />
             <div />
           </div>
@@ -225,7 +238,7 @@ const MotorcyclesComponent = ({
         onClick={() => setShowRefine(!showRefine)}
         className="flex items-center justify-center gap-1 text-[#2a6dc9] text-sm font-medium hover:underline cursor-pointer mx-auto"
       >
-        Refine search
+        {t("filters.refineSearch")}
         {showRefine ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
       </button>
     </div>

@@ -6,6 +6,7 @@ import { Edit, Trash2, ArrowLeft, TrendingUp, Package, DollarSign, Zap, Loader2 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { toast } from "sonner";
+import { useTranslation, usePageTitle } from "@/lib/i18n";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,6 +36,8 @@ interface Listing {
 
 const MyListingsPage = () => {
   const router = useRouter();
+  const { t } = useTranslation();
+  usePageTitle(t("titles.myListings"));
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -119,7 +122,7 @@ const MyListingsPage = () => {
       }
 
       setListings(listings.filter((listing) => listing.id !== listingId));
-      toast.success("Listing deleted successfully");
+      toast.success(t("myListings.listingDeleted"));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to delete listing");
     } finally {
@@ -192,10 +195,10 @@ const MyListingsPage = () => {
       <div className="mb-8">
         <button onClick={() => router.back()} className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors">
           <ArrowLeft size={20} />
-          Back
+          {t("common.back")}
         </button>
-        <h1 className="text-3xl font-bold text-gray-900">My Listings</h1>
-        <p className="text-gray-600 mt-2">Manage your vehicle listings</p>
+        <h1 className="text-3xl font-bold text-gray-900">{t("myListings.myListings")}</h1>
+        <p className="text-gray-600 mt-2">{t("myListings.manageListings")}</p>
       </div>
 
       {error && <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded mb-6">{error}</div>}
@@ -206,7 +209,7 @@ const MyListingsPage = () => {
           <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-6 shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-100 text-sm font-medium">Total Listings</p>
+                <p className="text-blue-100 text-sm font-medium">{t("myListings.totalListings")}</p>
                 <p className="text-3xl font-bold mt-2">{statistics.totalListings}</p>
               </div>
               <Package size={40} className="opacity-20" />
@@ -217,7 +220,7 @@ const MyListingsPage = () => {
           <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg p-6 shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm font-medium">Average Price</p>
+                <p className="text-green-100 text-sm font-medium">{t("myListings.averagePrice")}</p>
                 <p className="text-3xl font-bold mt-2">€{statistics.averagePrice.toLocaleString()}</p>
               </div>
               <DollarSign size={40} className="opacity-20" />
@@ -228,7 +231,7 @@ const MyListingsPage = () => {
           <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg p-6 shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-100 text-sm font-medium">Most Listed Brand</p>
+                <p className="text-purple-100 text-sm font-medium">{t("myListings.mostListedBrand")}</p>
                 <p className="text-3xl font-bold mt-2">{statistics.mostListedBrand}</p>
               </div>
               <TrendingUp size={40} className="opacity-20" />
@@ -239,7 +242,7 @@ const MyListingsPage = () => {
           <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-lg p-6 shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-orange-100 text-sm font-medium">Total Value</p>
+                <p className="text-orange-100 text-sm font-medium">{t("myListings.totalValue")}</p>
                 <p className="text-3xl font-bold mt-2">€{statistics.totalValue.toLocaleString()}</p>
               </div>
               <Zap size={40} className="opacity-20" />
@@ -252,7 +255,7 @@ const MyListingsPage = () => {
         <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Brand Breakdown */}
           <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Brand Breakdown</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t("myListings.brandBreakdown")}</h3>
             <div className="space-y-3">
               {statistics.brandBreakdown.slice(0, 5).map((item, idx) => (
                 <div key={idx}>
@@ -275,7 +278,7 @@ const MyListingsPage = () => {
 
           {/* Fuel Type Breakdown */}
           <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Fuel Type Distribution</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t("myListings.fuelTypeDistribution")}</h3>
             <div className="space-y-3">
               {statistics.fuelTypeBreakdown.map((item, idx) => (
                 <div key={idx}>
@@ -302,9 +305,9 @@ const MyListingsPage = () => {
 
       {listings.length === 0 ? (
         <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
-          <p className="text-gray-600 text-lg mb-4">You haven&apos;t created any listings yet.</p>
+          <p className="text-gray-600 text-lg mb-4">{t("myListings.noListingsYet")}</p>
           <Link href="/add-listing">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">Create Your First Listing</Button>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">{t("myListings.createFirstListing")}</Button>
           </Link>
         </div>
       ) : (
@@ -339,21 +342,23 @@ const MyListingsPage = () => {
 
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 my-4 text-sm">
                     <div>
-                      <p className="text-gray-600">Mileage</p>
-                      <p className="font-semibold">{listing.mileage.toLocaleString()} km</p>
+                      <p className="text-gray-600">{t("myListings.mileage")}</p>
+                      <p className="font-semibold">
+                        {listing.mileage.toLocaleString()} {t("common.km")}
+                      </p>
                     </div>
                     <div>
-                      <p className="text-gray-600">Fuel Type</p>
+                      <p className="text-gray-600">{t("myListings.fuelType")}</p>
                       <p className="font-semibold">{listing.fuel_type}</p>
                     </div>
                     <div>
-                      <p className="text-gray-600">Location</p>
+                      <p className="text-gray-600">{t("myListings.location")}</p>
                       <p className="font-semibold">
                         {listing.city}, {listing.country}
                       </p>
                     </div>
                     <div>
-                      <p className="text-gray-600">Listing ID</p>
+                      <p className="text-gray-600">{t("myListings.listingId")}</p>
                       <p className="font-semibold">#{listing.id}</p>
                     </div>
                   </div>
@@ -362,13 +367,13 @@ const MyListingsPage = () => {
                   <div className="flex gap-2 mt-4">
                     <Link href={`/vehicle/${listing.id}`} className="flex-1">
                       <Button variant="outline" className="w-full">
-                        View Listing
+                        {t("myListings.viewListing")}
                       </Button>
                     </Link>
                     <Link href={`/add-listing?id=${listing.id}`}>
                       <button className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-md transition-colors flex items-center gap-2">
                         <Edit size={18} />
-                        Edit
+                        {t("common.edit")}
                       </button>
                     </Link>
                     <AlertDialog>
@@ -378,18 +383,18 @@ const MyListingsPage = () => {
                           className="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-900 rounded-md transition-colors flex items-center gap-2 disabled:opacity-50"
                         >
                           {deletingId === listing.id ? <Loader2 size={18} className="animate-spin" /> : <Trash2 size={18} />}
-                          Delete
+                          {t("common.delete")}
                         </button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Delete listing</AlertDialogTitle>
-                          <AlertDialogDescription>Are you sure you want to delete &quot;{listing.title}&quot;? This action cannot be undone.</AlertDialogDescription>
+                          <AlertDialogTitle>{t("myListings.deleteListing")}</AlertDialogTitle>
+                          <AlertDialogDescription>{t("myListings.deleteConfirm", { title: listing.title })}</AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
                           <AlertDialogAction onClick={() => handleDelete(listing.id)} className="bg-red-600 hover:bg-red-700 text-white">
-                            Delete
+                            {t("common.delete")}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -406,11 +411,11 @@ const MyListingsPage = () => {
         <div className="mt-8 pt-6 border-t border-gray-200 flex justify-between">
           <div>
             <p className="text-gray-600">
-              Total listings: <span className="font-bold text-gray-900">{listings.length}</span>
+              {t("myListings.totalListingsCount")} <span className="font-bold text-gray-900">{listings.length}</span>
             </p>
           </div>
           <Link href="/add-listing">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">Add New Listing</Button>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">{t("myListings.addNewListing")}</Button>
           </Link>
         </div>
       )}

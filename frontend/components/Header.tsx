@@ -1,14 +1,30 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { HeaderDesktop, HeaderMobile, HeaderMobileOverlay } from "./ui/custom";
+import { useTranslation, Locale } from "@/lib/i18n";
+
+const localeToLanguage: Record<Locale, string> = { en: "English", de: "German" };
+const languageToLocale: Record<string, Locale> = { English: "en", German: "de" };
 
 const Header = () => {
+  const { locale, setLocale } = useTranslation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isLanguagesMobileOpen, setIsLanguagesMobileOpen] = useState(false);
-  const [language, setLanguage] = useState("English");
+  const [language, setLanguageLocal] = useState(localeToLanguage[locale] || "English");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
+
+  // Sync language dropdown with context
+  useEffect(() => {
+    setLanguageLocal(localeToLanguage[locale] || "English");
+  }, [locale]);
+
+  const setLanguage = (lang: string) => {
+    setLanguageLocal(lang);
+    const newLocale = languageToLocale[lang];
+    if (newLocale) setLocale(newLocale);
+  };
 
   // Function to check and update auth status
   const checkAuthStatus = async () => {

@@ -12,7 +12,6 @@
 - ~~Add `previous_owners` count~~
 - ~~Add `seller_type` (Private / Dealer)~~
 - ~~Add `views_count` for popularity tracking~~
-- `status` field exists but is never used — always 'ACTIVE'
 
 ## User / Contact Info -- DONE
 
@@ -55,11 +54,11 @@
 - ~~No search/filter on admin listings~~
 - No bulk actions (multi-select, bulk feature toggle)
 
-## Translations & Localization
+## ~~Translations & Localization~~ -- DONE
 
-- All strings hardcoded in English
-- No i18n framework (next-intl or similar)
-- No locale switching
+- ~~All strings hardcoded in English~~
+- ~~No i18n framework (next-intl or similar) — custom React Context + JSON files~~
+- ~~No locale switching — language switcher in header, stored in localStorage~~
 - Prices always shown in EUR with no formatting options
 
 ## Form Validation

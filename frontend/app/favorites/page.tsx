@@ -5,41 +5,45 @@ import { Check } from "lucide-react";
 import { Listing, getFavoriteIds } from "@/lib/api";
 import VehicleSearchedResult from "@/components/ui/custom/VehicleSearchedResult/VehicleSearchedResult";
 import Image from "next/image";
+import { useTranslation, usePageTitle } from "@/lib/i18n";
 
-const AppPromoSidebar = () => (
-  <aside className="hidden lg:block w-[260px] shrink-0">
-    <div className="bg-white rounded-lg border border-gray-200 p-5 text-center">
-      <h3 className="text-base font-bold text-[#222] mb-2">Germany&apos;s best car market app*</h3>
-      <p className="text-sm text-[#666] mb-4">Get your dream vehicle quickly and easily – just like millions of enthusiastic users already do.</p>
-      <div className="flex justify-center mb-4">
-        <Image src="/icons/favorites_teaser.png" alt="AutoScout24 App" width={200} height={150} />
+const AppPromoSidebar = () => {
+  const { t } = useTranslation();
+  return (
+    <aside className="hidden lg:block w-[260px] shrink-0">
+      <div className="bg-white rounded-lg border border-gray-200 p-5 text-center">
+        <h3 className="text-base font-bold text-[#222] mb-2">{t("favorites.bestCarMarketApp")}</h3>
+        <p className="text-sm text-[#666] mb-4">{t("favorites.getDreamVehicle")}</p>
+        <div className="flex justify-center mb-4">
+          <Image src="/icons/favorites_teaser.png" alt="AutoScout24 App" width={200} height={150} />
+        </div>
+        <div className="text-left">
+          <p className="font-semibold text-[#222] mb-2" style={{ fontSize: "0.9375rem" }}>
+            {t("favorites.stayConnected")}
+          </p>
+          <a
+            href="https://apps.apple.com/us/app/autoscout24-buy-sell-cars/id311785642?mt=8&pt=229724&ct=web2app"
+            target="_blank"
+            className="flex items-center text-black hover:text-blue-950 font-light mb-3"
+            style={{ fontSize: "0.9375rem" }}
+          >
+            <Image className="mr-2" width={18} height={22} src="/icons/ios-icon.svg" alt="" />
+            {t("favorites.forIos")}
+          </a>
+          <a
+            href="https://apps.apple.com/us/app/autoscout24-buy-sell-cars/id311785642?mt=8&pt=229724&ct=web2app"
+            target="_blank"
+            className="flex items-center text-black hover:text-blue-950 font-light"
+            style={{ fontSize: "0.9375rem" }}
+          >
+            <Image className="mr-2" width={18} height={22} src="/icons/android-icon.svg" alt="" />
+            {t("favorites.forAndroid")}
+          </a>
+        </div>
       </div>
-      <div className="text-left">
-        <p className="font-semibold text-[#222] mb-2" style={{ fontSize: "0.9375rem" }}>
-          Stay connected
-        </p>
-        <a
-          href="https://apps.apple.com/us/app/autoscout24-buy-sell-cars/id311785642?mt=8&pt=229724&ct=web2app"
-          target="_blank"
-          className="flex items-center text-black hover:text-blue-950 font-light mb-3"
-          style={{ fontSize: "0.9375rem" }}
-        >
-          <Image className="mr-2" width={18} height={22} src="/icons/ios-icon.svg" alt="" />
-          AutoScout24 for iOS
-        </a>
-        <a
-          href="https://apps.apple.com/us/app/autoscout24-buy-sell-cars/id311785642?mt=8&pt=229724&ct=web2app"
-          target="_blank"
-          className="flex items-center text-black hover:text-blue-950 font-light"
-          style={{ fontSize: "0.9375rem" }}
-        >
-          <Image className="mr-2" width={18} height={22} src="/icons/android-icon.svg" alt="" />
-          AutoScout24 for Android
-        </a>
-      </div>
-    </div>
-  </aside>
-);
+    </aside>
+  );
+};
 
 const NotepadIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80" fill="none">
@@ -54,6 +58,8 @@ const NotepadIcon = () => (
 
 export default function FavoritesPage() {
   const router = useRouter();
+  const { t } = useTranslation();
+  usePageTitle(t("titles.favorites"));
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -93,10 +99,10 @@ export default function FavoritesPage() {
 
         <div className="flex-1 min-w-0">
           <div className="flex items-baseline gap-3 mb-6">
-            <h1 className="text-2xl font-bold text-[#222]">Favorites</h1>
+            <h1 className="text-2xl font-bold text-[#222]">{t("favorites.favorites")}</h1>
             {!loading && (
               <span className="text-sm text-[#666]">
-                {listings.length} {listings.length === 1 ? "vehicle" : "vehicles"}
+                {listings.length} {listings.length === 1 ? t("favorites.vehicle") : t("favorites.vehicles")}
               </span>
             )}
           </div>
@@ -108,26 +114,26 @@ export default function FavoritesPage() {
             </div>
           ) : listings.length === 0 ? (
             <div className="bg-white rounded-lg border border-gray-200 p-8">
-              <h2 className="text-xl font-semibold text-[#222] text-center mb-6">Your notepad is empty.</h2>
+              <h2 className="text-xl font-semibold text-[#222] text-center mb-6">{t("favorites.emptyNotepad")}</h2>
               <div className="flex items-start justify-between gap-8">
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center gap-2">
                     <Check size={18} className="text-[#1166a8] shrink-0" />
-                    <span className="text-sm text-[#666]">Be reliably informed about price reductions</span>
+                    <span className="text-sm text-[#666]">{t("favorites.priceReductions")}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Check size={18} className="text-[#1166a8] shrink-0" />
-                    <span className="text-sm text-[#666]">Don&apos;t miss special offers on certain models</span>
+                    <span className="text-sm text-[#666]">{t("favorites.specialOffers")}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Check size={18} className="text-[#1166a8] shrink-0" />
-                    <span className="text-sm text-[#666]">Compare vehicles easily and clearly</span>
+                    <span className="text-sm text-[#666]">{t("favorites.compareVehicles")}</span>
                   </div>
                   <button
                     onClick={() => router.push("/search")}
                     className="mt-4 bg-[#1166a8] text-white px-6 py-2.5 rounded-md hover:bg-[#0f5790] transition-colors text-sm font-medium w-fit"
                   >
-                    Start search
+                    {t("favorites.startSearch")}
                   </button>
                 </div>
                 <div className="hidden sm:block shrink-0">
