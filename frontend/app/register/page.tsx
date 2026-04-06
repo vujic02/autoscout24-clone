@@ -13,10 +13,25 @@ const RegisterPage = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const getPasswordStrength = (pw: string): { label: string; color: string; width: string } => {
+    if (!pw) return { label: "", color: "", width: "0%" };
+    const hasNumber = /\d/.test(pw);
+    const isLong = pw.length >= 6;
+    const isVeryLong = pw.length >= 10;
+
+    if (!isLong) return { label: "Too short", color: "bg-red-500", width: "25%" };
+    if (!hasNumber) return { label: "Needs a number", color: "bg-orange-500", width: "40%" };
+    if (isVeryLong && hasNumber) return { label: "Strong", color: "bg-green-500", width: "100%" };
+    return { label: "Good", color: "bg-yellow-500", width: "70%" };
+  };
+
+  const passwordStrength = getPasswordStrength(password);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +40,27 @@ const RegisterPage = () => {
 
     if (!username || !email || !password) {
       setError("Please fill in username, e-mail, and password.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid e-mail address.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      return;
+    }
+
+    if (!/\d/.test(password)) {
+      setError("Password must contain at least one number.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
       return;
     }
 
@@ -49,7 +85,9 @@ const RegisterPage = () => {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.detail || "Registration failed.");
+        const msg = data.detail || "Registration failed.";
+        setError(msg);
+        toast.error(msg);
         return;
       }
 
@@ -67,6 +105,7 @@ const RegisterPage = () => {
     } catch (err) {
       console.error(err);
       setError("Something went wrong. Please try again.");
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -151,6 +190,35 @@ const RegisterPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              {password && (
+                <div className="mt-1.5">
+                  <div className="h-1.5 w-full bg-gray-200 rounded-full overflow-hidden">
+                    <div className={`h-full ${passwordStrength.color} transition-all duration-300 rounded-full`} style={{ width: passwordStrength.width }} />
+                  </div>
+                  <p
+                    className={`text-xs mt-1 ${passwordStrength.color === "bg-red-500" || passwordStrength.color === "bg-orange-500" ? "text-red-600" : passwordStrength.color === "bg-yellow-500" ? "text-yellow-600" : "text-green-600"}`}
+                  >
+                    {passwordStrength.label}
+                  </p>
+                </div>
+              )}
+              <p className="text-xs text-gray-500 mt-0.5">At least 6 characters with one number</p>
+            </div>
+
+            <div className="space-y-1">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-800">
+                Confirm Password <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="confirmPassword"
+                type="password"
+                autoComplete="new-password"
+                placeholder="Repeat your password"
+                className={`w-full border rounded-md px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#1166a8] focus:border-[#1166a8] ${confirmPassword && password !== confirmPassword ? "border-red-400" : "border-gray-300"}`}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+              {confirmPassword && password !== confirmPassword && <p className="text-xs text-red-600 mt-0.5">Passwords do not match</p>}
             </div>
 
             <div className="grid grid-cols-2 gap-3">

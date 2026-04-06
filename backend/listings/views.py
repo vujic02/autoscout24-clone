@@ -233,6 +233,28 @@ class RegisterView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # Email format validation
+        if email:
+            import re
+            email_regex = r'^[^\s@]+@[^\s@]+\.[^\s@]+$'
+            if not re.match(email_regex, email):
+                return Response(
+                    {'detail': 'Please enter a valid e-mail address.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        # Password validation: 6+ chars, at least one number
+        if len(password) < 6:
+            return Response(
+                {'detail': 'Password must be at least 6 characters long.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if not any(c.isdigit() for c in password):
+            return Response(
+                {'detail': 'Password must contain at least one number.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         if User.objects.filter(username=username).exists():
             return Response(
                 {'detail': 'Username already taken.'},

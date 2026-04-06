@@ -64,11 +64,11 @@
 
 ## Form Validation
 
-- Login: no email format validation
-- Register: no password confirmation field, no strength indicator
-- Add-listing: no validation on price/mileage/year (negative values possible)
+- ~~Login: no email format validation~~
+- ~~Register: no password confirmation field, no strength indicator~~
+- ~~Add-listing: no validation on price/mileage/year (negative values possible)~~
 - ~~No max file size check on image uploads (frontend or backend) — added backend validation (type, 5MB, 20 files max)~~
-- Serializer has no field-level validators
+- ~~Serializer has no field-level validators~~
 
 ## ~~Error Handling & UX~~ -- DONE
 

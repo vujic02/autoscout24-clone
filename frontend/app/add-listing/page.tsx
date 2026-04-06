@@ -207,7 +207,9 @@ const AddListingContent = () => {
         }
 
         // Reset dirty flag after loading edit data
-        setTimeout(() => { hasUnsavedChanges.current = false; }, 0);
+        setTimeout(() => {
+          hasUnsavedChanges.current = false;
+        }, 0);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load listing");
       } finally {
@@ -267,6 +269,48 @@ const AddListingContent = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    // Frontend validation
+    const currentYear = new Date().getFullYear();
+    const validationErrors: string[] = [];
+
+    if (!formData.title.trim()) validationErrors.push("Title is required.");
+    if (!formData.make) validationErrors.push("Make is required.");
+    if (!formData.model) validationErrors.push("Model is required.");
+    if (!formData.country) validationErrors.push("Country is required.");
+    if (!formData.city.trim()) validationErrors.push("City is required.");
+
+    const price = Number(formData.price);
+    if (!formData.price || price <= 0) validationErrors.push("Price must be a positive number.");
+
+    const mileage = Number(formData.mileage);
+    if (!formData.mileage && formData.mileage !== 0) {
+      validationErrors.push("Mileage is required.");
+    } else if (mileage < 0) {
+      validationErrors.push("Mileage cannot be negative.");
+    }
+
+    const year = Number(formData.year);
+    if (year < 1900 || year > currentYear + 1) validationErrors.push(`Year must be between 1900 and ${currentYear + 1}.`);
+
+    const regYear = Number(formData.registration_year);
+    if (regYear < 1900 || regYear > currentYear + 1) validationErrors.push(`Registration year must be between 1900 and ${currentYear + 1}.`);
+
+    if (formData.horsepower && Number(formData.horsepower) < 0) validationErrors.push("Horsepower cannot be negative.");
+    if (formData.engine_displacement && Number(formData.engine_displacement) < 0) validationErrors.push("Engine displacement cannot be negative.");
+    if (formData.number_of_doors && (Number(formData.number_of_doors) < 2 || Number(formData.number_of_doors) > 5))
+      validationErrors.push("Doors must be between 2 and 5.");
+    if (formData.number_of_seats && (Number(formData.number_of_seats) < 1 || Number(formData.number_of_seats) > 9))
+      validationErrors.push("Seats must be between 1 and 9.");
+    if (formData.previous_owners !== "" && Number(formData.previous_owners) < 0) validationErrors.push("Previous owners cannot be negative.");
+
+    if (validationErrors.length > 0) {
+      const msg = validationErrors.join(" ");
+      setError(msg);
+      toast.error(validationErrors[0]);
+      setLoading(false);
+      return;
+    }
 
     try {
       const token = localStorage.getItem("authToken");
@@ -331,7 +375,9 @@ const AddListingContent = () => {
       router.push(isEditMode ? `/vehicle/${listingId}` : "/");
     } catch (err) {
       console.error("Error:", err);
-      setError(err instanceof Error ? err.message : "An error occurred");
+      const msg = err instanceof Error ? err.message : "An error occurred";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }

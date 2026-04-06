@@ -24,6 +24,12 @@ const LoginPage = () => {
       return;
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid e-mail address.");
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -41,7 +47,9 @@ const LoginPage = () => {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.detail || "Login failed. Check your credentials.");
+        const msg = data.detail || "Login failed. Check your credentials.";
+        setError(msg);
+        toast.error(msg);
         return;
       }
 
@@ -70,6 +78,7 @@ const LoginPage = () => {
     } catch (err) {
       console.error(err);
       setError("Something went wrong. Please try again.");
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
