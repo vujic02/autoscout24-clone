@@ -1,11 +1,12 @@
 "use client";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { ArrowLeft, ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, SlidersHorizontal, ChevronDown } from "lucide-react";
 import { useEffect, useState, useCallback, useRef, Suspense } from "react";
 import { fetchListings, Listing, saveLastSearch } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { useTranslation, usePageTitle } from "@/lib/i18n";
 import { carsModelData } from "@/utils/tabsStatic";
-import { customSelectDataDynamic } from "@/types/Home";
+import { customSelectDataDynamic, SearchFilters } from "@/types/Home";
 import { Sidebar } from "@/components/ui/custom/FilterSidebar/FilterSidebarComponents";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import VehicleSearchedResult from "@/components/ui/custom/VehicleSearchedResult/VehicleSearchedResult";
@@ -19,6 +20,8 @@ export default function SearchPage() {
 }
 
 function SearchPageContent() {
+  const { t } = useTranslation();
+  usePageTitle(t("titles.search"));
   const router = useRouter();
   const pathname = usePathname();
   const urlSearchParams = useSearchParams();
@@ -29,14 +32,31 @@ function SearchPageContent() {
   const [hasPrevious, setHasPrevious] = useState(false);
 
   // Filter state initialized from URL params
-  const [selectedMake, setSelectedMake] = useState(urlSearchParams.get("make") || "");
-  const [selectedModel, setSelectedModel] = useState(urlSearchParams.get("model") || "");
-  const [selectedPrice, setSelectedPrice] = useState(urlSearchParams.get("price") || "");
-  const [selectedRegistration, setSelectedRegistration] = useState(urlSearchParams.get("registration") || "");
-  const [selectedCountry, setSelectedCountry] = useState(urlSearchParams.get("country") || "");
+  const [filters, setFilters] = useState<SearchFilters>({
+    make: urlSearchParams.get("make") || "",
+    model: urlSearchParams.get("model") || "",
+    price: urlSearchParams.get("price") || "",
+    registration: urlSearchParams.get("registration") || "",
+    country: urlSearchParams.get("country") || "",
+    fuel_type: urlSearchParams.get("fuel_type") || "",
+    body_type: urlSearchParams.get("body_type") || "",
+    transmission: urlSearchParams.get("transmission") || "",
+    drive_type: urlSearchParams.get("drive_type") || "",
+    exterior_color: urlSearchParams.get("exterior_color") || "",
+    mileage_from: urlSearchParams.get("mileage_from") || "",
+    mileage_to: urlSearchParams.get("mileage_to") || "",
+    hp_from: urlSearchParams.get("hp_from") || "",
+    hp_to: urlSearchParams.get("hp_to") || "",
+    sort: urlSearchParams.get("sort") || "",
+  });
+  const [sortOpen, setSortOpen] = useState(false);
+
+  const updateFilter = (key: keyof SearchFilters, value: string) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
 
   const model: customSelectDataDynamic = carsModelData;
-  const modelData = model[selectedMake];
+  const modelData = model[filters.make];
 
   const currentPage = Number(urlSearchParams.get("page")) || 1;
   const totalPages = Math.ceil(totalCount / 15);
@@ -45,9 +65,9 @@ function SearchPageContent() {
   // When make changes, reset model
   useEffect(() => {
     if (!isFirstRender.current) {
-      setSelectedModel("");
+      updateFilter("model", "");
     }
-  }, [selectedMake]);
+  }, [filters.make]);
 
   // Auto-update URL when filters change (with debounce)
   useEffect(() => {
@@ -58,18 +78,13 @@ function SearchPageContent() {
 
     const timeout = setTimeout(() => {
       const params = new URLSearchParams();
-      if (selectedMake) params.set("make", selectedMake);
-      if (selectedModel) params.set("model", selectedModel);
-      if (selectedPrice) params.set("price", selectedPrice);
-      if (selectedRegistration) params.set("registration", selectedRegistration);
-      if (selectedCountry) params.set("country", selectedCountry);
+      // Add all non-empty filter values to URL
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value) params.set(key, value);
+      });
       // Preserve filters not managed by sidebar state
-      const bodyType = urlSearchParams.get("body_type");
-      const fuelType = urlSearchParams.get("fuel_type");
       const seller = urlSearchParams.get("seller");
       const minDoors = urlSearchParams.get("min_doors");
-      if (bodyType) params.set("body_type", bodyType);
-      if (fuelType) params.set("fuel_type", fuelType);
       if (seller) params.set("seller", seller);
       if (minDoors) params.set("min_doors", minDoors);
       // Reset to page 1 when filters change
@@ -78,7 +93,7 @@ function SearchPageContent() {
     }, 400);
 
     return () => clearTimeout(timeout);
-  }, [selectedMake, selectedModel, selectedPrice, selectedRegistration, selectedCountry]);
+  }, [filters]);
 
   const setCurrentPage = useCallback(
     (page: number | ((prev: number) => number)) => {
@@ -107,7 +122,15 @@ function SearchPageContent() {
           seller: urlSearchParams.get("seller") || undefined,
           fuel_type: urlSearchParams.get("fuel_type") || undefined,
           body_type: urlSearchParams.get("body_type") || undefined,
+          transmission: urlSearchParams.get("transmission") || undefined,
+          drive_type: urlSearchParams.get("drive_type") || undefined,
+          exterior_color: urlSearchParams.get("exterior_color") || undefined,
+          mileage_from: urlSearchParams.get("mileage_from")?.replace(/,/g, "") || undefined,
+          mileage_to: urlSearchParams.get("mileage_to")?.replace(/,/g, "") || undefined,
+          hp_from: urlSearchParams.get("hp_from") || undefined,
+          hp_to: urlSearchParams.get("hp_to") || undefined,
           min_doors: urlSearchParams.get("min_doors") || undefined,
+          sort: urlSearchParams.get("sort") || undefined,
           page: String(currentPage),
         };
         const data = await fetchListings(filters);
@@ -150,18 +173,20 @@ function SearchPageContent() {
 
   const sidebarProps = {
     modelData,
-    selectedMake,
-    selectedModel,
-    selectedPrice,
-    selectedRegistration,
-    selectedCountry,
-    setSelectedMake,
-    setSelectedModel,
-    setSelectedPrice,
-    setSelectedRegistration,
-    setSelectedCountry,
+    filters,
+    updateFilter,
     totalCount,
   };
+
+  const sortOptions = [
+    { value: "", label: t("search.bestResults") },
+    { value: "price_asc", label: t("search.priceLowest") },
+    { value: "price_desc", label: t("search.priceHighest") },
+    { value: "newest", label: t("search.newest") },
+    { value: "mileage_asc", label: t("search.mileageLowest") },
+    { value: "year_desc", label: t("search.yearNewest") },
+  ];
+  const currentSortLabel = sortOptions.find((o) => o.value === filters.sort)?.label || t("search.bestResults");
 
   return (
     <main className="max-w-[1100px] w-full mx-auto py-8 px-4">
@@ -169,8 +194,12 @@ function SearchPageContent() {
         <button onClick={() => router.back()} className="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="Back">
           <ArrowLeft size={20} />
         </button>
-        <h1 className="text-2xl font-semibold">Search results {urlSearchParams.get("make") && `for ${urlSearchParams.get("make")}`}</h1>
-        <span className="text-sm text-gray-500">({totalCount} vehicles found)</span>
+        <h1 className="text-2xl font-semibold">
+          {t("search.searchResults")} {urlSearchParams.get("make") && `${t("search.for")} ${urlSearchParams.get("make")}`}
+        </h1>
+        <span className="text-sm text-gray-500">
+          ({totalCount} {t("search.vehiclesFound")})
+        </span>
       </div>
 
       <div className="flex gap-6">
@@ -178,7 +207,7 @@ function SearchPageContent() {
         <div className="md:hidden mb-4">
           <Sheet>
             <SheetTrigger className="flex items-center gap-2 bg-[#333] text-white px-3 py-2 rounded-md text-sm">
-              <SlidersHorizontal width={16} height={16} /> Filters
+              <SlidersHorizontal width={16} height={16} /> {t("common.filters")}
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-[320px]">
               <Sidebar {...sidebarProps} />
@@ -195,6 +224,41 @@ function SearchPageContent() {
 
         {/* Results */}
         <div className="flex-1 min-w-0">
+          {/* Results header with count and sort */}
+          <div className="flex items-center justify-between mb-4 bg-white border border-gray-200 rounded-lg px-4 py-3">
+            <p className="text-sm">
+              <span className="font-bold text-[#333]">
+                {totalCount} {t("search.offers")}
+              </span>{" "}
+              <span className="text-gray-500">{t("search.forYourSearch")}</span>
+            </p>
+            <div className="relative">
+              <button onClick={() => setSortOpen(!sortOpen)} className="flex items-center gap-1 text-sm text-[#1166a8] font-medium hover:underline">
+                Sort: {currentSortLabel}
+                <ChevronDown size={14} />
+              </button>
+              {sortOpen && (
+                <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-20 min-w-[180px]">
+                  {sortOptions.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => {
+                        updateFilter("sort", opt.value);
+                        setSortOpen(false);
+                      }}
+                      className={cn(
+                        "block w-full text-left px-4 py-2 text-sm hover:bg-gray-50",
+                        opt.value === filters.sort ? "text-[#1166a8] font-medium" : "text-[#333]",
+                      )}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
           {loading ? (
             <div className="animate-pulse space-y-4">
               <div className="h-32 bg-gray-200 rounded"></div>
@@ -202,7 +266,7 @@ function SearchPageContent() {
               <div className="h-32 bg-gray-200 rounded"></div>
             </div>
           ) : listings.length === 0 ? (
-            <p className="text-sm text-gray-500">No vehicles found for this filter.</p>
+            <p className="text-sm text-gray-500">{t("search.noVehiclesFound")}</p>
           ) : (
             <>
               <div className="space-y-4">
@@ -219,7 +283,7 @@ function SearchPageContent() {
                     className="flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   >
                     <ChevronLeft size={16} />
-                    Previous
+                    {t("common.previous")}
                   </button>
 
                   <div className="flex items-center gap-1">
@@ -246,7 +310,7 @@ function SearchPageContent() {
                     disabled={!hasNext}
                     className="flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   >
-                    Next
+                    {t("common.next")}
                     <ChevronRight size={16} />
                   </button>
                 </div>

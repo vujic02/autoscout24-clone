@@ -5,11 +5,14 @@ import LastSearchCard from "@/components/ui/custom/LastSearchCard/LastSearchCard
 import CustomTabs from "@/components/ui/custom/Search/CustomTabs";
 import FeaturedVehicles from "@/components/ui/custom/FeaturedVehicles/FeaturedVehicles";
 import { getLastSearches, LastSearch } from "@/lib/api";
+import { useTranslation, usePageTitle } from "@/lib/i18n";
 import { tabsContentData, tabsListData } from "@/utils/tabsData";
 import { useState, useEffect } from "react";
 
 export default function Home() {
   const [lastSearches, setLastSearches] = useState<LastSearch[]>([]);
+  const { t } = useTranslation();
+  usePageTitle(t("titles.home"));
 
   useEffect(() => {
     setLastSearches(getLastSearches());

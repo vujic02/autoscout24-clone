@@ -16,9 +16,12 @@ import {
   AuthUser,
 } from "@/lib/api";
 import Image from "next/image";
+import { useTranslation, usePageTitle } from "@/lib/i18n";
 
 const ProfilePage = () => {
   const router = useRouter();
+  const { t } = useTranslation();
+  usePageTitle(t("titles.profile"));
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -87,9 +90,9 @@ const ProfilePage = () => {
         location,
       });
       syncUser(updated);
-      setSuccess("Profile updated successfully.");
+      setSuccess(t("profile.profileUpdated"));
     } catch {
-      setError("Failed to update profile. Please try again.");
+      setError(t("profile.profileUpdateFailed"));
     } finally {
       setSaving(false);
     }
@@ -104,9 +107,9 @@ const ProfilePage = () => {
     try {
       const updated = await requestDealerAccount(token);
       syncUser(updated);
-      setSuccess("Dealer account request submitted. An admin will review it.");
+      setSuccess(t("profile.dealerRequestSubmitted"));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to request dealer account.");
+      setError(err instanceof Error ? err.message : t("profile.dealerRequestFailed"));
     } finally {
       setRequestingDealer(false);
     }
@@ -223,33 +226,35 @@ const ProfilePage = () => {
             <button onClick={() => router.back()} className="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="Back">
               <ArrowLeft size={20} />
             </button>
-            <h1 className="text-2xl font-bold">My Profile</h1>
+            <h1 className="text-2xl font-bold">{t("profile.myProfile")}</h1>
           </div>
 
           {/* Account Info (read-only) */}
           <div className="bg-gray-50 rounded-lg p-4 mb-6 space-y-3">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Account</h2>
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">{t("profile.account")}</h2>
             <div className="flex items-center gap-2 text-sm">
               <User size={16} className="text-gray-400" />
-              <span className="text-gray-600">Username:</span>
+              <span className="text-gray-600">{t("profile.username")}</span>
               <span className="font-medium">{user.username}</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <Mail size={16} className="text-gray-400" />
-              <span className="text-gray-600">Email:</span>
+              <span className="text-gray-600">{t("profile.emailLabel")}</span>
               <span className="font-medium">{user.email}</span>
             </div>
             {user.is_staff && (
               <div className="flex items-center gap-2 text-sm">
                 <Shield size={16} className="text-blue-500" />
-                <span className="font-medium text-blue-600">Staff / Admin</span>
+                <span className="font-medium text-blue-600">{t("profile.staffAdmin")}</span>
               </div>
             )}
             <div className="flex items-center gap-2 text-sm">
               <Package size={16} className="text-gray-400" />
-              <span className="text-gray-600">Listing quota:</span>
+              <span className="text-gray-600">{t("profile.listingQuota")}</span>
               <span className="font-medium">
-                {user.listing_quota.max === null ? `${user.listing_quota.used} used (unlimited)` : `${user.listing_quota.used} / ${user.listing_quota.max} used`}
+                {user.listing_quota.max === null
+                  ? `${user.listing_quota.used} ${t("profile.usedUnlimited")}`
+                  : `${user.listing_quota.used} / ${user.listing_quota.max} used`}
               </span>
             </div>
 
@@ -261,14 +266,14 @@ const ProfilePage = () => {
                     onClick={() => setShowLimitRequestForm(true)}
                     className="flex items-center gap-1.5 text-sm text-[#1166a8] hover:text-[#0e568f] font-medium transition-colors"
                   >
-                    <MessageSquare size={14} /> Request more listings
+                    <MessageSquare size={14} /> {t("profile.requestMoreListings")}
                   </button>
                 ) : (
                   <div className="space-y-2 bg-blue-50 border border-blue-200 rounded-lg p-3">
                     <textarea
                       value={limitRequestMessage}
                       onChange={(e) => setLimitRequestMessage(e.target.value)}
-                      placeholder="Explain why you need more listings..."
+                      placeholder={t("profile.explainWhyMore")}
                       rows={3}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1166a8] focus:border-transparent text-sm resize-none"
                     />
@@ -281,11 +286,11 @@ const ProfilePage = () => {
                           setError("");
                           try {
                             await requestMoreListings(token, limitRequestMessage);
-                            setSuccess("Your request has been sent to the admin team.");
+                            setSuccess(t("profile.requestSent"));
                             setShowLimitRequestForm(false);
                             setLimitRequestMessage("");
                           } catch (err) {
-                            setError(err instanceof Error ? err.message : "Failed to send request.");
+                            setError(err instanceof Error ? err.message : t("profile.requestFailed"));
                           } finally {
                             setLimitRequestSending(false);
                           }
@@ -293,7 +298,7 @@ const ProfilePage = () => {
                         disabled={limitRequestSending || !limitRequestMessage.trim()}
                         className="bg-[#1166a8] hover:bg-[#0e568f] disabled:opacity-50 text-white text-sm font-medium rounded-md px-4 py-1.5 transition-colors"
                       >
-                        {limitRequestSending ? "Sending..." : "Send Request"}
+                        {limitRequestSending ? t("profile.sending") : t("profile.sendRequest")}
                       </button>
                       <button
                         onClick={() => {
@@ -302,7 +307,7 @@ const ProfilePage = () => {
                         }}
                         className="text-sm text-gray-500 hover:text-gray-700 px-3 py-1.5"
                       >
-                        Cancel
+                        {t("common.cancel")}
                       </button>
                     </div>
                   </div>
@@ -312,8 +317,8 @@ const ProfilePage = () => {
 
             <div className="flex items-center gap-2 text-sm">
               <Building2 size={16} className="text-gray-400" />
-              <span className="text-gray-600">Account type:</span>
-              <span className={`font-medium ${isDealer ? "text-emerald-600" : "text-gray-900"}`}>{isDealer ? "Dealer" : "Private Seller"}</span>
+              <span className="text-gray-600">{t("profile.accountType")}</span>
+              <span className={`font-medium ${isDealer ? "text-emerald-600" : "text-gray-900"}`}>{isDealer ? t("profile.dealer") : t("profile.privateSeller")}</span>
             </div>
           </div>
 
@@ -322,12 +327,12 @@ const ProfilePage = () => {
           {success && <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-md text-sm">{success}</div>}
 
           <form onSubmit={handleSave} className="space-y-4">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Contact Information</h2>
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">{t("profile.contactInformation")}</h2>
 
             <div>
               <label htmlFor="displayName" className={labelClasses}>
                 <span className="flex items-center gap-1.5">
-                  <User size={14} className="text-gray-400" /> Display Name
+                  <User size={14} className="text-gray-400" /> {t("profile.displayName")}
                 </span>
               </label>
               <input
@@ -335,7 +340,7 @@ const ProfilePage = () => {
                 type="text"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="How buyers will see your name"
+                placeholder={t("profile.howBuyersSee")}
                 className={inputClasses}
               />
             </div>
@@ -343,16 +348,23 @@ const ProfilePage = () => {
             <div>
               <label htmlFor="phone" className={labelClasses}>
                 <span className="flex items-center gap-1.5">
-                  <Phone size={14} className="text-gray-400" /> Phone Number
+                  <Phone size={14} className="text-gray-400" /> {t("profile.phoneNumber")}
                 </span>
               </label>
-              <input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+49 123 456789" className={inputClasses} />
+              <input
+                id="phone"
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder={t("profile.phonePlaceholder")}
+                className={inputClasses}
+              />
             </div>
 
             <div>
               <label htmlFor="location" className={labelClasses}>
                 <span className="flex items-center gap-1.5">
-                  <MapPin size={14} className="text-gray-400" /> Location
+                  <MapPin size={14} className="text-gray-400" /> {t("profile.location")}
                 </span>
               </label>
               <input
@@ -360,7 +372,7 @@ const ProfilePage = () => {
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="e.g. Munich, Germany"
+                placeholder={t("profile.locationPlaceholder")}
                 className={inputClasses}
               />
             </div>
@@ -370,7 +382,7 @@ const ProfilePage = () => {
               disabled={saving}
               className="w-full bg-[#1166a8] hover:bg-[#0e568f] disabled:opacity-60 disabled:cursor-not-allowed text-white text-sm font-medium rounded-md py-2.5 transition-colors"
             >
-              {saving ? "Saving..." : "Save Changes"}
+              {saving ? t("common.saving") : t("profile.saveChanges")}
             </button>
           </form>
         </div>
@@ -378,21 +390,19 @@ const ProfilePage = () => {
         {/* Dealer Section */}
         <div className="bg-white rounded-lg shadow-sm p-8">
           <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-            <Building2 size={20} /> Dealer Account
+            <Building2 size={20} /> {t("profile.dealerAccount")}
           </h2>
 
           {/* Private seller — can request dealer */}
           {!isDealer && dealerStatus === "none" && (
             <div className="text-center py-6">
-              <p className="text-gray-600 text-sm mb-4">
-                Upgrade to a dealer account to add company details, multiple phone numbers, and multiple addresses to your profile.
-              </p>
+              <p className="text-gray-600 text-sm mb-4">{t("profile.upgradeToDealerDescription")}</p>
               <button
                 onClick={handleRequestDealer}
                 disabled={requestingDealer}
                 className="bg-[#f5f200] hover:bg-[#e0dd00] disabled:opacity-60 text-[#1c1c2e] text-sm font-medium rounded-md px-6 py-2.5 transition-colors"
               >
-                {requestingDealer ? "Submitting..." : "Request Dealer Account"}
+                {requestingDealer ? t("profile.submitting") : t("profile.requestDealerAccount")}
               </button>
             </div>
           )}
@@ -402,8 +412,8 @@ const ProfilePage = () => {
             <div className="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
               <Clock size={20} className="text-yellow-600 shrink-0" />
               <div>
-                <p className="font-medium text-yellow-800">Request Pending</p>
-                <p className="text-sm text-yellow-700">Your dealer account request is being reviewed by an admin.</p>
+                <p className="font-medium text-yellow-800">{t("profile.requestPending")}</p>
+                <p className="text-sm text-yellow-700">{t("profile.pendingMessage")}</p>
               </div>
             </div>
           )}
@@ -414,8 +424,8 @@ const ProfilePage = () => {
               <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
                 <XCircle size={20} className="text-red-600 shrink-0" />
                 <div>
-                  <p className="font-medium text-red-800">Request Rejected</p>
-                  <p className="text-sm text-red-700">Your dealer account request was rejected. You can submit a new request.</p>
+                  <p className="font-medium text-red-800">{t("profile.requestRejected")}</p>
+                  <p className="text-sm text-red-700">{t("profile.rejectedMessage")}</p>
                 </div>
               </div>
               <button
@@ -423,7 +433,7 @@ const ProfilePage = () => {
                 disabled={requestingDealer}
                 className="bg-[#f5f200] hover:bg-[#e0dd00] disabled:opacity-60 text-[#1c1c2e] text-sm font-medium rounded-md px-6 py-2.5 transition-colors"
               >
-                {requestingDealer ? "Submitting..." : "Request Again"}
+                {requestingDealer ? t("profile.submitting") : t("profile.requestAgain")}
               </button>
             </div>
           )}
@@ -433,29 +443,29 @@ const ProfilePage = () => {
             <div className="space-y-6">
               <div className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
                 <CheckCircle2 size={18} className="text-emerald-600" />
-                <span className="text-sm font-medium text-emerald-700">Approved Dealer Account</span>
+                <span className="text-sm font-medium text-emerald-700">{t("profile.approvedDealerAccount")}</span>
               </div>
 
               {/* Company Info */}
               <div className="space-y-4">
-                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Company Info</h3>
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">{t("profile.companyInfo")}</h3>
                 <div>
                   <label htmlFor="companyName" className={labelClasses}>
-                    Company Name
+                    {t("profile.companyName")}
                   </label>
                   <input
                     id="companyName"
                     type="text"
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
-                    placeholder="Your company name"
+                    placeholder={t("profile.companyNamePlaceholder")}
                     className={inputClasses}
                   />
                 </div>
                 <div>
                   <label htmlFor="companyImage" className={labelClasses}>
                     <span className="flex items-center gap-1.5">
-                      <ImageIcon size={14} className="text-gray-400" /> Company Image / Logo
+                      <ImageIcon size={14} className="text-gray-400" /> {t("profile.companyImage")}
                     </span>
                   </label>
                   {user.profile.company_image && (
@@ -470,13 +480,13 @@ const ProfilePage = () => {
                   disabled={dealerSaving}
                   className="bg-[#1166a8] hover:bg-[#0e568f] disabled:opacity-60 text-white text-sm font-medium rounded-md px-5 py-2 transition-colors"
                 >
-                  {dealerSaving ? "Saving..." : "Save Company Info"}
+                  {dealerSaving ? t("common.saving") : t("profile.saveCompanyInfo")}
                 </button>
               </div>
 
               {/* Dealer Phones */}
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Phone Numbers</h3>
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">{t("profile.phoneNumbers")}</h3>
                 {user.profile.dealer_phones?.map((p) => (
                   <div key={p.id} className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
                     <Phone size={14} className="text-gray-400 shrink-0" />
@@ -494,14 +504,14 @@ const ProfilePage = () => {
                     type="text"
                     value={newPhoneLabel}
                     onChange={(e) => setNewPhoneLabel(e.target.value)}
-                    placeholder="Label (e.g. Sales)"
+                    placeholder={t("profile.phoneLabelPlaceholder")}
                     className={`${inputClasses} w-1/3`}
                   />
                   <input
                     type="tel"
                     value={newPhoneNumber}
                     onChange={(e) => setNewPhoneNumber(e.target.value)}
-                    placeholder="Phone number"
+                    placeholder={t("profile.phoneNumberPlaceholder")}
                     className={`${inputClasses} flex-1`}
                   />
                   <button
@@ -517,7 +527,7 @@ const ProfilePage = () => {
 
               {/* Dealer Addresses */}
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Addresses</h3>
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">{t("profile.addresses")}</h3>
                 {user.profile.dealer_addresses?.map((a) => (
                   <div key={a.id} className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
                     <MapPin size={14} className="text-gray-400 shrink-0" />
@@ -535,14 +545,14 @@ const ProfilePage = () => {
                     type="text"
                     value={newAddressLabel}
                     onChange={(e) => setNewAddressLabel(e.target.value)}
-                    placeholder="Label (e.g. Showroom)"
+                    placeholder={t("profile.addressLabelPlaceholder")}
                     className={`${inputClasses} w-1/3`}
                   />
                   <input
                     type="text"
                     value={newAddressValue}
                     onChange={(e) => setNewAddressValue(e.target.value)}
-                    placeholder="Full address"
+                    placeholder={t("profile.addressPlaceholder")}
                     className={`${inputClasses} flex-1`}
                   />
                   <button

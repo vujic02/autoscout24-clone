@@ -16,15 +16,17 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { ChevronDown, LayoutDashboard, List, User, PlusCircle, LogOut } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 
 type PropsHeaderButtonDropdown = {
   variant: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost";
   customCSS?: string;
   language: string;
-  setLanguage: React.Dispatch<React.SetStateAction<string>>;
+  setLanguage: (lang: string) => void;
 };
 
 const HeaderButtonDropdown = ({ variant, customCSS, language, setLanguage }: PropsHeaderButtonDropdown) => {
+  const { t } = useTranslation();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -33,7 +35,7 @@ const HeaderButtonDropdown = ({ variant, customCSS, language, setLanguage }: Pro
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel>Language</DropdownMenuLabel>
+        <DropdownMenuLabel>{t("nav.language")}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup value={language} onValueChange={(value) => setLanguage(value)}>
           <DropdownMenuRadioItem className="data-[state=checked]:bg-gray-400 flex justify-between cursor-pointer data-[state=checked]:cursor-default" value="English">
@@ -41,16 +43,8 @@ const HeaderButtonDropdown = ({ variant, customCSS, language, setLanguage }: Pro
             <Image className="ml-2" width={24} height={24} alt="#" src="https://flagsapi.com/GB/flat/24.png" />
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem className="data-[state=checked]:bg-gray-400 flex justify-between cursor-pointer data-[state=checked]:cursor-default" value="German">
-            German
+            Deutsch
             <Image className="ml-2" width={24} height={24} alt="#" src="https://flagsapi.com/DE/flat/24.png" />
-          </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem className="data-[state=checked]:bg-gray-400 flex justify-between cursor-pointer data-[state=checked]:cursor-default" value="Italian">
-            Italian
-            <Image className="ml-2" width={24} height={24} alt="#" src="https://flagsapi.com/IT/flat/24.png" />
-          </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem className="data-[state=checked]:bg-gray-400 flex justify-between cursor-pointer data-[state=checked]:cursor-default" value="French">
-            French
-            <Image className="ml-2" width={24} height={24} alt="#" src="https://flagsapi.com/FR/flat/24.png" />
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
@@ -117,6 +111,7 @@ type PropsUserAuthDropdown = {
 
 const UserAuthDropdown = ({ isLoggedIn = false, userEmail, isAdmin = false }: PropsUserAuthDropdown) => {
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
 
   const handleLogout = () => {
     // Clear authentication data from localStorage
@@ -132,7 +127,7 @@ const UserAuthDropdown = ({ isLoggedIn = false, userEmail, isAdmin = false }: Pr
     return (
       <Link href="/login">
         <Button variant="ghost" className="text-base">
-          Log In
+          {t("nav.logIn")}
         </Button>
       </Link>
     );
@@ -152,7 +147,7 @@ const UserAuthDropdown = ({ isLoggedIn = false, userEmail, isAdmin = false }: Pr
           <>
             <DropdownMenuItem asChild>
               <Link href="/admin" className="cursor-pointer flex items-center gap-2">
-                <LayoutDashboard size={16} /> Admin Dashboard
+                <LayoutDashboard size={16} /> {t("nav.adminDashboard")}
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -160,22 +155,22 @@ const UserAuthDropdown = ({ isLoggedIn = false, userEmail, isAdmin = false }: Pr
         )}
         <DropdownMenuItem asChild>
           <Link href="/my-listings" className="cursor-pointer flex items-center gap-2">
-            <List size={16} /> My Listings
+            <List size={16} /> {t("nav.myListings")}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/profile" className="cursor-pointer flex items-center gap-2">
-            <User size={16} /> My Profile
+            <User size={16} /> {t("nav.myProfile")}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/add-listing" className="cursor-pointer flex items-center gap-2">
-            <PlusCircle size={16} /> Add Listing
+            <PlusCircle size={16} /> {t("nav.addListing")}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 flex items-center gap-2">
-          <LogOut size={16} /> Log Out
+          <LogOut size={16} /> {t("nav.logOut")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

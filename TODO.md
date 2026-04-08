@@ -12,7 +12,6 @@
 - ~~Add `previous_owners` count~~
 - ~~Add `seller_type` (Private / Dealer)~~
 - ~~Add `views_count` for popularity tracking~~
-- `status` field exists but is never used — always 'ACTIVE'
 
 ## User / Contact Info -- DONE
 
@@ -45,10 +44,9 @@
 
 ## Search & Filtering
 
-- Motorcycles tab search doesn't pass `fuel_type` to search results
 - ~~No `body_type` filter (needs DB field first)~~
-- No `transmission` filter
-- No sort options (price low/high, newest, mileage)
+- ~~No `transmission` filter~~
+- ~~No sort options (price low/high, newest, mileage)~~
 
 ## Admin Dashboard
 
@@ -56,29 +54,29 @@
 - ~~No search/filter on admin listings~~
 - No bulk actions (multi-select, bulk feature toggle)
 
-## Translations & Localization
+## ~~Translations & Localization~~ -- DONE
 
-- All strings hardcoded in English
-- No i18n framework (next-intl or similar)
-- No locale switching
+- ~~All strings hardcoded in English~~
+- ~~No i18n framework (next-intl or similar) — custom React Context + JSON files~~
+- ~~No locale switching — language switcher in header, stored in localStorage~~
 - Prices always shown in EUR with no formatting options
 
 ## Form Validation
 
-- Login: no email format validation
-- Register: no password confirmation field, no strength indicator
-- Add-listing: no validation on price/mileage/year (negative values possible)
+- ~~Login: no email format validation~~
+- ~~Register: no password confirmation field, no strength indicator~~
+- ~~Add-listing: no validation on price/mileage/year (negative values possible)~~
 - ~~No max file size check on image uploads (frontend or backend) — added backend validation (type, 5MB, 20 files max)~~
-- Serializer has no field-level validators
+- ~~Serializer has no field-level validators~~
 
-## Error Handling & UX
+## ~~Error Handling & UX~~ -- DONE
 
-- No toast notification system (success/error)
-- Errors only shown inline or logged to console
-- No global error boundary
-- No "unsaved changes" warning on add-listing page
-- No confirmation dialog before delete (besides browser default)
-- No loading spinners on delete/update operations
+- ~~No toast notification system (success/error)~~
+- ~~Errors only shown inline or logged to console~~
+- ~~No global error boundary~~
+- ~~No "unsaved changes" warning on add-listing page~~
+- ~~No confirmation dialog before delete (besides browser default)~~
+- ~~No loading spinners on delete/update operations~~
 
 ## ~~Favorites System~~ -- DONE
 

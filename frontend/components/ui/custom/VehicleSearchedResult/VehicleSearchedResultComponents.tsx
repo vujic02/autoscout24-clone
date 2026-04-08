@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
+import { useTranslation } from "@/lib/i18n";
 import { Star, Mail, Facebook, Link as LinkIcon, Share2 } from "lucide-react";
 import * as DropdownMenu from "@/components/ui/dropdown-menu";
 import Image from "next/image";
@@ -38,6 +39,7 @@ const useFavorite = (listingId: number) => {
 };
 
 const VehicleSearchedResultDesktop = ({ listing }: Props) => {
+  const { t } = useTranslation();
   const { favorite, toggleFavorite } = useFavorite(listing.id);
   const imageCount = (listing.images?.length || 0) + (listing.main_image && (!listing.images || listing.images.length === 0) ? 1 : 0);
 
@@ -64,7 +66,7 @@ const VehicleSearchedResultDesktop = ({ listing }: Props) => {
                   style={{ boxShadow: "0 12px 24px 0 #0000000d, 0 8px 16px 0 #0000000d, 0 4px 8px 0 #0000000d, 0 0 2px 0 #0000001f" }}
                   className="w-56 mt-3 relative overflow-visible !border-0"
                 >
-                  <DropdownMenu.DropdownMenuLabel>Share offer</DropdownMenu.DropdownMenuLabel>
+                  <DropdownMenu.DropdownMenuLabel>{t("search.shareOffer")}</DropdownMenu.DropdownMenuLabel>
                   <DropdownMenu.DropdownMenuSeparator />
                   <DropdownMenu.DropdownMenuGroup>
                     <DropdownMenu.DropdownMenuItem className="hover:!bg-transparent hover:!text-[unset]">
@@ -72,7 +74,7 @@ const VehicleSearchedResultDesktop = ({ listing }: Props) => {
                         <Mail width={18} height={18} className="text-white" />
                       </div>
                       <a className="ml-2 text-blue-600 text-" href="#">
-                        E-Mail
+                        {t("search.email")}
                       </a>
                     </DropdownMenu.DropdownMenuItem>
                     <DropdownMenu.DropdownMenuItem className="hover:!bg-transparent hover:!text-[unset]">
@@ -80,7 +82,7 @@ const VehicleSearchedResultDesktop = ({ listing }: Props) => {
                         <Facebook width={18} height={18} className="text-white" />
                       </div>
                       <a className="ml-2 text-blue-600 text-" href="#">
-                        Facebook
+                        {t("search.facebook")}
                       </a>
                     </DropdownMenu.DropdownMenuItem>
                     <DropdownMenu.DropdownMenuItem className="hover:!bg-transparent hover:!text-[unset]">
@@ -88,7 +90,7 @@ const VehicleSearchedResultDesktop = ({ listing }: Props) => {
                         <LinkIcon width={18} height={18} className="text-white" />
                       </div>
                       <a className="ml-2 text-blue-600 text-" href="#">
-                        Copy link
+                        {t("search.copyLink")}
                       </a>
                     </DropdownMenu.DropdownMenuItem>
                   </DropdownMenu.DropdownMenuGroup>
@@ -135,7 +137,9 @@ const VehicleSearchedResultDesktop = ({ listing }: Props) => {
               {listing.horsepower && (
                 <div className="flex gap-x-2">
                   <Image className="object-contain" width={24} height={24} alt="#" src="/icons/speedometer.png"></Image>
-                  <p className="text-[#333] font-normal text-base">{listing.horsepower} hp</p>
+                  <p className="text-[#333] font-normal text-base">
+                    {listing.horsepower} {t("common.hp")}
+                  </p>
                 </div>
               )}
             </div>
@@ -153,7 +157,7 @@ const VehicleSearchedResultDesktop = ({ listing }: Props) => {
                 <p className="text-[#333] text-sm font-medium">{listing.seller.company_name}</p>
               )}
               <p className="text-[#333] text-sm font-normal">
-                {listing.seller?.display_name || listing.seller?.username || "Private seller"}
+                {listing.seller?.display_name || listing.seller?.username || t("search.privateSeller")}
                 {listing.seller?.location ? ` \u2022 ${listing.seller.location}` : listing.city ? ` \u2022 ${listing.city}, ${listing.country}` : ""}
               </p>
             </div>
@@ -164,7 +168,7 @@ const VehicleSearchedResultDesktop = ({ listing }: Props) => {
               onClick={(e) => e.stopPropagation()}
               className="text-[#1166a8] text-base font-normal hover:text-[#1167a8cc] transition-colors duration-300"
             >
-              + Show more vehicles
+              {t("search.showMoreVehicles")}
             </Link>
           </div>
         </div>
@@ -174,6 +178,7 @@ const VehicleSearchedResultDesktop = ({ listing }: Props) => {
 };
 
 const VehicleSearchedResultMobile = ({ listing }: Props) => {
+  const { t } = useTranslation();
   const { favorite, toggleFavorite } = useFavorite(listing.id);
   const imageCount = (listing.images?.length || 0) + (listing.main_image && (!listing.images || listing.images.length === 0) ? 1 : 0);
 
@@ -202,7 +207,7 @@ const VehicleSearchedResultMobile = ({ listing }: Props) => {
                     style={{ boxShadow: "0 12px 24px 0 #0000000d, 0 8px 16px 0 #0000000d, 0 4px 8px 0 #0000000d, 0 0 2px 0 #0000001f" }}
                     className="w-56 mt-3 relative overflow-visible !border-0"
                   >
-                    <DropdownMenu.DropdownMenuLabel>Share offer</DropdownMenu.DropdownMenuLabel>
+                    <DropdownMenu.DropdownMenuLabel>{t("search.shareOffer")}</DropdownMenu.DropdownMenuLabel>
                     <DropdownMenu.DropdownMenuSeparator />
                     <DropdownMenu.DropdownMenuGroup>
                       <DropdownMenu.DropdownMenuItem className="hover:!bg-transparent hover:!text-[unset]">
@@ -210,7 +215,7 @@ const VehicleSearchedResultMobile = ({ listing }: Props) => {
                           <Mail width={18} height={18} className="text-white" />
                         </div>
                         <a className="ml-2 text-blue-600 text-" href="#">
-                          E-Mail
+                          {t("search.email")}
                         </a>
                       </DropdownMenu.DropdownMenuItem>
                       <DropdownMenu.DropdownMenuItem className="hover:!bg-transparent hover:!text-[unset]">
@@ -218,7 +223,7 @@ const VehicleSearchedResultMobile = ({ listing }: Props) => {
                           <Facebook width={18} height={18} className="text-white" />
                         </div>
                         <a className="ml-2 text-blue-600 text-" href="#">
-                          Facebook
+                          {t("search.facebook")}
                         </a>
                       </DropdownMenu.DropdownMenuItem>
                       <DropdownMenu.DropdownMenuItem className="hover:!bg-transparent hover:!text-[unset]">
@@ -226,7 +231,7 @@ const VehicleSearchedResultMobile = ({ listing }: Props) => {
                           <LinkIcon width={18} height={18} className="text-white" />
                         </div>
                         <a className="ml-2 text-blue-600 text-" href="#">
-                          Copy link
+                          {t("search.copyLink")}
                         </a>
                       </DropdownMenu.DropdownMenuItem>
                     </DropdownMenu.DropdownMenuGroup>
@@ -272,7 +277,9 @@ const VehicleSearchedResultMobile = ({ listing }: Props) => {
               {listing.horsepower && (
                 <div className="flex gap-x-2">
                   <Image className="object-contain" width={20} height={20} alt="#" src="/icons/speedometer.png"></Image>
-                  <p className="text-[#333] font-normal text-sm">{listing.horsepower} hp</p>
+                  <p className="text-[#333] font-normal text-sm">
+                    {listing.horsepower} {t("common.hp")}
+                  </p>
                 </div>
               )}
             </div>
@@ -290,7 +297,7 @@ const VehicleSearchedResultMobile = ({ listing }: Props) => {
                 <p className="text-[#333] text-sm font-medium">{listing.seller.company_name}</p>
               )}
               <p className="text-[#333] text-sm font-normal">
-                {listing.seller?.display_name || listing.seller?.username || "Private seller"}
+                {listing.seller?.display_name || listing.seller?.username || t("search.privateSeller")}
                 {listing.seller?.location ? ` \u2022 ${listing.seller.location}` : listing.city ? ` \u2022 ${listing.city}, ${listing.country}` : ""}
               </p>
             </div>
@@ -301,7 +308,7 @@ const VehicleSearchedResultMobile = ({ listing }: Props) => {
               onClick={(e) => e.stopPropagation()}
               className="text-[#1166a8] text-base font-normal hover:text-[#1167a8cc] transition-colors duration-300"
             >
-              + Show more vehicles
+              {t("search.showMoreVehicles")}
             </Link>
           </div>
         </div>

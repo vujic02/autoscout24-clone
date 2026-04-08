@@ -3,9 +3,11 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import VehicleCard from "../VehicleCard/VehicleCard";
 import { Listing, fetchListings } from "@/lib/api";
+import { useTranslation } from "@/lib/i18n";
 
 const FeaturedVehicles = () => {
   const router = useRouter();
+  const { t } = useTranslation();
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -19,7 +21,7 @@ const FeaturedVehicles = () => {
         setError("");
       } catch (err) {
         console.error("Failed to fetch featured listings:", err);
-        setError("Failed to load featured vehicles");
+        setError(t("home.failedToLoadFeatured"));
       } finally {
         setLoading(false);
       }
@@ -31,7 +33,7 @@ const FeaturedVehicles = () => {
   if (loading) {
     return (
       <div className="w-full">
-        <h2 className="text-2xl font-semibold mb-6">Featured Vehicles</h2>
+        <h2 className="text-2xl font-semibold mb-6">{t("home.featuredVehicles")}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="bg-gray-200 h-64 rounded-md animate-pulse"></div>
@@ -44,7 +46,7 @@ const FeaturedVehicles = () => {
   if (error) {
     return (
       <div className="w-full">
-        <h2 className="text-2xl font-semibold mb-6">Featured Vehicles</h2>
+        <h2 className="text-2xl font-semibold mb-6">{t("home.featuredVehicles")}</h2>
         <div className="text-red-500">{error}</div>
       </div>
     );
@@ -56,7 +58,7 @@ const FeaturedVehicles = () => {
 
   return (
     <div className="w-full">
-      <h2 className="text-2xl font-semibold mb-6">Featured Vehicles</h2>
+      <h2 className="text-2xl font-semibold mb-6">{t("home.featuredVehicles")}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {listings.map((listing) => (
           <VehicleCard

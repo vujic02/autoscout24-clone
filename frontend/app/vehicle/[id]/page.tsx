@@ -4,15 +4,18 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Heart, Share2, Printer, Mail, Facebook, Link as LinkIcon, Eye, Phone, MapPin, User, Building2 } from "lucide-react";
 import * as DropdownMenu from "@/components/ui/dropdown-menu";
 import { Listing, SellerInfo, isFavorite, addFavorite, removeFavorite } from "@/lib/api";
+import { useTranslation, usePageTitle } from "@/lib/i18n";
 import Image from "next/image";
 
 const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const [listing, setListing] = useState<Listing | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [favorite, setFavorite] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  usePageTitle(listing ? t("titles.vehicleDetail", { make: listing.make, model: listing.model }) : "");
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -79,7 +82,7 @@ const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
     return (
       <main className="max-w-6xl mx-auto py-8">
         <button onClick={() => router.back()} className="flex items-center gap-2 text-blue-600 mb-4 hover:text-blue-800">
-          <ArrowLeft width={20} /> Back
+          <ArrowLeft width={20} /> {t("common.back")}
         </button>
         <div className="text-red-500">{error || "Listing not found"}</div>
       </main>
@@ -92,7 +95,7 @@ const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
       <div className="mb-8 rounded-lg flex items-center justify-between">
         <button onClick={() => router.back()} className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors">
           <ArrowLeft size={20} />
-          <span>Back to vehicle list</span>
+          <span>{t("vehicle.backToVehicleList")}</span>
         </button>
       </div>
 
@@ -156,27 +159,29 @@ const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
           <div className="bg-white rounded-lg p-6 mb-6">
             <div className="grid grid-cols-3 gap-6">
               <div className="border-r border-gray-200 pr-6">
-                <p className="text-gray-600 text-sm mb-2">Mileage</p>
-                <p className="text-xl font-semibold">{listing.mileage.toLocaleString()} km</p>
+                <p className="text-gray-600 text-sm mb-2">{t("vehicle.mileage")}</p>
+                <p className="text-xl font-semibold">
+                  {listing.mileage.toLocaleString()} {t("common.km")}
+                </p>
               </div>
               <div className="border-r border-gray-200 pr-6">
-                <p className="text-gray-600 text-sm mb-2">Gearbox</p>
+                <p className="text-gray-600 text-sm mb-2">{t("vehicle.gearbox")}</p>
                 <p className="text-xl font-semibold capitalize">{listing.transmission || "-"}</p>
               </div>
               <div>
-                <p className="text-gray-600 text-sm mb-2">First registration</p>
+                <p className="text-gray-600 text-sm mb-2">{t("vehicle.firstRegistration")}</p>
                 <p className="text-xl font-semibold">{listing.registration_year}</p>
               </div>
               <div className="border-r border-gray-200 pr-6 pt-4">
-                <p className="text-gray-600 text-sm mb-2">Fuel type</p>
+                <p className="text-gray-600 text-sm mb-2">{t("vehicle.fuelType")}</p>
                 <p className="text-xl font-semibold capitalize">{listing.fuel_type}</p>
               </div>
               <div className="border-r border-gray-200 pr-6 pt-4">
-                <p className="text-gray-600 text-sm mb-2">Power</p>
-                <p className="text-xl font-semibold">{listing.horsepower ? `${listing.horsepower} hp` : "-"}</p>
+                <p className="text-gray-600 text-sm mb-2">{t("vehicle.power")}</p>
+                <p className="text-xl font-semibold">{listing.horsepower ? `${listing.horsepower} ${t("common.hp")}` : "-"}</p>
               </div>
               <div className="pt-4">
-                <p className="text-gray-600 text-sm mb-2">Seller</p>
+                <p className="text-gray-600 text-sm mb-2">{t("vehicle.seller")}</p>
                 <p className="text-xl font-semibold capitalize">{listing.seller_type ? `${listing.seller_type} seller` : "-"}</p>
               </div>
             </div>
@@ -192,53 +197,55 @@ const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
             listing.number_of_seats ||
             listing.previous_owners) && (
             <div className="bg-white rounded-lg p-6 mb-6">
-              <h3 className="text-lg font-semibold mb-4">Vehicle Details</h3>
+              <h3 className="text-lg font-semibold mb-4">{t("vehicle.vehicleDetails")}</h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 {listing.body_type && (
                   <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Body type</span>
+                    <span className="text-gray-600">{t("vehicle.bodyType")}</span>
                     <span className="font-medium capitalize">{listing.body_type}</span>
                   </div>
                 )}
                 {listing.drive_type && (
                   <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Drive type</span>
+                    <span className="text-gray-600">{t("vehicle.driveType")}</span>
                     <span className="font-medium uppercase">{listing.drive_type}</span>
                   </div>
                 )}
                 {listing.engine_displacement && (
                   <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Engine</span>
-                    <span className="font-medium">{listing.engine_displacement.toLocaleString()} cc</span>
+                    <span className="text-gray-600">{t("vehicle.engine")}</span>
+                    <span className="font-medium">
+                      {listing.engine_displacement.toLocaleString()} {t("common.cc")}
+                    </span>
                   </div>
                 )}
                 {listing.exterior_color && (
                   <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Exterior color</span>
+                    <span className="text-gray-600">{t("vehicle.exteriorColor")}</span>
                     <span className="font-medium capitalize">{listing.exterior_color}</span>
                   </div>
                 )}
                 {listing.interior_color && (
                   <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Interior color</span>
+                    <span className="text-gray-600">{t("vehicle.interiorColor")}</span>
                     <span className="font-medium capitalize">{listing.interior_color}</span>
                   </div>
                 )}
                 {listing.number_of_doors && (
                   <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Doors</span>
+                    <span className="text-gray-600">{t("vehicle.doors")}</span>
                     <span className="font-medium">{listing.number_of_doors}</span>
                   </div>
                 )}
                 {listing.number_of_seats && (
                   <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Seats</span>
+                    <span className="text-gray-600">{t("vehicle.seats")}</span>
                     <span className="font-medium">{listing.number_of_seats}</span>
                   </div>
                 )}
                 {listing.previous_owners !== null && listing.previous_owners !== undefined && (
                   <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Previous owners</span>
+                    <span className="text-gray-600">{t("vehicle.previousOwners")}</span>
                     <span className="font-medium">{listing.previous_owners}</span>
                   </div>
                 )}
@@ -249,7 +256,7 @@ const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
           {/* Description */}
           {listing.description && (
             <div className="bg-white rounded-lg p-6">
-              <h3 className="text-lg font-semibold mb-4">Description</h3>
+              <h3 className="text-lg font-semibold mb-4">{t("vehicle.description")}</h3>
               <p className="text-gray-700 leading-relaxed text-sm">{listing.description}</p>
             </div>
           )}
@@ -268,7 +275,7 @@ const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
             <div className="flex items-center gap-1.5 text-gray-500 text-sm mb-4">
               <Eye size={16} />
               <span>
-                {listing.view_count} {listing.view_count === 1 ? "view" : "views"}
+                {listing.view_count} {listing.view_count === 1 ? t("common.view") : t("common.views")}
               </span>
             </div>
 
@@ -290,28 +297,28 @@ const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
                 title="Add to favorites"
               >
                 <Heart size={18} className={favorite ? "fill-red-500 text-red-500" : "text-gray-600"} />
-                <span>{favorite ? "Saved" : "Add to list"}</span>
+                <span>{favorite ? t("vehicle.saved") : t("vehicle.addToList")}</span>
               </button>
 
               <DropdownMenu.DropdownMenu modal={false}>
                 <DropdownMenu.DropdownMenuTrigger asChild>
                   <button className="flex items-center justify-center gap-1 py-3 px-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors text-xs">
                     <Share2 size={18} className="text-gray-600" />
-                    <span>Share</span>
+                    <span>{t("vehicle.share")}</span>
                   </button>
                 </DropdownMenu.DropdownMenuTrigger>
                 <DropdownMenu.DropdownMenuContent align="end">
-                  <DropdownMenu.DropdownMenuLabel>Share offer</DropdownMenu.DropdownMenuLabel>
+                  <DropdownMenu.DropdownMenuLabel>{t("vehicle.shareOffer")}</DropdownMenu.DropdownMenuLabel>
                   <DropdownMenu.DropdownMenuSeparator />
                   <DropdownMenu.DropdownMenuGroup>
                     <DropdownMenu.DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-                      <Mail size={16} /> Email
+                      <Mail size={16} /> {t("vehicle.email")}
                     </DropdownMenu.DropdownMenuItem>
                     <DropdownMenu.DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-                      <Facebook size={16} /> Facebook
+                      <Facebook size={16} /> {t("vehicle.facebook")}
                     </DropdownMenu.DropdownMenuItem>
                     <DropdownMenu.DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-                      <LinkIcon size={16} /> Copy link
+                      <LinkIcon size={16} /> {t("vehicle.copyLink")}
                     </DropdownMenu.DropdownMenuItem>
                   </DropdownMenu.DropdownMenuGroup>
                 </DropdownMenu.DropdownMenuContent>
@@ -319,7 +326,7 @@ const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
 
               <button className="flex items-center justify-center gap-1 py-3 px-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors text-xs">
                 <Printer size={18} className="text-gray-600" />
-                <span>Print</span>
+                <span>{t("vehicle.print")}</span>
               </button>
             </div>
           </div>
@@ -328,10 +335,10 @@ const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
           {listing.seller && (
             <div className="bg-white rounded-lg p-4 mb-4">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Seller</h3>
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">{t("vehicle.seller")}</h3>
                 {listing.seller.seller_type === "dealer" && (
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full">
-                    <Building2 size={12} /> Dealer
+                    <Building2 size={12} /> {t("vehicle.dealer")}
                   </span>
                 )}
               </div>
@@ -396,7 +403,7 @@ const VehicleDetailPage = ({ params }: { params: { id: string } }) => {
           {/* Additional Info Box */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-blue-900">
-              <strong>💡 Tip:</strong> Contact the seller to arrange a viewing. Never send money before seeing the vehicle.
+              <strong>💡 {t("vehicle.tip")}</strong> {t("vehicle.contactSellerTip")}
             </p>
           </div>
         </div>
