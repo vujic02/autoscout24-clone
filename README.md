@@ -31,7 +31,7 @@
 <h1 align="center" id="demo">💻 Demo</h1>
 
 <div width="100%" align="center">
-<img src="DEMO IMAGE LINK GOES HERE / GIF" height="400px" align="center" />
+<img src="frontend/public/demo.gif" height="400px" align="center" />
 </div>
 
 <h1 align="center" id="setup"> ⚙️ Setup (Local)</h1>
